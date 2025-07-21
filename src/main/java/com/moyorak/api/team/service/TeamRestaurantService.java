@@ -7,8 +7,9 @@ import com.moyorak.api.team.domain.TeamRestaurant;
 import com.moyorak.api.team.domain.TeamRestaurantDistance;
 import com.moyorak.api.team.domain.TeamRestaurantNotFoundException;
 import com.moyorak.api.team.domain.TeamRestaurantSearch;
-import com.moyorak.api.team.domain.TeamRestaurantSearchSummaries;
+import com.moyorak.api.team.domain.TeamRestaurantSummaries;
 import com.moyorak.api.team.domain.TeamUser;
+import com.moyorak.api.team.dto.TeamRestaurantListRequest;
 import com.moyorak.api.team.dto.TeamRestaurantLocation;
 import com.moyorak.api.team.dto.TeamRestaurantLocationsResponse;
 import com.moyorak.api.team.dto.TeamRestaurantResponse;
@@ -20,6 +21,7 @@ import com.moyorak.api.team.repository.TeamUserRepository;
 import com.moyorak.config.exception.BusinessException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,6 +38,13 @@ public class TeamRestaurantService {
         final TeamRestaurant teamRestaurant = getValidatedTeamRestaurant(teamId, teamRestaurantId);
 
         return TeamRestaurantResponse.from(teamRestaurant);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<TeamRestaurant> getTeamRestaurants(
+            Long teamId, TeamRestaurantListRequest teamRestaurantListRequest) {
+        return teamRestaurantRepository.findAllByTeamId(
+                teamId, teamRestaurantListRequest.toPageable());
     }
 
     @Transactional
@@ -122,9 +131,8 @@ public class TeamRestaurantService {
     }
 
     @Transactional(readOnly = true)
-    public TeamRestaurantSearchSummaries findByIdsAndUse(List<Long> ids, boolean use) {
-        return TeamRestaurantSearchSummaries.create(
-                teamRestaurantRepository.findByIdInAndUse(ids, use));
+    public TeamRestaurantSummaries findByIdsAndUse(List<Long> ids, boolean use) {
+        return TeamRestaurantSummaries.create(teamRestaurantRepository.findByIdInAndUse(ids, use));
     }
 
     @Transactional(readOnly = true)

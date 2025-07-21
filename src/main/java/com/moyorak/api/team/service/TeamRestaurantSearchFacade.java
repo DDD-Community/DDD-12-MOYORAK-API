@@ -2,7 +2,7 @@ package com.moyorak.api.team.service;
 
 import com.moyorak.api.review.domain.FirstReviewPhotoPaths;
 import com.moyorak.api.review.service.ReviewPhotoService;
-import com.moyorak.api.team.domain.TeamRestaurantSearchSummaries;
+import com.moyorak.api.team.domain.TeamRestaurantSummaries;
 import com.moyorak.api.team.dto.SearchResult;
 import com.moyorak.api.team.dto.TeamRestaurantSearchRequest;
 import com.moyorak.api.team.dto.TeamRestaurantSearchResponse;
@@ -37,17 +37,17 @@ public class TeamRestaurantSearchFacade {
                         teamRestaurantSearchRequest.toPageable());
 
         // 팀 식당 id로 필요한 정보 가져오기
-        final TeamRestaurantSearchSummaries teamRestaurantSearchSummaries =
+        final TeamRestaurantSummaries teamRestaurantSummaries =
                 teamRestaurantService.findByIdsAndUse(searchResult.ids(), true);
 
         // 팀 식당별로 리뷰 첫 사진 정보 가져오기
         final FirstReviewPhotoPaths firstReviewPhotoPaths =
                 reviewPhotoService.findFirstReviewPhotoPaths(
-                        teamRestaurantSearchSummaries.getTeamRestaurantIds());
+                        teamRestaurantSummaries.getTeamRestaurantIds());
 
         // 팀 식당 정보로 응답 조합
         final List<TeamRestaurantSearchResponse> teamRestaurantSearchResponses =
-                teamRestaurantSearchSummaries.toResponse(firstReviewPhotoPaths);
+                teamRestaurantSummaries.toResponse(firstReviewPhotoPaths);
 
         // 검색 기록 이벤트 발행
         teamRestaurantEventPublisher.publishSearchEvent(

@@ -2,7 +2,7 @@ package com.moyorak.api.team.dto;
 
 import com.moyorak.api.restaurant.domain.RestaurantCategory;
 
-public record TeamRestaurantSearchSummary(
+public record TeamRestaurantSummary(
         Long teamRestaurantId,
         String restaurantName,
         RestaurantCategory restaurantCategory,

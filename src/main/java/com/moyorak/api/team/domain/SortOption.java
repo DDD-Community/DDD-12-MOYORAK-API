@@ -11,7 +11,8 @@ import org.springframework.util.StringUtils;
 public enum SortOption {
     DISTANCE("distanceFromTeam", Sort.Direction.ASC),
     RATING("averageReviewScore", Sort.Direction.DESC),
-    RECENT("createdDate", Sort.Direction.DESC);
+    RECENT("createdDate", Sort.Direction.DESC),
+    NAME("restaurantName", Sort.Direction.DESC);
 
     private final String field;
     private final Sort.Direction direction;
