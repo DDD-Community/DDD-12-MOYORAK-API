@@ -8,11 +8,16 @@ import static org.mockito.BDDMockito.then;
 import com.moyorak.api.company.domain.Company;
 import com.moyorak.api.company.domain.CompanyFixture;
 import com.moyorak.api.company.domain.CompanySearch;
+import com.moyorak.api.company.domain.CompanySearchFixture;
 import com.moyorak.api.company.dto.CompanySaveRequest;
+import com.moyorak.api.company.dto.CompanySearchListResponse;
+import com.moyorak.api.company.dto.CompanySearchRequest;
 import com.moyorak.api.company.repository.CompanyRepository;
 import com.moyorak.api.company.repository.CompanySearchRepository;
 import com.moyorak.config.exception.BusinessException;
+import java.util.List;
 import java.util.Optional;
+import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -88,6 +93,46 @@ class CompanyServiceTest {
             // when & then
             assertThatThrownBy(() -> companyService.save(saveRequest))
                     .isInstanceOf(BusinessException.class);
+        }
+    }
+
+    @Nested
+    @DisplayName("회사 검색 시")
+    class Search {
+        @Test
+        @DisplayName("회사 검색 조건에 맞는 결과를 반환한다")
+        void searchCompaniesByCondition_success() {
+            // given
+            final Long companySearchId = 1L;
+            final Long companyId = 1L;
+            final String name = "우가우가";
+            final double longitude = 12.0;
+            final double latitude = 37.5;
+
+            final CompanySearchRequest request = new CompanySearchRequest(companyId, name);
+
+            final CompanySearch companySearch =
+                    CompanySearchFixture.fixture(
+                            companySearchId, companyId, name, longitude, latitude, true); // 생성자 예시
+            final List<CompanySearch> list = List.of(companySearch);
+
+            given(companySearchRepository.findByConditions(companyId, name)).willReturn(list);
+
+            // when
+            final CompanySearchListResponse response = companyService.search(request);
+
+            // then
+            SoftAssertions.assertSoftly(
+                    it -> {
+                        it.assertThat(response).isNotNull();
+                        it.assertThat(response.searchResponses()).hasSize(1);
+                        it.assertThat(response.searchResponses().get(0).companyId())
+                                .isEqualTo(companyId);
+                        ;
+                        it.assertThat(response.searchResponses().get(0).name()).isEqualTo(name);
+                    });
+
+            ;
         }
     }
 }
