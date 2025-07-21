@@ -8,6 +8,7 @@ import com.moyorak.api.company.repository.CompanySearchRepository;
 import com.moyorak.config.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -16,6 +17,7 @@ public class CompanyService {
     private final CompanyRepository companyRepository;
     private final CompanySearchRepository companySearchRepository;
 
+    @Transactional
     public void save(CompanySaveRequest saveRequest) {
         final Company company = saveRequest.toCompany();
 
