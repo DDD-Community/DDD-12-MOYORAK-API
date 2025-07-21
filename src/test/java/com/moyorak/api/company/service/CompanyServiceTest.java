@@ -106,14 +106,11 @@ class CompanyServiceTest {
             final Long companySearchId = 1L;
             final Long companyId = 1L;
             final String name = "우가우가";
-            final double longitude = 12.0;
-            final double latitude = 37.5;
 
             final CompanySearchRequest request = new CompanySearchRequest(companyId, name);
 
             final CompanySearch companySearch =
-                    CompanySearchFixture.fixture(
-                            companySearchId, companyId, name, longitude, latitude, true); // 생성자 예시
+                    CompanySearchFixture.fixture(companySearchId, companyId, name, true); // 생성자 예시
             final List<CompanySearch> list = List.of(companySearch);
 
             given(companySearchRepository.findByConditions(companyId, name)).willReturn(list);
@@ -128,11 +125,8 @@ class CompanyServiceTest {
                         it.assertThat(response.searchResponses()).hasSize(1);
                         it.assertThat(response.searchResponses().get(0).companyId())
                                 .isEqualTo(companyId);
-                        ;
                         it.assertThat(response.searchResponses().get(0).name()).isEqualTo(name);
                     });
-
-            ;
         }
     }
 }
