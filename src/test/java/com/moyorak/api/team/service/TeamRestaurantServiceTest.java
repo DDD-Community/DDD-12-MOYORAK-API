@@ -162,7 +162,7 @@ class TeamRestaurantServiceTest {
             // given
             final TeamRestaurantSaveRequest request =
                     new TeamRestaurantSaveRequest(restaurantId, "맛집입니다.");
-            final Company company = CompanyFixture.fixture(1L, 127.0, 37.5, true);
+            final Company company = CompanyFixture.fixture(1L, "우가우가회사", 127.0, 37.5, true);
             final Team team = TeamFixture.fixture(teamId, company, true);
             final TeamUser approvedTeamUser = TeamUserFixture.fixtureApproved(userId, team);
             final Restaurant restaurant =
