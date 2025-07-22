@@ -2,6 +2,7 @@ package com.moyorak.api.team.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
@@ -19,6 +20,7 @@ import com.moyorak.api.team.domain.TeamRestaurant;
 import com.moyorak.api.team.domain.TeamRestaurantFixture;
 import com.moyorak.api.team.domain.TeamRestaurantNotFoundException;
 import com.moyorak.api.team.domain.TeamRestaurantSearch;
+import com.moyorak.api.team.domain.TeamRestaurantSearchFixture;
 import com.moyorak.api.team.domain.TeamUser;
 import com.moyorak.api.team.domain.TeamUserFixture;
 import com.moyorak.api.team.domain.TeamUserStatus;
@@ -370,7 +372,20 @@ class TeamRestaurantServiceTest {
                     TeamRestaurantFixture.fixture(
                             teamRestaurantId, "맛있네요", 4.5, 5, 5, 5.5, 5, true, teamId, restaurant);
 
-            final boolean before = teamRestaurant.isUse();
+            final TeamRestaurantSearch teamRestaurantSearch =
+                    TeamRestaurantSearchFixture.fixture(
+                            teamRestaurantId,
+                            4.5,
+                            5.5,
+                            127.043616,
+                            37.503095,
+                            "우가우가 차차차",
+                            true,
+                            teamId);
+
+            final boolean beforeTeamRestaurantUse = teamRestaurant.isUse();
+            final boolean beforeSearchUse = teamRestaurantSearch.isUse();
+
             final Team team = TeamFixture.fixture(teamId, null, true);
             final TeamUser approvedUser =
                     TeamUserFixture.fixture(userId, team, TeamUserStatus.APPROVED, true);
@@ -381,11 +396,19 @@ class TeamRestaurantServiceTest {
             given(teamRestaurantRepository.findByTeamIdAndIdAndUse(teamId, teamRestaurantId, true))
                     .willReturn(Optional.of(teamRestaurant));
 
+            given(
+                            teamRestaurantSearchRepository.findByTeamIdAndTeamRestaurantId(
+                                    teamId, teamRestaurantId))
+                    .willReturn(Optional.of(teamRestaurantSearch));
             // when
             teamRestaurantService.deleteTeamRestaurant(teamId, teamRestaurantId, userId);
 
             // then
-            assertThat(teamRestaurant.isUse()).isNotEqualTo(before);
+            assertSoftly(
+                    it -> {
+                        it.assertThat(teamRestaurant.isUse()).isNotEqualTo(beforeTeamRestaurantUse);
+                        it.assertThat(teamRestaurantSearch.isUse()).isNotEqualTo(beforeSearchUse);
+                    });
         }
     }
 }
