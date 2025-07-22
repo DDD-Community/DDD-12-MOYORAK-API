@@ -5,7 +5,9 @@ import com.moyorak.api.team.dto.TeamRestaurantListResponse;
 import com.moyorak.api.team.dto.TeamRestaurantSearchResponse;
 import com.moyorak.api.team.dto.TeamRestaurantSummary;
 import java.util.List;
+import lombok.Getter;
 
+@Getter
 public class TeamRestaurantSummaries {
 
     private final List<TeamRestaurantSummary> summaries;
