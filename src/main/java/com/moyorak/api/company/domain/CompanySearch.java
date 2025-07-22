@@ -18,7 +18,7 @@ import org.hibernate.annotations.Comment;
 
 @Getter
 @Entity
-@Table(name = "company_serachc")
+@Table(name = "company_search")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CompanySearch extends AuditInformation {
 
