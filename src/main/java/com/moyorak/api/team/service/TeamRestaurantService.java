@@ -32,11 +32,15 @@ public class TeamRestaurantService {
     private final TeamUserRepository teamUserRepository;
     private final RestaurantRepository restaurantRepository;
     private final TeamRestaurantSearchRepository teamRestaurantSearchRepository;
+    private final TeamRestaurantEventPublisher teamRestaurantEventPublisher;
 
     @Transactional(readOnly = true)
-    public TeamRestaurantResponse getTeamRestaurant(Long teamId, Long teamRestaurantId) {
+    public TeamRestaurantResponse getTeamRestaurant(
+            Long userId, Long teamId, Long teamRestaurantId) {
         final TeamRestaurant teamRestaurant = getValidatedTeamRestaurant(teamId, teamRestaurantId);
 
+        // 조회 이벤트 발행
+        teamRestaurantEventPublisher.publishViewEvent(userId, teamId, teamRestaurantId);
         return TeamRestaurantResponse.from(teamRestaurant);
     }
 

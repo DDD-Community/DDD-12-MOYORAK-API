@@ -60,8 +60,10 @@ class TeamRestaurantController {
     @Operation(summary = "팀 맛집 상세 조회", description = "팀 맛집 상세 조회를 합니다.")
     public TeamRestaurantResponse getTeamRestaurant(
             @PathVariable @Positive final Long teamId,
-            @PathVariable @Positive final Long teamRestaurantId) {
-        return teamRestaurantService.getTeamRestaurant(teamId, teamRestaurantId);
+            @PathVariable @Positive final Long teamRestaurantId,
+            @AuthenticationPrincipal final UserPrincipal userPrincipal) {
+        return teamRestaurantService.getTeamRestaurant(
+                userPrincipal.getId(), teamId, teamRestaurantId);
     }
 
     @PutMapping("/{teamId}/restaurants/{teamRestaurantId}")
