@@ -40,4 +40,15 @@ public class ViewHistory extends AuditInformation {
     @Comment("팀 고유 ID")
     @Column(name = "team_restaurant_id", nullable = false)
     private Long teamRestaurantId;
+
+    public static ViewHistory create(
+            final Long userId, final Long teamId, final Long teamRestaurantId) {
+        ViewHistory viewHistory = new ViewHistory();
+
+        viewHistory.userId = userId;
+        viewHistory.teamId = teamId;
+        viewHistory.teamRestaurantId = teamRestaurantId;
+
+        return viewHistory;
+    }
 }
