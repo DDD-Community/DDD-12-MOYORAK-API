@@ -1,6 +1,5 @@
 package com.moyorak.api.history.dto;
 
-import com.moyorak.api.restaurant.domain.RestaurantCategory;
 import com.moyorak.api.review.domain.FirstReviewPhotoPaths;
 import com.moyorak.api.team.domain.TeamRestaurantSummaries;
 import com.moyorak.api.team.dto.TeamRestaurantSummary;
@@ -40,14 +39,8 @@ public record ViewHistoryListResponse(
                                                     viewHistorySummary.teamRestaurantId());
                                     // 팀 식당이 존재하지 않는 경우
                                     if (teamRestaurantSummary == null) {
-                                        return ViewHistoryResponse.create(
-                                                viewHistorySummary.id(),
-                                                0L,
-                                                "",
-                                                RestaurantCategory.ETC,
-                                                0.0,
-                                                0,
-                                                null);
+                                        return ViewHistoryResponse.createDefault(
+                                                viewHistorySummary.id());
                                     }
 
                                     return ViewHistoryResponse.create(

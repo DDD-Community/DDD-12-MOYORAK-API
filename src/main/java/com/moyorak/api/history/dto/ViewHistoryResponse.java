@@ -30,4 +30,9 @@ public record ViewHistoryResponse(
                 reviewCount,
                 reviewImagePath);
     }
+
+    public static ViewHistoryResponse createDefault(final Long viewHistoryId) {
+        return ViewHistoryResponse.create(
+                viewHistoryId, 0L, "", RestaurantCategory.ETC, 0.0, 0, null);
+    }
 }
