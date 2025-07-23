@@ -66,6 +66,14 @@ public class TeamRestaurantService {
         final TeamRestaurant teamRestaurant = getValidatedTeamRestaurant(teamId, teamRestaurantId);
         // 사용 여부 값 변경
         teamRestaurant.toggleUse();
+
+        final TeamRestaurantSearch teamRestaurantSearch =
+                teamRestaurantSearchRepository
+                        .findByTeamIdAndTeamRestaurantId(teamId, teamRestaurantId)
+                        .orElseThrow(() -> new BusinessException("팀 맛집 검색 데이터가 없습니다."));
+
+        // 사용 여부 값 변경
+        teamRestaurantSearch.toggleUse();
     }
 
     @Transactional

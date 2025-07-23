@@ -52,6 +52,10 @@ public class TeamRestaurantSearch extends AuditInformation {
     @Column(name = "use_yn", nullable = false, columnDefinition = "char(1)")
     private boolean use = true;
 
+    public void toggleUse() {
+        this.use = !this.use;
+    }
+
     public static TeamRestaurantSearch from(TeamRestaurant teamRestaurant, Restaurant restaurant) {
         TeamRestaurantSearch teamRestaurantSearch = new TeamRestaurantSearch();
 
