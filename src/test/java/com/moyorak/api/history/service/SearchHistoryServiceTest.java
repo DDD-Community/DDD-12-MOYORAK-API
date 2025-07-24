@@ -1,5 +1,7 @@
 package com.moyorak.api.history.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
 
 import com.moyorak.api.history.domain.SearchHistory;
@@ -7,8 +9,10 @@ import com.moyorak.api.history.domain.SearchHistoryFixture;
 import com.moyorak.api.history.dto.SearchHistoryListResponse;
 import com.moyorak.api.history.dto.SearchHistoryRequest;
 import com.moyorak.api.history.repository.SearchHistoryRepository;
+import com.moyorak.config.exception.BusinessException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -59,6 +63,45 @@ class SearchHistoryServiceTest {
                                 .extracting("keyword")
                                 .containsExactly("keyword2", "keyword1");
                     });
+        }
+    }
+
+    @Nested
+    @DisplayName("팀 맛집 검색 기록 삭제 시")
+    class DeleteSearchHistory {
+        final Long userId = 1L;
+        final Long searchHistoryId = 1L;
+
+        @Test
+        @DisplayName("성공한다.")
+        void success() {
+            // given
+            final SearchHistory searchHistory =
+                    SearchHistoryFixture.fixture(
+                            searchHistoryId, "우가우가", userId, true, LocalDateTime.now());
+
+            given(searchHistoryRepository.findByIdAndUserIdAndUse(searchHistoryId, userId, true))
+                    .willReturn(Optional.of(searchHistory));
+
+            // when
+            searchHistoryService.deleteSearchHistory(searchHistoryId, userId);
+
+            // then
+            assertThat(searchHistory.isUse()).isFalse();
+        }
+
+        @Test
+        @DisplayName("검색 기록이 없으면 예외를 반환한다.")
+        void noHistory() {
+            // given
+            given(searchHistoryRepository.findByIdAndUserIdAndUse(searchHistoryId, userId, true))
+                    .willReturn(Optional.empty());
+
+            // when & then
+            assertThatThrownBy(
+                            () -> searchHistoryService.deleteSearchHistory(searchHistoryId, userId))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("검색 기록이 존재하지 않습니다.");
         }
     }
 }
