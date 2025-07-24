@@ -14,7 +14,7 @@ public interface SearchHistoryRepository extends JpaRepository<SearchHistory, Lo
             @QueryHint(
                     name = "org.hibernate.comment",
                     value =
-                            "SearchHistoryRepository.findAllByUserIdAndTeamIdAndUse : 팀 맛집 검색 기록을 조회합니다."))
+                            "SearchHistoryRepository.findAllByUserIdAndTeamIdAndUse : 팀 맛집 검색 기록 리스트를 조회합니다."))
     List<SearchHistory> findAllByUserIdAndTeamIdAndUse(
             Long userId, Long teamId, boolean use, Pageable pageable);
 
