@@ -11,6 +11,7 @@ import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,5 +34,13 @@ class SearchHistoryController {
             @AuthenticationPrincipal final UserPrincipal userPrincipal) {
         return searchHistoryService.getSearchHistories(
                 SearchHistoryRequest.create(userPrincipal.getId(), teamId));
+    }
+
+    @DeleteMapping("/teams/{teamId}/team-members/me/search-history/{searchHistoryId}")
+    @Operation(summary = "자신의 팀 맛집 검색 기록 삭제", description = "자신의 팀 맛집 검색 기록을 삭제합니다.")
+    public void deleteSearchHistory(
+            @PathVariable @Positive final Long searchHistoryId,
+            @AuthenticationPrincipal final UserPrincipal userPrincipal) {
+        searchHistoryService.deleteSearchHistory(searchHistoryId, userPrincipal.getId());
     }
 }
