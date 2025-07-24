@@ -22,9 +22,6 @@ public class TeamInvitationService {
     private final TeamInvitationRepository teamInvitationRepository;
     private final TeamUserRepository teamUserRepository;
 
-    // TODO 프론트에서 사용할 URL로 교체해야함 OR 그냥 토큰만 내려주기(프론트에서 전체 링크 생성)
-    private static final String INVITATION_URL_PREFIX = "http://moyorak/invitation/";
-
     @Transactional
     public TeamInvitationCreateResponse createTeamInvitation(final Long teamId, final Long userId) {
 
@@ -45,8 +42,7 @@ public class TeamInvitationService {
                         invitationToken.token(), invitationToken.expiresDate(), teamId);
         teamInvitationRepository.save(teamInvitation);
 
-        final String invitationUrl = INVITATION_URL_PREFIX + teamInvitation.getInvitationToken();
-        return TeamInvitationCreateResponse.of(invitationUrl);
+        return TeamInvitationCreateResponse.of(teamInvitation.getInvitationToken());
     }
 
     @Transactional(readOnly = true)
