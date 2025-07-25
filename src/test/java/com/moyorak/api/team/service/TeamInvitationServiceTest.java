@@ -34,7 +34,7 @@ class TeamInvitationServiceTest {
     @Mock private TeamInvitationRepository teamInvitationRepository;
 
     @Nested
-    @DisplayName("초대 링크 생성 시")
+    @DisplayName("초대 링크 토큰 생성 시")
     class Create {
 
         final Long teamId = 1L;

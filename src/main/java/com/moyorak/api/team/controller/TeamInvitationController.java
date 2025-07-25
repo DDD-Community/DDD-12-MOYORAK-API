@@ -28,7 +28,7 @@ class TeamInvitationController {
     private final TeamInvitationService teamInvitationService;
 
     @PostMapping("/teams/{teamId}/invitation")
-    @Operation(summary = "팀 초대 링크 생성", description = "팀 초대를 위한 링크를 생성합니다.")
+    @Operation(summary = "팀 초대 링크 토큰 생성", description = "팀 초대를 위한 링크 토큰을 생성합니다.")
     public TeamInvitationCreateResponse createTeamInvitation(
             @PathVariable @Positive final Long teamId,
             @AuthenticationPrincipal final UserPrincipal userPrincipal) {
