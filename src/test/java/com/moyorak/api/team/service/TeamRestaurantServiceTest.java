@@ -49,9 +49,11 @@ class TeamRestaurantServiceTest {
     @Mock private TeamUserRepository teamUserRepository;
     @Mock private RestaurantRepository restaurantRepository;
     @Mock private TeamRestaurantSearchRepository teamRestaurantSearchRepository;
+    @Mock private TeamRestaurantEventPublisher teamRestaurantEventPublisher;
 
     final Long teamId = 1L;
     final Long teamRestaurantId = 1L;
+    final Long userId = 1L;
 
     @Nested
     @DisplayName("팀 맛집 상세 조회 시,")
@@ -78,7 +80,7 @@ class TeamRestaurantServiceTest {
 
             // when
             final TeamRestaurantResponse response =
-                    teamRestaurantService.getTeamRestaurant(teamId, teamRestaurantId);
+                    teamRestaurantService.getTeamRestaurant(userId, teamId, teamRestaurantId);
 
             // then
             assertThat(response.name()).isEqualTo(teamRestaurant.getRestaurant().getName());
@@ -93,7 +95,9 @@ class TeamRestaurantServiceTest {
 
             // when & then
             assertThatThrownBy(
-                            () -> teamRestaurantService.getTeamRestaurant(teamId, teamRestaurantId))
+                            () ->
+                                    teamRestaurantService.getTeamRestaurant(
+                                            userId, teamId, teamRestaurantId))
                     .isInstanceOf(TeamRestaurantNotFoundException.class);
         }
 
@@ -110,7 +114,9 @@ class TeamRestaurantServiceTest {
 
             // when & then
             assertThatThrownBy(
-                            () -> teamRestaurantService.getTeamRestaurant(teamId, teamRestaurantId))
+                            () ->
+                                    teamRestaurantService.getTeamRestaurant(
+                                            userId, teamId, teamRestaurantId))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("연결된 식당 정보가 존재하지 않습니다.");
         }
@@ -145,7 +151,9 @@ class TeamRestaurantServiceTest {
 
             // when & then
             assertThatThrownBy(
-                            () -> teamRestaurantService.getTeamRestaurant(teamId, teamRestaurantId))
+                            () ->
+                                    teamRestaurantService.getTeamRestaurant(
+                                            userId, teamId, teamRestaurantId))
                     .isInstanceOf(TeamRestaurantNotFoundException.class);
         }
     }
