@@ -51,4 +51,8 @@ public class ViewHistory extends AuditInformation {
 
         return viewHistory;
     }
+
+    public void delete() {
+        use = false;
+    }
 }
