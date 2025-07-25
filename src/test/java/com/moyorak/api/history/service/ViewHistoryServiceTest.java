@@ -1,5 +1,7 @@
 package com.moyorak.api.history.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
 
 import com.moyorak.api.history.domain.ViewHistory;
@@ -7,8 +9,10 @@ import com.moyorak.api.history.domain.ViewHistoryFixture;
 import com.moyorak.api.history.dto.ViewHistoryRequest;
 import com.moyorak.api.history.dto.ViewHistorySummaries;
 import com.moyorak.api.history.repository.ViewHistoryRepository;
+import com.moyorak.config.exception.BusinessException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -56,6 +60,42 @@ class ViewHistoryServiceTest {
                         it.assertThat(result.summaries()).hasSize(2);
                         it.assertThat(result.summaries()).extracting("id").containsExactly(2L, 1L);
                     });
+        }
+    }
+
+    @Nested
+    @DisplayName("팀 맛집 조회 기록 삭제 시")
+    class DeleteViewHistory {
+        final Long userId = 1L;
+        final Long viewHistoryId = 1L;
+
+        @Test
+        @DisplayName("성공한다.")
+        void success() {
+            // given
+            final ViewHistory viewHistory = ViewHistoryFixture.fixture(userId, true);
+
+            given(viewHistoryRepository.findByIdAndUserIdAndUse(viewHistoryId, userId, true))
+                    .willReturn(Optional.of(viewHistory));
+
+            // when
+            viewHistoryService.deleteViewHistory(userId, viewHistoryId);
+
+            // then
+            assertThat(viewHistory.isUse()).isFalse();
+        }
+
+        @Test
+        @DisplayName("조회 기록이 없으면 예외를 반환한다.")
+        void noView() {
+            // given
+            given(viewHistoryRepository.findByIdAndUserIdAndUse(viewHistoryId, userId, true))
+                    .willReturn(Optional.empty());
+
+            // when & then
+            assertThatThrownBy(() -> viewHistoryService.deleteViewHistory(userId, viewHistoryId))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("조회 기록이 존재하지 않습니다.");
         }
     }
 }
