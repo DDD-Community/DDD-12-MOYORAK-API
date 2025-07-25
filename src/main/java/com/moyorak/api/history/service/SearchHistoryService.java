@@ -4,6 +4,7 @@ import com.moyorak.api.history.domain.SearchHistory;
 import com.moyorak.api.history.dto.SearchHistoryListResponse;
 import com.moyorak.api.history.dto.SearchHistoryRequest;
 import com.moyorak.api.history.repository.SearchHistoryRepository;
+import com.moyorak.config.exception.BusinessException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,5 +22,14 @@ public class SearchHistoryService {
                 searchHistoryRepository.findAllByUserIdAndTeamIdAndUse(
                         request.userId(), request.teamId(), true, request.toRecentPageable());
         return SearchHistoryListResponse.from(searchHistories);
+    }
+
+    @Transactional
+    public void deleteSearchHistory(final Long searchHistoryId, final Long userId) {
+        SearchHistory searchHistory =
+                searchHistoryRepository
+                        .findByIdAndUserIdAndUse(searchHistoryId, userId, true)
+                        .orElseThrow(() -> new BusinessException("검색 기록이 존재하지 않습니다."));
+        searchHistory.delete();
     }
 }

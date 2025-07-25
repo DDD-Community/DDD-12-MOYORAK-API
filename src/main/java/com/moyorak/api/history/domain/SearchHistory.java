@@ -50,4 +50,8 @@ public class SearchHistory extends AuditInformation {
 
         return searchHistory;
     }
+
+    public void delete() {
+        use = false;
+    }
 }
