@@ -4,6 +4,7 @@ import com.moyorak.api.auth.domain.UserPrincipal;
 import com.moyorak.api.history.dto.ViewHistoryListResponse;
 import com.moyorak.api.history.dto.ViewHistoryRequest;
 import com.moyorak.api.history.service.ViewHistoryFacade;
+import com.moyorak.api.history.service.ViewHistoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -11,6 +12,7 @@ import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 class ViewHistoryController {
 
     private final ViewHistoryFacade viewHistoryFacade;
+    private final ViewHistoryService viewHistoryService;
 
     @GetMapping("/teams/{teamId}/team-members/me/view-history")
     @Operation(summary = "자신의 팀 맛집 상세 조회 기록", description = "자신의 팀 맛집 상세 조회 기록을 조회합니다.")
@@ -33,5 +36,13 @@ class ViewHistoryController {
             @AuthenticationPrincipal final UserPrincipal userPrincipal) {
         return viewHistoryFacade.getViewHistories(
                 ViewHistoryRequest.create(userPrincipal.getId(), teamId));
+    }
+
+    @DeleteMapping("/teams/{teamId}/team-members/me/view-history/{viewHistoryId}")
+    @Operation(summary = "자신의 팀 맛집 상세 조회 기록 삭제", description = "자신의 팀 맛집 상세 조회 기록을 삭제합니다.")
+    public void deleteViewHistory(
+            @PathVariable @Positive final Long viewHistoryId,
+            @AuthenticationPrincipal final UserPrincipal userPrincipal) {
+        viewHistoryService.deleteViewHistory(viewHistoryId, userPrincipal.getId());
     }
 }
