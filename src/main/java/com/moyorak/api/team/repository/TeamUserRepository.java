@@ -1,6 +1,7 @@
 package com.moyorak.api.team.repository;
 
 import com.moyorak.api.team.domain.TeamUser;
+import com.moyorak.api.team.domain.TeamUserStatus;
 import jakarta.persistence.QueryHint;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -36,4 +37,10 @@ public interface TeamUserRepository extends JpaRepository<TeamUser, Long> {
                     value = "TeamUserRepository.findByUserIdAndTeamIdAndUse : 팀 멤버를 조회합니다."))
     Optional<TeamUser> findByUserIdAndTeamIdAndUse(
             @Param("userId") Long userId, @Param("teamId") Long teamId, @Param("use") boolean use);
+
+    @QueryHints(
+            @QueryHint(
+                    name = "org.hibernate.comment",
+                    value = "TeamUserRepository.findByIdAndUseAndStatus : 팀 멤버를 조회합니다."))
+    Optional<TeamUser> findByIdAndUseAndStatus(Long id, boolean use, TeamUserStatus status);
 }
