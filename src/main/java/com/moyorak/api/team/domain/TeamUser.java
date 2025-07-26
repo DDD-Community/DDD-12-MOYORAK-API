@@ -14,6 +14,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -60,6 +61,14 @@ public class TeamUser extends AuditInformation {
 
     public boolean isTeamAdmin() {
         return role == TeamRole.TEAM_ADMIN;
+    }
+
+    public boolean isTeam(Long teamId) {
+        return Objects.equals(team.getId(), teamId);
+    }
+
+    public void changeStatus(TeamUserStatus status) {
+        this.status = status;
     }
 
     public void withdraw() {

@@ -13,6 +13,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -41,5 +42,14 @@ class TeamUserController {
             @PathVariable @Positive final Long teamId,
             @AuthenticationPrincipal final UserPrincipal userPrincipal) {
         teamJoinFacade.requestJoin(userPrincipal.getId(), teamId);
+    }
+
+    @PutMapping("/teams/{teamId}/team-members/{teamMemberId}/approve")
+    @Operation(summary = "팀 가입 신청", description = "팀 가입을 신청 합니다.")
+    public void approveRequestJoin(
+            @PathVariable @Positive final Long teamId,
+            @PathVariable @Positive final Long teamMemberId,
+            @AuthenticationPrincipal final UserPrincipal userPrincipal) {
+        teamUserService.approveRequestJoin(userPrincipal.getId(), teamId, teamMemberId);
     }
 }
