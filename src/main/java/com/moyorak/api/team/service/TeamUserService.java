@@ -7,6 +7,7 @@ import com.moyorak.api.team.domain.TeamUserNotFoundException;
 import com.moyorak.api.team.domain.TeamUserStatus;
 import com.moyorak.api.team.repository.TeamUserRepository;
 import com.moyorak.config.exception.BusinessException;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,8 +38,15 @@ public class TeamUserService {
 
     @Transactional
     public void requestJoin(final Long userId, final Team team) {
-        teamUserRepository.save(
-                TeamUser.create(team, userId, TeamRole.TEAM_MEMBER, TeamUserStatus.PENDING));
+        final Optional<TeamUser> isWithdrawnTeamUser =
+                teamUserRepository.findByUserIdAndTeamIdAndUse(userId, team.getId(), false);
+        if (isWithdrawnTeamUser.isPresent()) {
+            final TeamUser teamUser = isWithdrawnTeamUser.get();
+            teamUser.restore();
+        } else {
+            teamUserRepository.save(
+                    TeamUser.create(team, userId, TeamRole.TEAM_MEMBER, TeamUserStatus.PENDING));
+        }
     }
 
     @Transactional

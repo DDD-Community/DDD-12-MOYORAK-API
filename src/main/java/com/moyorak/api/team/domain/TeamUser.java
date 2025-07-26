@@ -71,6 +71,11 @@ public class TeamUser extends AuditInformation {
         this.status = status;
     }
 
+    public void restore() {
+        status = TeamUserStatus.PENDING;
+        use = true;
+    }
+
     public void withdraw() {
         status = TeamUserStatus.WITHDRAWN;
         use = false;
