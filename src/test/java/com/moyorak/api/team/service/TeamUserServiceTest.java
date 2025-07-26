@@ -1,8 +1,17 @@
 package com.moyorak.api.team.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.mock;
 
+import com.moyorak.api.company.domain.Company;
+import com.moyorak.api.company.domain.CompanyFixture;
+import com.moyorak.api.team.domain.Team;
+import com.moyorak.api.team.domain.TeamFixture;
 import com.moyorak.api.team.domain.TeamRole;
 import com.moyorak.api.team.domain.TeamUser;
 import com.moyorak.api.team.domain.TeamUserFixture;
@@ -76,6 +85,56 @@ class TeamUserServiceTest {
             assertThatThrownBy(() -> teamUserService.withdraw(userId, teamId))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("팀 관리자는 탈퇴할 수 없습니다.");
+        }
+    }
+
+    @Nested
+    @DisplayName("withdraw 호출 시")
+    class RequestJoin {
+
+        final Long userId = 1L;
+        final Long teamId = 100L;
+        final Company company = CompanyFixture.fixture(1L, "우가우가", 37.5, 36.5, true);
+        final Team team = TeamFixture.fixture(teamId, company, true);
+
+        @Test
+        @DisplayName("기존 탈퇴한 기록이 존재하면 복원 처리한다")
+        void restoreWithdrawnUser() {
+            // given
+            final TeamUser withdrawnUser =
+                    TeamUserFixture.fixture(TeamUserStatus.WITHDRAWN, TeamRole.TEAM_MEMBER, false);
+            given(teamUserRepository.findByUserIdAndTeamIdAndUse(userId, teamId, false))
+                    .willReturn(Optional.of(withdrawnUser));
+
+            // when
+            teamUserService.requestJoin(userId, team);
+
+            // then
+            assertThat(withdrawnUser.isUse()).isTrue();
+            assertThat(withdrawnUser.getStatus()).isEqualTo(TeamUserStatus.PENDING);
+        }
+
+        @Test
+        @DisplayName("탈퇴한 기록이 없다면 새로운 대기 상태의 팀멤버를 생성한다")
+        void createNewPendingUser() {
+            // given
+            given(teamUserRepository.findByUserIdAndTeamIdAndUse(userId, teamId, false))
+                    .willReturn(Optional.empty());
+            given(teamUserRepository.save(any())).willReturn(mock(TeamUser.class));
+
+            // when
+            teamUserService.requestJoin(userId, team);
+
+            // then
+            then(teamUserRepository)
+                    .should()
+                    .save(
+                            argThat(
+                                    user ->
+                                            user.getUserId().equals(userId)
+                                                    && user.getTeam().equals(team)
+                                                    && user.getRole() == TeamRole.TEAM_MEMBER
+                                                    && user.getStatus() == TeamUserStatus.PENDING));
         }
     }
 }
