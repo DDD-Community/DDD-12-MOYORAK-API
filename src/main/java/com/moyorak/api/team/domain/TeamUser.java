@@ -66,4 +66,15 @@ public class TeamUser extends AuditInformation {
         status = TeamUserStatus.WITHDRAWN;
         use = false;
     }
+
+    public static TeamUser create(
+            Team team, Long userId, TeamRole teamRole, TeamUserStatus teamUserStatus) {
+        TeamUser teamUser = new TeamUser();
+        teamUser.team = team;
+        teamUser.userId = userId;
+        teamUser.role = teamRole;
+        teamUser.status = teamUserStatus;
+
+        return teamUser;
+    }
 }

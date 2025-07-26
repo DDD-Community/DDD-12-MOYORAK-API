@@ -1,7 +1,10 @@
 package com.moyorak.api.team.service;
 
+import com.moyorak.api.team.domain.Team;
+import com.moyorak.api.team.domain.TeamRole;
 import com.moyorak.api.team.domain.TeamUser;
 import com.moyorak.api.team.domain.TeamUserNotFoundException;
+import com.moyorak.api.team.domain.TeamUserStatus;
 import com.moyorak.api.team.repository.TeamUserRepository;
 import com.moyorak.config.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
@@ -30,5 +33,11 @@ public class TeamUserService {
         }
 
         teamUser.withdraw();
+    }
+
+    @Transactional
+    public void requestJoin(final Long userId, final Team team) {
+        teamUserRepository.save(
+                TeamUser.create(team, userId, TeamRole.TEAM_MEMBER, TeamUserStatus.PENDING));
     }
 }
