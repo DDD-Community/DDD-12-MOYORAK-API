@@ -137,4 +137,82 @@ class TeamUserServiceTest {
                                                     && user.getStatus() == TeamUserStatus.PENDING));
         }
     }
+
+    @Nested
+    @DisplayName("가입 신청 승인 시")
+    class ApproveRequestJoin {
+
+        final Long teamId = 200L;
+        final Long otherTeamId = 300L;
+        final Long adminUserId = 10L;
+        final Long pendingMemberId = 20L;
+        final Company company = CompanyFixture.fixture(1L, "우가우가", 37.5, 36.5, true);
+        final Team team = TeamFixture.fixture(teamId, company, true);
+        final Team otherTeam = TeamFixture.fixture(otherTeamId, company, true);
+
+        @Test
+        @DisplayName("승인자가 팀 관리자가 아니면 예외를 발생시킨다")
+        void notAdminUser() {
+            // given
+            final TeamUser nonAdminUser =
+                    TeamUserFixture.fixture(TeamUserStatus.APPROVED, TeamRole.TEAM_MEMBER, true);
+            given(teamUserRepository.findByUserIdAndTeamIdAndUse(adminUserId, teamId, true))
+                    .willReturn(Optional.of(nonAdminUser));
+
+            // when & then
+            assertThatThrownBy(
+                            () ->
+                                    teamUserService.approveRequestJoin(
+                                            adminUserId, teamId, pendingMemberId))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("승인을 하는 주체가, 팀 관리자가 아닙니다.");
+        }
+
+        @Test
+        @DisplayName("요청자가 팀원이 아니면 예외를 발생시킨다")
+        void notSameTeam() {
+            // given
+            final TeamUser adminUser =
+                    TeamUserFixture.fixture(TeamUserStatus.APPROVED, TeamRole.TEAM_ADMIN, true);
+            final TeamUser otherTeamUser =
+                    TeamUserFixture.fixture(
+                            pendingMemberId, otherTeam, TeamUserStatus.PENDING, true);
+            given(teamUserRepository.findByUserIdAndTeamIdAndUse(adminUserId, teamId, true))
+                    .willReturn(Optional.of(adminUser));
+            given(
+                            teamUserRepository.findByIdAndUseAndStatus(
+                                    pendingMemberId, true, TeamUserStatus.PENDING))
+                    .willReturn(Optional.of(otherTeamUser));
+
+            // when & then
+            assertThatThrownBy(
+                            () ->
+                                    teamUserService.approveRequestJoin(
+                                            adminUserId, teamId, pendingMemberId))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("해당 팀의 팀원이 아닙니다.");
+        }
+
+        @Test
+        @DisplayName("승인이 정상적으로 처리된다")
+        void success() {
+            // given
+            final TeamUser adminUser =
+                    TeamUserFixture.fixture(TeamUserStatus.APPROVED, TeamRole.TEAM_ADMIN, true);
+            final TeamUser pendingUser =
+                    TeamUserFixture.fixture(pendingMemberId, team, TeamUserStatus.PENDING, true);
+            given(teamUserRepository.findByUserIdAndTeamIdAndUse(adminUserId, teamId, true))
+                    .willReturn(Optional.of(adminUser));
+            given(
+                            teamUserRepository.findByIdAndUseAndStatus(
+                                    pendingMemberId, true, TeamUserStatus.PENDING))
+                    .willReturn(Optional.of(pendingUser));
+
+            // when
+            teamUserService.approveRequestJoin(adminUserId, teamId, pendingMemberId);
+
+            // then
+            assertThat(pendingUser.getStatus()).isEqualTo(TeamUserStatus.APPROVED);
+        }
+    }
 }
