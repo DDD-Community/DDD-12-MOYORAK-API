@@ -89,7 +89,7 @@ class TeamUserServiceTest {
     }
 
     @Nested
-    @DisplayName("withdraw 호출 시")
+    @DisplayName("가입 승인 신청 시")
     class RequestJoin {
 
         final Long userId = 1L;
