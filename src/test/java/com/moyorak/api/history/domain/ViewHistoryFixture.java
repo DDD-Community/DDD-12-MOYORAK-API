@@ -21,4 +21,13 @@ public class ViewHistoryFixture {
 
         return viewHistory;
     }
+
+    public static ViewHistory fixture(final Long userId, final boolean use) {
+        ViewHistory viewHistory = new ViewHistory();
+
+        ReflectionTestUtils.setField(viewHistory, "userId", userId);
+        ReflectionTestUtils.setField(viewHistory, "use", use);
+
+        return viewHistory;
+    }
 }
