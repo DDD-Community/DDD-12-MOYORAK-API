@@ -45,7 +45,7 @@ class TeamUserController {
     }
 
     @PutMapping("/teams/{teamId}/team-members/{teamMemberId}/approve")
-    @Operation(summary = "팀 가입 신청", description = "팀 가입을 신청 합니다.")
+    @Operation(summary = "팀 가입 신청을 승인합니다.", description = "팀 가입 신청을 승인 합니다.")
     public void approveRequestJoin(
             @PathVariable @Positive final Long teamId,
             @PathVariable @Positive final Long teamMemberId,
