@@ -16,6 +16,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.util.Objects;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
@@ -54,6 +55,32 @@ public class TeamUser extends AuditInformation {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "team_id", nullable = false)
     private Team team;
+
+    @Builder(access = AccessLevel.PRIVATE)
+    private TeamUser(TeamUserStatus status, TeamRole role, boolean use, Long userId, Team team) {
+        this.status = status;
+        this.role = role;
+        this.use = use;
+        this.userId = userId;
+        this.team = team;
+    }
+
+    /**
+     * 팀에 최초로 가입하는 사용자를 위한 메서드
+     *
+     * @param team
+     * @param userId
+     * @return
+     */
+    public static TeamUser firstJoin(final Team team, final Long userId) {
+        return TeamUser.builder()
+                .team(team)
+                .userId(userId)
+                .status(TeamUserStatus.APPROVED)
+                .role(TeamRole.TEAM_ADMIN)
+                .use(true)
+                .build();
+    }
 
     public boolean isNotApproved() {
         return status != TeamUserStatus.APPROVED;

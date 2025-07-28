@@ -25,7 +25,7 @@ public interface TeamSearchRepository extends CrudRepository<TeamSearch, Long> {
     @QueryHints(
             @QueryHint(
                     name = "org.hibernate.comment",
-                    value = "TeamRepository.findByConditions : 팀 정보를 검색합니다."))
+                    value = "TeamSearchRepository.findByConditions : 팀 정보를 검색합니다."))
     List<TeamSearch> findByConditions(
             @Param("companyId") Long companyId,
             @Param("teamId") Long teamId,
