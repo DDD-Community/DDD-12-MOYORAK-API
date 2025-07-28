@@ -14,6 +14,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -62,8 +63,32 @@ public class TeamUser extends AuditInformation {
         return role == TeamRole.TEAM_ADMIN;
     }
 
+    public boolean isTeam(Long teamId) {
+        return Objects.equals(team.getId(), teamId);
+    }
+
+    public void changeStatus(TeamUserStatus status) {
+        this.status = status;
+    }
+
+    public void restore() {
+        status = TeamUserStatus.PENDING;
+        use = true;
+    }
+
     public void withdraw() {
         status = TeamUserStatus.WITHDRAWN;
         use = false;
+    }
+
+    public static TeamUser create(
+            Team team, Long userId, TeamRole teamRole, TeamUserStatus teamUserStatus) {
+        TeamUser teamUser = new TeamUser();
+        teamUser.team = team;
+        teamUser.userId = userId;
+        teamUser.role = teamRole;
+        teamUser.status = teamUserStatus;
+
+        return teamUser;
     }
 }

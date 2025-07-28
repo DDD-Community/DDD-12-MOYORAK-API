@@ -39,15 +39,15 @@ jobs:
           echo "KAKAO_API_KEY=${{ secrets.KAKAO_API_KEY }}" >> .env
           echo "GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}" >> .env
           echo "GOOGLE_CLIENT_SECRET_ID=${{ secrets.GOOGLE_CLIENT_SECRET_ID }}" >> .env
-          echo "DB_URL=${{ secrets.DB_URL }}" >> .env
-          echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> .env
-          echo "DB_NAME=${{ secrets.DB_NAME }}" >> .env
-          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
+          echo "DB_URL=${{ vars.DB_URL }}" >> .env
+          echo "DB_USER_ID=${{ vars.DB_USER_ID }}" >> .env
+          echo "DB_NAME=${{ vars.DB_NAME }}" >> .env
+          echo "DB_PASSWORD=${{ vars.DB_PASSWORD }}" >> .env
           echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
           echo "JWT_REFRESH_SECRET=${{ secrets.JWT_REFRESH_SECRET }}" >> .env
-          echo "S3_BUCKET_NAME=${{ secrets.S3_BUCKET_NAME }}" >> .env
-          echo "S3_BUCKET_URI=${{ secrets.S3_BUCKET_URI }}" >> .env
-          echo "S3_BUCKET_DIRECTORY=${{ secrets.S3_BUCKET_DIRECTORY }}" >> .env
+          echo "S3_BUCKET_NAME=${{ vars.S3_BUCKET_NAME }}" >> .env
+          echo "S3_BUCKET_URI=${{ vars.S3_BUCKET_URI }}" >> .env
+          echo "S3_BUCKET_DIRECTORY=${{ vars.S3_BUCKET_DIRECTORY }}" >> .env
           echo "SPRING_PROFILES_ACTIVE=${{ github.event.inputs.springProfile }}" >> .env
 
       - name: Copy .env to EC2

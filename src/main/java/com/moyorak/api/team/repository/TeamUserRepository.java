@@ -58,4 +58,10 @@ public interface TeamUserRepository extends JpaRepository<TeamUser, Long> {
             @Param("status") TeamUserStatus status,
             @Param("use") boolean use,
             Pageable pageable);
+
+    @QueryHints(
+            @QueryHint(
+                    name = "org.hibernate.comment",
+                    value = "TeamUserRepository.findByIdAndUseAndStatus : 팀 멤버를 조회합니다."))
+    Optional<TeamUser> findByIdAndUseAndStatus(Long id, boolean use, TeamUserStatus status);
 }

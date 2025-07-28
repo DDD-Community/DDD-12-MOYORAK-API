@@ -3,6 +3,7 @@ package com.moyorak.api.team.controller;
 import com.moyorak.api.auth.domain.UserPrincipal;
 import com.moyorak.api.team.dto.TeamUserListRequest;
 import com.moyorak.api.team.dto.TeamUserResponse;
+import com.moyorak.api.team.service.TeamJoinFacade;
 import com.moyorak.api.team.service.TeamUserService;
 import com.moyorak.global.domain.ListResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -16,6 +17,8 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -28,6 +31,7 @@ import org.springframework.web.bind.annotation.RestController;
 class TeamUserController {
 
     private final TeamUserService teamUserService;
+    private final TeamJoinFacade teamJoinFacade;
 
     @DeleteMapping("/teams/{teamId}/team-members/me")
     @Operation(summary = "팀 탈퇴", description = "팀을 탈퇴합니다.")
@@ -44,5 +48,22 @@ class TeamUserController {
             @AuthenticationPrincipal final UserPrincipal userPrincipal,
             @Valid final TeamUserListRequest request) {
         return teamUserService.getTeamUsers(userPrincipal.getId(), teamId, request);
+    }
+
+    @PostMapping("/teams/{teamId}/team-members")
+    @Operation(summary = "팀 가입 신청", description = "팀 가입을 신청 합니다.")
+    public void requestJoin(
+            @PathVariable @Positive final Long teamId,
+            @AuthenticationPrincipal final UserPrincipal userPrincipal) {
+        teamJoinFacade.requestJoin(userPrincipal.getId(), teamId);
+    }
+
+    @PutMapping("/teams/{teamId}/team-members/{teamMemberId}/approve")
+    @Operation(summary = "팀 가입 신청을 승인합니다.", description = "팀 가입 신청을 승인 합니다.")
+    public void approveRequestJoin(
+            @PathVariable @Positive final Long teamId,
+            @PathVariable @Positive final Long teamMemberId,
+            @AuthenticationPrincipal final UserPrincipal userPrincipal) {
+        teamUserService.approveRequestJoin(userPrincipal.getId(), teamId, teamMemberId);
     }
 }
