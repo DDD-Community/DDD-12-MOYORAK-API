@@ -1,7 +1,9 @@
 package com.moyorak.api.review.service;
 
+import com.moyorak.api.review.domain.Review;
 import com.moyorak.api.review.domain.ReviewServingTime;
 import com.moyorak.api.review.domain.ReviewWaitingTime;
+import com.moyorak.api.review.dto.ReviewSaveRequest;
 import com.moyorak.api.review.dto.ReviewServingTimeResponse;
 import com.moyorak.api.review.dto.ReviewWaitingTimeResponse;
 import com.moyorak.api.review.dto.ReviewWithUserProjection;
@@ -40,6 +42,13 @@ public class ReviewService {
     }
 
     @Transactional(readOnly = true)
+    public ReviewServingTime getReviewServingTime(final Long id) {
+        return reviewServingTimeRepository
+                .findByIdAndUseIsTrue(id)
+                .orElseThrow(() -> new BusinessException("서빙 시간 데이터가 없습니다."));
+    }
+
+    @Transactional(readOnly = true)
     public List<ReviewWaitingTimeResponse> getReviewWaitingTimeList() {
         List<ReviewWaitingTime> reviewWaitingTimes = reviewWaitingTimeRepository.findAllByUse(true);
         if (reviewWaitingTimes.isEmpty()) {
@@ -47,5 +56,22 @@ public class ReviewService {
         }
 
         return ReviewWaitingTimeResponse.fromList(reviewWaitingTimes);
+    }
+
+    @Transactional(readOnly = true)
+    public ReviewWaitingTime getReviewWaitingTime(final Long id) {
+        return reviewWaitingTimeRepository
+                .findByIdAndUseIsTrue(id)
+                .orElseThrow(() -> new BusinessException("대기 시간 데이터가 없습니다."));
+    }
+
+    @Transactional
+    public Review crateReview(
+            final ReviewSaveRequest reviewSaveRequest,
+            final Integer servingTimeValue,
+            final Integer waitingTimeValue,
+            Long teamRestaurantId) {
+        return reviewRepository.save(
+                reviewSaveRequest.toReview(servingTimeValue, waitingTimeValue, teamRestaurantId));
     }
 }
