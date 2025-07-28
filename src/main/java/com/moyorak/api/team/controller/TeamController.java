@@ -3,6 +3,7 @@ package com.moyorak.api.team.controller;
 import com.moyorak.api.team.dto.TeamSearchListResponse;
 import com.moyorak.api.team.dto.TeamSearchRequest;
 import com.moyorak.api.team.service.TeamService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -25,6 +26,7 @@ class TeamController {
     private final TeamService teamService;
 
     @GetMapping("/companies/{companyId}")
+    @Operation(summary = "[팀] 팀 조회", description = "팀 정보를 조회합니다.")
     public TeamSearchListResponse searchTeamsInfo(
             @PathVariable @Positive final Long companyId, @Valid final TeamSearchRequest request) {
         return teamService.search(companyId, request);
