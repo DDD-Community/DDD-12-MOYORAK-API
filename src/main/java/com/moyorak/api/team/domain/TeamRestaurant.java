@@ -81,6 +81,23 @@ public class TeamRestaurant extends AuditInformation {
         }
     }
 
+    public void updateReviewCount() {
+        this.reviewCount += 1;
+    }
+
+    public void updateAverageValue(
+            final Integer reviewScore,
+            final Integer servingTimeValue,
+            final Integer waitingTimeValue) {
+        Double totalReviewScore = this.averageReviewScore + reviewScore;
+        // 조회 방식이랑 값 변경 해야함
+        //        Double totalServingTime = this.averageServingTime + reviewScore;
+        //        Double totalWaitingTime = this.averageWaitingTime + reviewScore;
+        this.averageReviewScore = totalReviewScore / reviewCount;
+        //        this.averageServingTime = totalServingTime/reviewCount;
+        //        this.averageWaitingTime = totalWaitingTime/reviewCount;
+    }
+
     public static TeamRestaurant create(
             Long teamId, Restaurant restaurant, String summary, double distanceFromTeam) {
         TeamRestaurant teamRestaurant = new TeamRestaurant();
