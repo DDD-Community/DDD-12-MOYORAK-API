@@ -38,5 +38,8 @@ public class ReviewFacade {
                         reviewServingTime.getServingTimeValue(),
                         reviewWaitingTime.getWaitingTimeValue(),
                         teamRestaurantId);
+
+        // 리뷰 사진 등록
+        reviewPhotoService.createReviewPhoto(reviewSaveRequest.photoPaths(), review.getId());
     }
 }
