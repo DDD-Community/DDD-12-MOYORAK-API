@@ -80,7 +80,7 @@ public class ReviewServiceTest {
             given(reviewServingTimeRepository.findAllByUse(true)).willReturn(List.of(servingTime));
 
             // when
-            final List<ReviewServingTimeResponse> result = reviewService.getReviewServingTime();
+            final List<ReviewServingTimeResponse> result = reviewService.getReviewServingTimeList();
 
             // then
             assertSoftly(
@@ -98,7 +98,7 @@ public class ReviewServiceTest {
             given(reviewServingTimeRepository.findAllByUse(true)).willReturn(List.of());
 
             // when & then
-            assertThatThrownBy(() -> reviewService.getReviewServingTime())
+            assertThatThrownBy(() -> reviewService.getReviewServingTimeList())
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("서빙 시간 데이터가 없습니다.");
         }
@@ -112,7 +112,7 @@ public class ReviewServiceTest {
             given(reviewWaitingTimeRepository.findAllByUse(true)).willReturn(List.of(waitingTime));
 
             // when
-            final List<ReviewWaitingTimeResponse> result = reviewService.getReviewWaitingTime();
+            final List<ReviewWaitingTimeResponse> result = reviewService.getReviewWaitingTimeList();
 
             // then
             assertSoftly(
@@ -130,7 +130,7 @@ public class ReviewServiceTest {
             given(reviewWaitingTimeRepository.findAllByUse(true)).willReturn(List.of());
 
             // when & then
-            assertThatThrownBy(() -> reviewService.getReviewWaitingTime())
+            assertThatThrownBy(() -> reviewService.getReviewWaitingTimeList())
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("대기 시간 데이터가 없습니다.");
         }

@@ -30,7 +30,7 @@ public class ReviewService {
     }
 
     @Transactional(readOnly = true)
-    public List<ReviewServingTimeResponse> getReviewServingTime() {
+    public List<ReviewServingTimeResponse> getReviewServingTimeList() {
         List<ReviewServingTime> reviewServingTimes = reviewServingTimeRepository.findAllByUse(true);
         if (reviewServingTimes.isEmpty()) {
             throw new BusinessException("서빙 시간 데이터가 없습니다.");
@@ -40,7 +40,7 @@ public class ReviewService {
     }
 
     @Transactional(readOnly = true)
-    public List<ReviewWaitingTimeResponse> getReviewWaitingTime() {
+    public List<ReviewWaitingTimeResponse> getReviewWaitingTimeList() {
         List<ReviewWaitingTime> reviewWaitingTimes = reviewWaitingTimeRepository.findAllByUse(true);
         if (reviewWaitingTimes.isEmpty()) {
             throw new BusinessException("대기 시간 데이터가 없습니다.");
