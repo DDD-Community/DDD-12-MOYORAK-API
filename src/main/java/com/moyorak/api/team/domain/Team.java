@@ -14,6 +14,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
@@ -41,4 +42,15 @@ public class Team extends AuditInformation {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "company_id", nullable = false)
     private Company company;
+
+    @Builder(access = AccessLevel.PRIVATE)
+    private Team(String name, boolean use, Company company) {
+        this.name = name;
+        this.use = use;
+        this.company = company;
+    }
+
+    public static Team create(final String name, final Company company) {
+        return Team.builder().name(name).use(true).company(company).build();
+    }
 }

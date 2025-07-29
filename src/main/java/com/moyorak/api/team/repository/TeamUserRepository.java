@@ -64,4 +64,6 @@ public interface TeamUserRepository extends JpaRepository<TeamUser, Long> {
                     name = "org.hibernate.comment",
                     value = "TeamUserRepository.findByIdAndUseAndStatus : 팀 멤버를 조회합니다."))
     Optional<TeamUser> findByIdAndUseAndStatus(Long id, boolean use, TeamUserStatus status);
+
+    boolean existsByUserIdAndUseIsTrue(Long userId);
 }
