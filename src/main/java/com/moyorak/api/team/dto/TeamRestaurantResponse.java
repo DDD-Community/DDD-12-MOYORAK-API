@@ -7,10 +7,10 @@ public record TeamRestaurantResponse(
         @Schema(description = "식당 이름", example = "김밥 천국") String name,
         @Schema(description = "한줄평", example = "여기 맛있습니다") String summary,
         @Schema(description = "장소 링크 url", example = "https://naver.me/xFLu69C9") String placeUrl,
-        @Schema(description = "음식 나오는 시간", example = "10") Integer servingTime,
-        @Schema(description = "대기 시간", example = "10") Integer waitingTime,
+        @Schema(description = "음식 나오는 시간", example = "10") double servingTime,
+        @Schema(description = "대기 시간", example = "10") double waitingTime,
         @Schema(description = "리뷰 갯수", example = "50") Integer reviewCount,
-        @Schema(description = "평점", example = "4.5") Double score) {
+        @Schema(description = "평점", example = "4.5") double score) {
     public static TeamRestaurantResponse from(TeamRestaurant teamRestaurant) {
         return new TeamRestaurantResponse(
                 teamRestaurant.getRestaurant().getName(),

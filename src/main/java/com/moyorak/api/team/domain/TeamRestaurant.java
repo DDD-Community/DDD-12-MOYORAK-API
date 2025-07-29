@@ -13,6 +13,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -35,19 +37,19 @@ public class TeamRestaurant extends AuditInformation {
 
     @Comment("리뷰 평균 점수")
     @Column(name = "average_review_score", columnDefinition = "double")
-    private Double averageReviewScore;
+    private double averageReviewScore;
 
     @Comment("평균 음식 나오는 시간")
     @Column(name = "average_serving_time", columnDefinition = "int")
-    private Integer averageServingTime;
+    private double averageServingTime;
 
     @Comment("평균 대기 시간")
     @Column(name = "average_waiting_time", columnDefinition = "int")
-    private Integer averageWaitingTime;
+    private double averageWaitingTime;
 
     @Comment("팀에서 맛집까지 거리")
     @Column(name = "distance_from_team", columnDefinition = "double")
-    private Double distanceFromTeam;
+    private double distanceFromTeam;
 
     @Comment("리뷰 갯수")
     @Column(name = "review_count", columnDefinition = "int")
@@ -89,13 +91,25 @@ public class TeamRestaurant extends AuditInformation {
             final Integer reviewScore,
             final Integer servingTimeValue,
             final Integer waitingTimeValue) {
-        Double totalReviewScore = this.averageReviewScore + reviewScore;
-        // 조회 방식이랑 값 변경 해야함
-        //        Double totalServingTime = this.averageServingTime + reviewScore;
-        //        Double totalWaitingTime = this.averageWaitingTime + reviewScore;
-        this.averageReviewScore = totalReviewScore / reviewCount;
-        //        this.averageServingTime = totalServingTime/reviewCount;
-        //        this.averageWaitingTime = totalWaitingTime/reviewCount;
+        int previousCount = this.reviewCount - 1;
+        this.averageReviewScore =
+                roundTo1Decimal(
+                        ((this.averageReviewScore * previousCount) + reviewScore)
+                                / this.reviewCount);
+
+        this.averageServingTime =
+                roundTo1Decimal(
+                        ((this.averageServingTime * previousCount) + servingTimeValue)
+                                / this.reviewCount);
+
+        this.averageWaitingTime =
+                roundTo1Decimal(
+                        ((this.averageWaitingTime * previousCount) + waitingTimeValue)
+                                / this.reviewCount);
+    }
+
+    private double roundTo1Decimal(double value) {
+        return new BigDecimal(value).setScale(1, RoundingMode.HALF_UP).doubleValue();
     }
 
     public static TeamRestaurant create(
@@ -107,8 +121,8 @@ public class TeamRestaurant extends AuditInformation {
         teamRestaurant.distanceFromTeam = distanceFromTeam;
         teamRestaurant.averageReviewScore = 0.0;
         teamRestaurant.reviewCount = 0;
-        teamRestaurant.averageServingTime = 0;
-        teamRestaurant.averageWaitingTime = 0;
+        teamRestaurant.averageServingTime = 0.0;
+        teamRestaurant.averageWaitingTime = 0.0;
         return teamRestaurant;
     }
 }
