@@ -14,4 +14,13 @@ public class TeamFixture {
 
         return team;
     }
+
+    public static Team fixture(final Long id, final boolean ues) {
+        Team team = new Team();
+
+        ReflectionTestUtils.setField(team, "id", id);
+        ReflectionTestUtils.setField(team, "use", ues);
+
+        return team;
+    }
 }
