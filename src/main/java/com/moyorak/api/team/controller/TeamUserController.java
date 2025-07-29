@@ -1,11 +1,14 @@
 package com.moyorak.api.team.controller;
 
 import com.moyorak.api.auth.domain.UserPrincipal;
+import com.moyorak.api.team.dto.TeamUserRoleUpdateRequest;
 import com.moyorak.api.team.service.TeamJoinFacade;
+import com.moyorak.api.team.service.TeamUserManagementService;
 import com.moyorak.api.team.service.TeamUserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -14,6 +17,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -27,6 +31,7 @@ class TeamUserController {
 
     private final TeamUserService teamUserService;
     private final TeamJoinFacade teamJoinFacade;
+    private final TeamUserManagementService teamUserManagementService;
 
     @DeleteMapping("/teams/{teamId}/team-members/me")
     @Operation(summary = "팀 탈퇴", description = "팀을 탈퇴합니다.")
@@ -51,5 +56,16 @@ class TeamUserController {
             @PathVariable @Positive final Long teamMemberId,
             @AuthenticationPrincipal final UserPrincipal userPrincipal) {
         teamUserService.approveRequestJoin(userPrincipal.getId(), teamId, teamMemberId);
+    }
+
+    @PutMapping("/teams/{teamId}/team-members/{teamMemberId}/role")
+    @Operation(summary = "팀 멤버 역할 변경", description = "팀 멤버 역할을 변경합니다.")
+    public void updateRole(
+            @PathVariable @Positive final Long teamId,
+            @PathVariable @Positive final Long teamMemberId,
+            @AuthenticationPrincipal final UserPrincipal userPrincipal,
+            @Valid @RequestBody final TeamUserRoleUpdateRequest request) {
+        teamUserManagementService.updateRole(
+                userPrincipal.getId(), teamId, teamMemberId, request.role());
     }
 }
