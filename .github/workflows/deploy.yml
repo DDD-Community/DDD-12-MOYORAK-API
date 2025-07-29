@@ -11,8 +11,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    env:
-      SPRING_PROFILE: ${{ github.event.inputs.springProfile }}
+    environment: ${{ github.event.inputs.springProfile }}
     steps:
       - name: Get GitHub Actions public IP
         id: ip
@@ -70,64 +69,6 @@ jobs:
             cd ${{ secrets.SHELL_DIRECTORY }}
             chmod +x ${{ secrets.SHELL_NAME }}
             ./${{ secrets.SHELL_NAME }}
-
-      - name: Notify Discord (Success)
-        if: success()
-        env:
-          DISCORD_DEPLOY_WEBHOOK_URL: ${{ secrets.DISCORD_DEPLOY_WEBHOOK_URL }}
-          BASE: ${{ github.ref }}
-          COMMIT: ${{ github.sha }}
-          PROFILE: ${{ github.event.inputs.springProfile }}
-          ACTOR: ${{ github.actor }}
-        run: |
-          JSON=$(jq -n --arg branch "$BASE" \
-                      --arg commit "$COMMIT" \
-                      --arg profile "PROFILE" \
-                      --arg actor "$ACTOR" \
-                      --arg time $(date -u +%Y-%m-%dT%H:%M:%SZ) \
-          '{
-            embeds: [{
-              title: "✅ 배포 성공",
-              color: 3066993,
-              fields: [
-                { name: "브랜치", value: $branch, inline: true },
-                { name: "커밋", value: $commit, inline: true },
-                { name: "환경", value: $profile, inline: true },
-                { name: "실행자", value: $actor, inline: true }
-              ],
-              timestamp: $time
-            }]
-          }')
-          curl -X POST -H "Content-Type: application/json" -d "$JSON" "DISCORD_DEPLOY_WEBHOOK_URL"
-
-      - name: Notify Discord (Failure)
-        if: failure()
-        env:
-          DISCORD_DEPLOY_WEBHOOK_URL: ${{ secrets.DISCORD_DEPLOY_WEBHOOK_URL }}
-          BASE: ${{ github.ref }}
-          COMMIT: ${{ github.sha }}
-          PROFILE: ${{ github.event.inputs.springProfile }}
-          ACTOR: ${{ github.actor }}
-        run: |
-          JSON=$(jq -n --arg branch "$BASE" \
-                      --arg commit "$COMMIT" \
-                      --arg profile "PROFILE" \
-                      --arg actor "$ACTOR" \
-                      --arg time $(date -u +%Y-%m-%dT%H:%M:%SZ) \
-          '{
-            embeds: [{
-              title: "🚨 배포 실패",
-              color: 15158332,
-              fields: [
-                { name: "브랜치", value: $branch, inline: true },
-                { name: "커밋", value: $commit, inline: true },
-                { name: "환경", value: $profile, inline: true },
-                { name: "실행자", value: $actor, inline: true }
-              ],
-              timestamp: $time
-            }]
-          }')
-          curl -X POST -H "Content-Type: application/json" -d "$JSON" "DISCORD_DEPLOY_WEBHOOK_URL"
 
       - name: Remove GitHub Actions IP from Security Group
         if: always()
