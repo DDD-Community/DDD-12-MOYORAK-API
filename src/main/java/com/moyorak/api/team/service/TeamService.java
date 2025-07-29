@@ -1,8 +1,8 @@
 package com.moyorak.api.team.service;
 
-import com.moyorak.api.team.domain.Team;
 import com.moyorak.api.company.domain.Company;
 import com.moyorak.api.company.repository.CompanyRepository;
+import com.moyorak.api.team.domain.Team;
 import com.moyorak.api.team.domain.TeamSearch;
 import com.moyorak.api.team.dto.TeamSaveRequest;
 import com.moyorak.api.team.dto.TeamSearchListResponse;
@@ -36,8 +36,8 @@ public class TeamService {
     @Transactional(readOnly = true)
     public Team getTeam(final Long teamId) {
         return teamRepository
-            .findById(teamId)
-            .orElseThrow(() -> new BusinessException("팀이 존재 하지 않습니다."));
+                .findById(teamId)
+                .orElseThrow(() -> new BusinessException("팀이 존재 하지 않습니다."));
     }
 
     /**
