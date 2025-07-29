@@ -11,8 +11,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    env:
-      SPRING_PROFILE: ${{ github.event.inputs.springProfile }}
+    environment: ${{ github.event.inputs.springProfile }}
     steps:
       - name: Get GitHub Actions public IP
         id: ip
