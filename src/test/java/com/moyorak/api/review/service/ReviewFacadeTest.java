@@ -1,7 +1,5 @@
 package com.moyorak.api.review.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
@@ -18,9 +16,8 @@ import com.moyorak.api.review.dto.ReviewSaveRequest;
 import com.moyorak.api.review.dto.ReviewSaveRequestFixture;
 import com.moyorak.api.team.domain.TeamRestaurant;
 import com.moyorak.api.team.domain.TeamRestaurantFixture;
+import com.moyorak.api.team.repository.TeamRestaurantRepository;
 import com.moyorak.api.team.service.TeamRestaurantService;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -38,6 +35,7 @@ class ReviewFacadeTest {
     @Mock private ReviewPhotoService reviewPhotoService;
 
     @Mock private TeamRestaurantService teamRestaurantService;
+    @Mock private TeamRestaurantRepository teamRestaurantRepository;
 
     @Test
     @DisplayName("리뷰 생성 성공 시, 평균 값 및 사진 등록까지 처리된다")
@@ -110,36 +108,8 @@ class ReviewFacadeTest {
         // then
         verify(reviewPhotoService)
                 .createReviewPhoto(List.of("s3://photo1.jpg", "s3://photo2.jpg"), reviewId);
-        assertSoftly(
-                it -> {
-                    assertThat(teamRestaurant.getReviewCount()).isEqualTo(beforeReviewCount + 1);
-
-                    it.assertThat(BigDecimal.valueOf(teamRestaurant.getAverageReviewScore()))
-                            .isEqualByComparingTo(
-                                    calculateExpectedAverage(
-                                            beforeAverageReviewScore,
-                                            beforeReviewCount,
-                                            reviewScore));
-
-                    it.assertThat(BigDecimal.valueOf(teamRestaurant.getAverageServingTime()))
-                            .isEqualByComparingTo(
-                                    calculateExpectedAverage(
-                                            beforeAverageServingTime,
-                                            beforeReviewCount,
-                                            servingTimeValue));
-
-                    it.assertThat(BigDecimal.valueOf(teamRestaurant.getAverageWaitingTime()))
-                            .isEqualByComparingTo(
-                                    calculateExpectedAverage(
-                                            beforeAverageWaitingTime,
-                                            beforeReviewCount,
-                                            waitingTimeValue));
-                });
-    }
-
-    private BigDecimal calculateExpectedAverage(double beforeAvg, int beforeCount, int newValue) {
-        return BigDecimal.valueOf(beforeAvg * beforeCount)
-                .add(BigDecimal.valueOf(newValue))
-                .divide(BigDecimal.valueOf(beforeCount + 1), 1, RoundingMode.HALF_UP);
+        verify(teamRestaurantService)
+                .updateAverageValue(
+                        teamRestaurantId, reviewScore, servingTimeValue, waitingTimeValue);
     }
 }
