@@ -68,15 +68,15 @@ public class TeamRestaurant extends AuditInformation {
     private Restaurant restaurant;
 
     @Comment("리뷰 갯수")
-    @Column(name = "review_count", columnDefinition = "int")
+    @Column(name = "totalReviewScore", columnDefinition = "int")
     private int totalReviewScore;
 
     @Comment("리뷰 갯수")
-    @Column(name = "review_count", columnDefinition = "int")
+    @Column(name = "totalServingTime", columnDefinition = "int")
     private int totalServingTime;
 
     @Comment("리뷰 갯수")
-    @Column(name = "review_count", columnDefinition = "int")
+    @Column(name = "totalWaitingTime", columnDefinition = "int")
     private int totalWaitingTime;
 
     public boolean isRestaurantNull() {
