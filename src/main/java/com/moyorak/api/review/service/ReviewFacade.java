@@ -42,11 +42,9 @@ public class ReviewFacade {
         // 리뷰 사진 등록
         reviewPhotoService.createReviewPhoto(reviewSaveRequest.photoPaths(), review.getId());
 
-        // 리뷰 등록 시 팀 맛집 평균 값 업데이트
-        // 전체 리뷰 갯수 증가
-        teamRestaurant.updateReviewCount();
-        // 평균 값 업데이트
-        teamRestaurant.updateAverageValue(
+        // 전체 리뷰 갯수 증가, 평균 값 업데이트
+        teamRestaurantService.updateAverageValue(
+                teamRestaurantId,
                 review.getScore(),
                 reviewServingTime.getServingTimeValue(),
                 reviewWaitingTime.getWaitingTimeValue());

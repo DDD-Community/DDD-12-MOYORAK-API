@@ -13,8 +13,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -69,6 +67,18 @@ public class TeamRestaurant extends AuditInformation {
     @JoinColumn(name = "restaurant_id", nullable = false)
     private Restaurant restaurant;
 
+    @Comment("리뷰 갯수")
+    @Column(name = "review_count", columnDefinition = "int")
+    private int totalReviewScore;
+
+    @Comment("리뷰 갯수")
+    @Column(name = "review_count", columnDefinition = "int")
+    private int totalServingTime;
+
+    @Comment("리뷰 갯수")
+    @Column(name = "review_count", columnDefinition = "int")
+    private int totalWaitingTime;
+
     public boolean isRestaurantNull() {
         return this.restaurant == null;
     }
@@ -83,35 +93,6 @@ public class TeamRestaurant extends AuditInformation {
         }
     }
 
-    public void updateReviewCount() {
-        this.reviewCount += 1;
-    }
-
-    public void updateAverageValue(
-            final Integer reviewScore,
-            final Integer servingTimeValue,
-            final Integer waitingTimeValue) {
-        int previousCount = this.reviewCount - 1;
-        this.averageReviewScore =
-                roundTo1Decimal(
-                        ((this.averageReviewScore * previousCount) + reviewScore)
-                                / this.reviewCount);
-
-        this.averageServingTime =
-                roundTo1Decimal(
-                        ((this.averageServingTime * previousCount) + servingTimeValue)
-                                / this.reviewCount);
-
-        this.averageWaitingTime =
-                roundTo1Decimal(
-                        ((this.averageWaitingTime * previousCount) + waitingTimeValue)
-                                / this.reviewCount);
-    }
-
-    private double roundTo1Decimal(double value) {
-        return new BigDecimal(value).setScale(1, RoundingMode.HALF_UP).doubleValue();
-    }
-
     public static TeamRestaurant create(
             Long teamId, Restaurant restaurant, String summary, double distanceFromTeam) {
         TeamRestaurant teamRestaurant = new TeamRestaurant();
@@ -123,6 +104,9 @@ public class TeamRestaurant extends AuditInformation {
         teamRestaurant.reviewCount = 0;
         teamRestaurant.averageServingTime = 0.0;
         teamRestaurant.averageWaitingTime = 0.0;
+        teamRestaurant.totalReviewScore = 0;
+        teamRestaurant.totalServingTime = 0;
+        teamRestaurant.totalWaitingTime = 0;
         return teamRestaurant;
     }
 }
