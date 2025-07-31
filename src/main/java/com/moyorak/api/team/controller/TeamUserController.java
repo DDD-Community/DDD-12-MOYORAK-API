@@ -51,7 +51,7 @@ class TeamUserController {
             @PathVariable @Positive final Long teamId,
             @AuthenticationPrincipal final UserPrincipal userPrincipal,
             @Valid final TeamUserListRequest request) {
-        return teamUserService.getTeamUsers(userPrincipal.getId(), teamId, request);
+        return teamUserManagementService.getTeamUsers(userPrincipal.getId(), teamId, request);
     }
 
     @PostMapping("/teams/{teamId}/team-members")
@@ -68,7 +68,7 @@ class TeamUserController {
             @PathVariable @Positive final Long teamId,
             @PathVariable @Positive final Long teamMemberId,
             @AuthenticationPrincipal final UserPrincipal userPrincipal) {
-        teamUserService.approveRequestJoin(userPrincipal.getId(), teamId, teamMemberId);
+        teamUserManagementService.approveRequestJoin(userPrincipal.getId(), teamId, teamMemberId);
     }
 
     @PutMapping("/teams/{teamId}/team-members/{teamMemberId}/role")
