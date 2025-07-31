@@ -34,14 +34,14 @@ class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler {
         if (isNew) {
             final String profileImage = userPrincipal.getAttribute("picture");
 
-            final OAuthResponse OAuthResponse =
+            final OAuthResponse oAuthResponse =
                     OAuthResponse.create(
                             userPrincipal.getUsername(), userPrincipal.getName(), profileImage);
 
             response.setStatus(HttpServletResponse.SC_OK);
             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
             response.setCharacterEncoding(StandardCharsets.UTF_8.name());
-            response.getWriter().write(objectMapper.writeValueAsString(OAuthResponse));
+            response.getWriter().write(objectMapper.writeValueAsString(oAuthResponse));
 
             return;
         }
