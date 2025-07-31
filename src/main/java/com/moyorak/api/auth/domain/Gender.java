@@ -5,7 +5,8 @@ import org.springframework.util.StringUtils;
 
 public enum Gender {
     MALE,
-    FEMALE;
+    FEMALE,
+    UNREGISTER;
 
     @JsonCreator
     public static Gender from(final String input) {
