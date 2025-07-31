@@ -108,6 +108,10 @@ public class TeamUser extends AuditInformation {
         use = false;
     }
 
+    public void changeRole(TeamRole role) {
+        this.role = role;
+    }
+
     public static TeamUser create(
             Team team, Long userId, TeamRole teamRole, TeamUserStatus teamUserStatus) {
         TeamUser teamUser = new TeamUser();
