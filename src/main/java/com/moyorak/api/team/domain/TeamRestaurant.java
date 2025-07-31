@@ -67,16 +67,16 @@ public class TeamRestaurant extends AuditInformation {
     @JoinColumn(name = "restaurant_id", nullable = false)
     private Restaurant restaurant;
 
-    @Comment("리뷰 갯수")
-    @Column(name = "totalReviewScore", columnDefinition = "int")
+    @Comment("리뷰 총점")
+    @Column(name = "total_review_score", columnDefinition = "int")
     private int totalReviewScore;
 
-    @Comment("리뷰 갯수")
-    @Column(name = "totalServingTime", columnDefinition = "int")
+    @Comment("음식 나오는 시간 총점")
+    @Column(name = "total_serving_time", columnDefinition = "int")
     private int totalServingTime;
 
-    @Comment("리뷰 갯수")
-    @Column(name = "totalWaitingTime", columnDefinition = "int")
+    @Comment("대기 시간 총점")
+    @Column(name = "total_waiting_time", columnDefinition = "int")
     private int totalWaitingTime;
 
     public boolean isRestaurantNull() {
