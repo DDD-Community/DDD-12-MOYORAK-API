@@ -16,7 +16,6 @@ public class ReviewTimeRangeMapper {
 
     public static ReviewTimeRangeMapper create(
             List<ReviewServingTime> servingRanges, List<ReviewWaitingTime> waitingRanges) {
-        // 유효한 값만 정렬해서 세팅
         List<ReviewServingTime> sortedServing =
                 servingRanges.stream()
                         .sorted(Comparator.comparingInt(ReviewServingTime::getServingTimeValue))
