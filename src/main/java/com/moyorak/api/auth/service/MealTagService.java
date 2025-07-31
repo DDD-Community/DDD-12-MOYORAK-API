@@ -100,6 +100,18 @@ public class MealTagService {
         toSoftDelete.forEach(MealTag::delete);
     }
 
+    /**
+     * 회원의 알러지 + 비선호 음식 정보 초기화 <br>
+     * <br>
+     * 회원 탈퇴 시, 회원의 식사 태그 정보 미사용 처리합니다.
+     *
+     * @param userId 회원 고유 ID
+     */
+    @Transactional
+    public void clear(final Long userId) {
+        mealTagRepository.clearByUserId(userId);
+    }
+
     private void validateWithinLimit(long finalCount, MealTagType type) {
         if (finalCount > MAX_ITEMS_PER_TYPE) {
             throw new BusinessException(
