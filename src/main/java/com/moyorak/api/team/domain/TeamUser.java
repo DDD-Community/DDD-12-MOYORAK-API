@@ -48,7 +48,7 @@ public class TeamUser extends AuditInformation {
     private boolean use = true;
 
     @Comment("유저 고유 ID")
-    @Column(name = "member_id", nullable = false, columnDefinition = "bigint")
+    @Column(name = "member_id", columnDefinition = "bigint")
     private Long userId;
 
     @Comment("팀 고유 ID")

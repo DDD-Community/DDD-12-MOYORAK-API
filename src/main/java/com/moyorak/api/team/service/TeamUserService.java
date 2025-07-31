@@ -100,4 +100,27 @@ public class TeamUserService {
 
         teamUser.changeStatus(TeamUserStatus.APPROVED);
     }
+
+    /**
+     * 과거 팀에 속해있던 정보를 제거합니다. <br>
+     * <br>
+     * 사용자가 탈퇴할 때 사용됩니다.
+     *
+     * @param userId 회원 고유 ID
+     */
+    @Transactional
+    public void clear(final Long userId) {
+        teamUserRepository.clearUserId(userId);
+    }
+
+    /**
+     * 팀 관리자인지 확인합니다.
+     *
+     * @param userId 회원 고유 ID
+     * @return true면 팀 관리자, false면 팀 관리자가 아님
+     */
+    @Transactional(readOnly = true)
+    public boolean isTeamAdmin(final Long userId) {
+        return teamUserRepository.isTeamAdmin(userId);
+    }
 }
