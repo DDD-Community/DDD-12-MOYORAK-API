@@ -20,7 +20,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
             """
     SELECT new com.moyorak.api.review.dto.ReviewWithUserProjection(
         r.id, r.extraText,r.score, r.servingTime, r.waitingTime,
-        u.name, u.profileImage
+        u.name, u.profileImage,r.createdDate
     )
     FROM Review r
     JOIN User u ON r.userId = u.id

@@ -7,6 +7,10 @@ import com.moyorak.api.restaurant.domain.Restaurant;
 import com.moyorak.api.restaurant.domain.RestaurantCategory;
 import com.moyorak.api.restaurant.domain.RestaurantFixture;
 import com.moyorak.api.review.domain.ReviewPhotoPaths;
+import com.moyorak.api.review.domain.ReviewServingTime;
+import com.moyorak.api.review.domain.ReviewServingTimeFixture;
+import com.moyorak.api.review.domain.ReviewWaitingTime;
+import com.moyorak.api.review.domain.ReviewWaitingTimeFixture;
 import com.moyorak.api.review.dto.PhotoPath;
 import com.moyorak.api.review.dto.ReviewPhotoPath;
 import com.moyorak.api.review.dto.ReviewWithUserProjection;
@@ -102,6 +106,14 @@ class TeamRestaurantReviewFacadeTest {
             given(reviewPhotoService.getReviewPhotoPathsGroupedByReviewId(reviewIds))
                     .willReturn(reviewPhotoPaths);
 
+            final ReviewServingTime reviewServingTime =
+                    ReviewServingTimeFixture.fixture(1L, "5분이내", true, 5);
+            final ReviewWaitingTime reviewWaitingTime =
+                    ReviewWaitingTimeFixture.fixture(1L, "5분이내", true, 5);
+
+            given(reviewService.getAllReviewServingTimes()).willReturn(List.of(reviewServingTime));
+            given(reviewService.getAllReviewWaitingTimes()).willReturn(List.of(reviewWaitingTime));
+
             // when
             final ListResponse<TeamRestaurantReviewResponse> result =
                     teamRestaurantReviewFacade.getTeamRestaurantReviews(
@@ -114,6 +126,8 @@ class TeamRestaurantReviewFacadeTest {
             assertThat(teamRestaurantReviewResponse.id()).isEqualTo(1L);
             assertThat(teamRestaurantReviewResponse.photoUrls())
                     .contains("s3://review1/photo1.jpg");
+            assertThat(teamRestaurantReviewResponse.servingTime()).isEqualTo("5분이내");
+            assertThat(teamRestaurantReviewResponse.waitingTime()).isEqualTo("5분이내");
         }
     }
 

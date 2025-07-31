@@ -33,12 +33,16 @@ public class ReviewService {
 
     @Transactional(readOnly = true)
     public List<ReviewServingTimeResponse> getReviewServingTimeList() {
+        return ReviewServingTimeResponse.fromList(getAllReviewServingTimes());
+    }
+
+    @Transactional(readOnly = true)
+    public List<ReviewServingTime> getAllReviewServingTimes() {
         List<ReviewServingTime> reviewServingTimes = reviewServingTimeRepository.findAllByUse(true);
         if (reviewServingTimes.isEmpty()) {
             throw new BusinessException("서빙 시간 데이터가 없습니다.");
         }
-
-        return ReviewServingTimeResponse.fromList(reviewServingTimes);
+        return reviewServingTimes;
     }
 
     @Transactional(readOnly = true)
@@ -50,12 +54,16 @@ public class ReviewService {
 
     @Transactional(readOnly = true)
     public List<ReviewWaitingTimeResponse> getReviewWaitingTimeList() {
+        return ReviewWaitingTimeResponse.fromList(getAllReviewWaitingTimes());
+    }
+
+    @Transactional(readOnly = true)
+    public List<ReviewWaitingTime> getAllReviewWaitingTimes() {
         List<ReviewWaitingTime> reviewWaitingTimes = reviewWaitingTimeRepository.findAllByUse(true);
         if (reviewWaitingTimes.isEmpty()) {
             throw new BusinessException("대기 시간 데이터가 없습니다.");
         }
-
-        return ReviewWaitingTimeResponse.fromList(reviewWaitingTimes);
+        return reviewWaitingTimes;
     }
 
     @Transactional(readOnly = true)
