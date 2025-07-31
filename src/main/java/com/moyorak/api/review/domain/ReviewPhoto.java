@@ -35,4 +35,11 @@ public class ReviewPhoto extends AuditInformation {
     @Comment("리뷰 고유 ID")
     @Column(name = "review_id", nullable = false)
     private Long reviewId;
+
+    public static ReviewPhoto create(final String photoPath, final Long reviewId) {
+        ReviewPhoto photo = new ReviewPhoto();
+        photo.path = photoPath;
+        photo.reviewId = reviewId;
+        return photo;
+    }
 }

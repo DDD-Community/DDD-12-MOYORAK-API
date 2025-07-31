@@ -9,6 +9,7 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.data.repository.CrudRepository;
@@ -52,4 +53,29 @@ WHERE tr.id IN :ids AND tr.use = :use
             @Param("teamId") Long teamId, @Param("use") boolean use);
 
     Page<TeamRestaurant> findAllByTeamId(Long teamId, Pageable pageable);
+
+    @Modifying(clearAutomatically = true)
+    @Query(
+            """
+    UPDATE TeamRestaurant tr
+    SET
+        tr.reviewCount = tr.reviewCount + 1,
+        tr.totalReviewScore = tr.totalReviewScore + :reviewScore,
+        tr.totalServingTime = tr.totalServingTime + :servingTime,
+        tr.totalWaitingTime = tr.totalWaitingTime + :waitingTime,
+        tr.averageReviewScore = ROUND((tr.totalReviewScore + :reviewScore) * 1.0 / (tr.reviewCount + 1), 1),
+        tr.averageServingTime = ROUND((tr.totalServingTime + :servingTime) * 1.0 / (tr.reviewCount + 1), 1),
+        tr.averageWaitingTime = ROUND((tr.totalWaitingTime + :waitingTime) * 1.0 / (tr.reviewCount + 1), 1)
+    WHERE tr.id = :teamRestaurantId
+""")
+    @QueryHints(
+            @QueryHint(
+                    name = "org.hibernate.comment",
+                    value =
+                            "TeamRestaurantRepository.updateAverageValue : 팀 식당의 리뷰 갯수와 평균 값을 업데이트 합니다."))
+    void updateAverageValue(
+            @Param("teamRestaurantId") Long teamRestaurantId,
+            @Param("reviewScore") Integer reviewScore,
+            @Param("servingTime") Integer servingTime,
+            @Param("waitingTime") Integer waitingTime);
 }

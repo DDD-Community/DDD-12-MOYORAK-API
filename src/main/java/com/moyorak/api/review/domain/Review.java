@@ -10,6 +10,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
@@ -52,4 +53,39 @@ public class Review extends AuditInformation {
     @Comment("식당 고유 ID")
     @Column(name = "team_restaurant_id", nullable = false)
     private Long teamRestaurantId;
+
+    @Builder(access = AccessLevel.PRIVATE)
+    private Review(
+            Long id,
+            Integer score,
+            Integer servingTime,
+            Integer waitingTime,
+            String extraText,
+            Long userId,
+            Long teamRestaurantId) {
+        this.id = id;
+        this.score = score;
+        this.servingTime = servingTime;
+        this.waitingTime = waitingTime;
+        this.extraText = extraText;
+        this.userId = userId;
+        this.teamRestaurantId = teamRestaurantId;
+    }
+
+    public static Review create(
+            final Integer score,
+            final Integer servingTime,
+            final Integer waitingTime,
+            final String extraText,
+            final Long userId,
+            final Long teamRestaurantId) {
+        return Review.builder()
+                .score(score)
+                .servingTime(servingTime)
+                .waitingTime(waitingTime)
+                .extraText(extraText)
+                .userId(userId)
+                .teamRestaurantId(teamRestaurantId)
+                .build();
+    }
 }

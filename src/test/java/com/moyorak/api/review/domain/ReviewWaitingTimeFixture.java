@@ -14,4 +14,19 @@ public class ReviewWaitingTimeFixture {
 
         return reviewWaitingTime;
     }
+
+    public static ReviewWaitingTime fixture(
+            final Long id,
+            final String waitingTime,
+            final boolean ues,
+            final Integer waitingTimeValue) {
+        ReviewWaitingTime reviewWaitingTime = new ReviewWaitingTime();
+
+        ReflectionTestUtils.setField(reviewWaitingTime, "id", id);
+        ReflectionTestUtils.setField(reviewWaitingTime, "waitingTime", waitingTime);
+        ReflectionTestUtils.setField(reviewWaitingTime, "use", ues);
+        ReflectionTestUtils.setField(reviewWaitingTime, "waitingTimeValue", waitingTimeValue);
+
+        return reviewWaitingTime;
+    }
 }
