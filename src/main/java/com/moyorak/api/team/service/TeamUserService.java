@@ -79,4 +79,48 @@ public class TeamUserService {
                     TeamUser.create(team, userId, TeamRole.TEAM_MEMBER, TeamUserStatus.PENDING));
         }
     }
+
+    @Transactional
+    public void approveRequestJoin(final Long userId, final Long teamId, final Long teamMemberId) {
+        final TeamUser teamAdminUser =
+                teamUserRepository
+                        .findByUserIdAndTeamIdAndUse(userId, teamId, true)
+                        .orElseThrow(TeamUserNotFoundException::new);
+        if (!teamAdminUser.isTeamAdmin()) {
+            throw new BusinessException("승인을 하는 주체가, 팀 관리자가 아닙니다.");
+        }
+
+        final TeamUser teamUser =
+                teamUserRepository
+                        .findByIdAndUseAndStatus(teamMemberId, true, TeamUserStatus.PENDING)
+                        .orElseThrow(TeamUserNotFoundException::new);
+        if (!teamUser.isTeam(teamId)) {
+            throw new BusinessException("해당 팀의 팀원이 아닙니다.");
+        }
+
+        teamUser.changeStatus(TeamUserStatus.APPROVED);
+    }
+
+    /**
+     * 과거 팀에 속해있던 정보를 제거합니다. <br>
+     * <br>
+     * 사용자가 탈퇴할 때 사용됩니다.
+     *
+     * @param userId 회원 고유 ID
+     */
+    @Transactional
+    public void clear(final Long userId) {
+        teamUserRepository.clearUserId(userId);
+    }
+
+    /**
+     * 팀 관리자인지 확인합니다.
+     *
+     * @param userId 회원 고유 ID
+     * @return true면 팀 관리자, false면 팀 관리자가 아님
+     */
+    @Transactional(readOnly = true)
+    public boolean isTeamAdmin(final Long userId) {
+        return teamUserRepository.isTeamAdmin(userId);
+    }
 }
