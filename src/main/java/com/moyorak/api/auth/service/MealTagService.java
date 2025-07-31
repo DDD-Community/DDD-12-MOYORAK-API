@@ -43,6 +43,18 @@ public class MealTagService {
         mealTagRepository.saveAll(newEntities);
     }
 
+    /**
+     * 회원의 알러지 + 비선호 음식 정보 초기화 <br>
+     * <br>
+     * 회원 탈퇴 시, 회원의 식사 태그 정보 미사용 처리합니다.
+     *
+     * @param userId 회원 고유 ID
+     */
+    @Transactional
+    public void clear(final Long userId) {
+        mealTagRepository.clearByUserId(userId);
+    }
+
     private void validateWithinLimit(
             MealTagSummary count, MealTagSaveRequest request, MealTagType type) {
         if (!count.isWithinLimit(type, request.getCountByType(type))) {
