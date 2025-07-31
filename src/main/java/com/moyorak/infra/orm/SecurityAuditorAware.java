@@ -27,7 +27,7 @@ class SecurityAuditorAware implements AuditorAware<Long> {
 
         final UserPrincipal principal = (UserPrincipal) authentication.getPrincipal();
 
-        if (!ObjectUtils.isEmpty(principal)) {
+        if (!ObjectUtils.isEmpty(principal) && principal.getId() != null) {
             return Optional.of(principal.getId());
         }
 
