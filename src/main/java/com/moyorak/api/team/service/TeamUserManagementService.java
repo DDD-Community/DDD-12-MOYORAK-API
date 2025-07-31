@@ -44,6 +44,6 @@ public class TeamUserManagementService {
             throw new NotTeamUserException();
         }
 
-        teamUser.updateRole(role);
+        teamUser.changeRole(role);
     }
 }

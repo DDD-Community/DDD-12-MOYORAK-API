@@ -108,7 +108,7 @@ public class TeamUser extends AuditInformation {
         use = false;
     }
 
-    public void updateRole(TeamRole role) {
+    public void changeRole(TeamRole role) {
         this.role = role;
     }
 
