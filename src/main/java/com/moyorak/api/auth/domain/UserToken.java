@@ -51,8 +51,13 @@ public class UserToken extends AuditInformation {
         return !StringUtils.hasText(this.accessToken);
     }
 
+    /**
+     * 등록 된 토큰을 초기화합니다. <br>
+     * 로그아웃 혹은 탈퇴때 사용됩니다.
+     */
     public void clear() {
         this.accessToken = null;
+        this.refreshToken = null;
     }
 
     public boolean isEqualsToken(final String token) {
