@@ -1,6 +1,7 @@
 package com.moyorak.api.auth.controller;
 
 import com.moyorak.api.auth.dto.SignUpRequest;
+import com.moyorak.api.auth.dto.SignUpResponse;
 import com.moyorak.api.auth.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -21,7 +22,7 @@ class UserController {
 
     @PostMapping("/sign-up")
     @Operation(summary = "[회원] 회원 가입", description = "회원 가입을 요청합니다.")
-    public void signUp(@RequestBody @Valid final SignUpRequest request) {
-        userService.signUp(request);
+    public SignUpResponse signUp(@RequestBody @Valid final SignUpRequest request) {
+        return userService.signUp(request);
     }
 }
