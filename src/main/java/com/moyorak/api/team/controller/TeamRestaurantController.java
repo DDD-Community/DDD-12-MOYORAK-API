@@ -13,7 +13,7 @@ import com.moyorak.api.team.dto.TeamRestaurantSaveRequest;
 import com.moyorak.api.team.dto.TeamRestaurantSearchRequest;
 import com.moyorak.api.team.dto.TeamRestaurantSearchResponse;
 import com.moyorak.api.team.dto.TeamRestaurantUpdateRequest;
-import com.moyorak.api.team.service.TeamRestaurantListFacade;
+import com.moyorak.api.team.service.TeamRestaurantFacade;
 import com.moyorak.api.team.service.TeamRestaurantReviewFacade;
 import com.moyorak.api.team.service.TeamRestaurantSearchFacade;
 import com.moyorak.api.team.service.TeamRestaurantService;
@@ -46,14 +46,14 @@ class TeamRestaurantController {
     private final TeamRestaurantService teamRestaurantService;
     private final TeamRestaurantSearchFacade teamRestaurantSearchFacade;
     private final TeamRestaurantReviewFacade teamRestaurantReviewFacade;
-    private final TeamRestaurantListFacade teamRestaurantListFacade;
+    private final TeamRestaurantFacade teamRestaurantFacade;
 
     @GetMapping("/{teamId}/restaurants")
     @Operation(summary = "팀 맛집 목록 조회", description = "팀 맛집 목록 조회를 합니다.")
     public ListResponse<TeamRestaurantListResponse> getTeamRestaurants(
             @PathVariable @Positive final Long teamId,
             @Valid final TeamRestaurantListRequest teamRestaurantListRequest) {
-        return teamRestaurantListFacade.getRestaurants(teamId, teamRestaurantListRequest);
+        return teamRestaurantFacade.getRestaurants(teamId, teamRestaurantListRequest);
     }
 
     @GetMapping("/{teamId}/restaurants/{teamRestaurantId}")
@@ -62,7 +62,7 @@ class TeamRestaurantController {
             @PathVariable @Positive final Long teamId,
             @PathVariable @Positive final Long teamRestaurantId,
             @AuthenticationPrincipal final UserPrincipal userPrincipal) {
-        return teamRestaurantService.getTeamRestaurant(
+        return teamRestaurantFacade.getTeamRestaurant(
                 userPrincipal.getId(), teamId, teamRestaurantId);
     }
 

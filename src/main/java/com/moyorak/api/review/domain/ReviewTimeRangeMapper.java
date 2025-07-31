@@ -10,17 +10,8 @@ public class ReviewTimeRangeMapper {
 
     public ReviewTimeRangeMapper(
             List<ReviewServingTime> servingRanges, List<ReviewWaitingTime> waitingRanges) {
-        this.servingRanges =
-                servingRanges.stream()
-                        .filter(ReviewServingTime::isUse)
-                        .sorted(Comparator.comparingInt(ReviewServingTime::getServingTimeValue))
-                        .toList();
-
-        this.waitingRanges =
-                waitingRanges.stream()
-                        .filter(ReviewWaitingTime::isUse)
-                        .sorted(Comparator.comparingInt(ReviewWaitingTime::getWaitingTimeValue))
-                        .toList();
+        this.servingRanges = servingRanges;
+        this.waitingRanges = waitingRanges;
     }
 
     public static ReviewTimeRangeMapper create(
@@ -28,20 +19,18 @@ public class ReviewTimeRangeMapper {
         // 유효한 값만 정렬해서 세팅
         List<ReviewServingTime> sortedServing =
                 servingRanges.stream()
-                        .filter(ReviewServingTime::isUse)
                         .sorted(Comparator.comparingInt(ReviewServingTime::getServingTimeValue))
                         .toList();
 
         List<ReviewWaitingTime> sortedWaiting =
                 waitingRanges.stream()
-                        .filter(ReviewWaitingTime::isUse)
                         .sorted(Comparator.comparingInt(ReviewWaitingTime::getWaitingTimeValue))
                         .toList();
 
         return new ReviewTimeRangeMapper(sortedServing, sortedWaiting);
     }
 
-    public String mapServingTime(int input) {
+    public String mapServingTime(double input) {
         return findClosestRange(
                 servingRanges,
                 input,
@@ -49,7 +38,7 @@ public class ReviewTimeRangeMapper {
                 ReviewServingTime::getServingTime);
     }
 
-    public String mapWaitingTime(int input) {
+    public String mapWaitingTime(double input) {
         return findClosestRange(
                 waitingRanges,
                 input,
@@ -59,7 +48,7 @@ public class ReviewTimeRangeMapper {
 
     private <T> String findClosestRange(
             List<T> ranges,
-            int input,
+            double input,
             Function<T, Integer> valueExtractor,
             Function<T, String> labelExtractor) {
         T result = null;
