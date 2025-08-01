@@ -26,6 +26,7 @@ public class TeamRestaurantFacade {
     private final TeamRestaurantService teamRestaurantService;
     private final ReviewPhotoService reviewPhotoService;
     private final ReviewService reviewService;
+    private final TeamRestaurantEventPublisher teamRestaurantEventPublisher;
 
     @Transactional(readOnly = true)
     public ListResponse<TeamRestaurantListResponse> getRestaurants(
@@ -64,7 +65,7 @@ public class TeamRestaurantFacade {
                 teamRestaurantService.getValidatedTeamRestaurant(teamId, teamRestaurantId);
 
         // 조회 이벤트 발행
-        teamRestaurantService.publishTeamRestaurantEvent(userId, teamId, teamRestaurantId);
+        teamRestaurantEventPublisher.publishViewEvent(userId, teamId, teamRestaurantId);
 
         final FirstReviewPhotoPaths firstReviewPhotoPaths =
                 reviewPhotoService.findFirstReviewPhotoPaths(List.of(teamRestaurantId));

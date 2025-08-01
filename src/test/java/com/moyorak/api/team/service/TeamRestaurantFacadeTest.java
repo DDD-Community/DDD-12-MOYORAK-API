@@ -3,6 +3,7 @@ package com.moyorak.api.team.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doNothing;
 
 import com.moyorak.api.restaurant.domain.Restaurant;
 import com.moyorak.api.restaurant.domain.RestaurantCategory;
@@ -25,7 +26,6 @@ import com.moyorak.api.team.dto.TeamRestaurantListResponse;
 import com.moyorak.api.team.dto.TeamRestaurantResponse;
 import com.moyorak.api.team.dto.TeamRestaurantSummary;
 import com.moyorak.api.team.dto.TeamRestaurantSummaryFixture;
-import com.moyorak.api.team.repository.TeamRestaurantRepository;
 import com.moyorak.global.domain.ListResponse;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -48,7 +48,7 @@ class TeamRestaurantFacadeTest {
 
     @Mock private ReviewService reviewService;
 
-    @Mock private TeamRestaurantRepository teamRestaurantRepository;
+    @Mock private TeamRestaurantEventPublisher teamRestaurantEventPublisher;
 
     @Nested
     @DisplayName("팀 맛집 목록 조회 시")
@@ -135,6 +135,9 @@ class TeamRestaurantFacadeTest {
 
             given(teamRestaurantService.getValidatedTeamRestaurant(teamId, teamRestaurantId))
                     .willReturn(teamRestaurant);
+            doNothing()
+                    .when(teamRestaurantEventPublisher)
+                    .publishViewEvent(userId, teamId, teamRestaurantId);
 
             final FirstReviewPhotoPath photo =
                     new FirstReviewPhotoPath(teamRestaurantId, photoPath);

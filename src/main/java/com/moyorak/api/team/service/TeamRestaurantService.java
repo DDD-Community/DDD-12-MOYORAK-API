@@ -31,13 +31,6 @@ public class TeamRestaurantService {
     private final TeamUserRepository teamUserRepository;
     private final RestaurantRepository restaurantRepository;
     private final TeamRestaurantSearchRepository teamRestaurantSearchRepository;
-    private final TeamRestaurantEventPublisher teamRestaurantEventPublisher;
-
-    @Transactional
-    public void publishTeamRestaurantEvent(Long userId, Long teamId, Long teamRestaurantId) {
-        // 조회 이벤트 발행
-        teamRestaurantEventPublisher.publishViewEvent(userId, teamId, teamRestaurantId);
-    }
 
     @Transactional(readOnly = true)
     public Page<TeamRestaurant> getTeamRestaurants(
