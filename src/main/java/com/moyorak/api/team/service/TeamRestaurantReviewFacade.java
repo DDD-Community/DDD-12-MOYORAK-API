@@ -1,6 +1,10 @@
 package com.moyorak.api.team.service;
 
 import com.moyorak.api.review.domain.ReviewPhotoPaths;
+import com.moyorak.api.review.domain.ReviewServingTime;
+import com.moyorak.api.review.domain.ReviewTimeLabels;
+import com.moyorak.api.review.domain.ReviewTimeRangeMapper;
+import com.moyorak.api.review.domain.ReviewWaitingTime;
 import com.moyorak.api.review.dto.PhotoPath;
 import com.moyorak.api.review.dto.ReviewWithUserProjection;
 import com.moyorak.api.review.service.ReviewPhotoService;
@@ -37,12 +41,19 @@ public class TeamRestaurantReviewFacade {
         final List<Long> reviewIds =
                 reviews.getContent().stream().map(ReviewWithUserProjection::id).toList();
 
+        final List<ReviewServingTime> reviewServingTimes = reviewService.getAllReviewServingTimes();
+        final List<ReviewWaitingTime> reviewWaitingTimes = reviewService.getAllReviewWaitingTimes();
+
+        final ReviewTimeRangeMapper reviewTimeRangeMapper =
+                ReviewTimeRangeMapper.create(reviewServingTimes, reviewWaitingTimes);
+        final ReviewTimeLabels reviewTimeLabels =
+                ReviewTimeLabels.create(reviews.getContent(), reviewTimeRangeMapper);
         // 리뷰 별 리뷰 사진들 정보 가져오기
         final ReviewPhotoPaths reviewPhotoPaths =
                 reviewPhotoService.getReviewPhotoPathsGroupedByReviewId(reviewIds);
 
         final Page<TeamRestaurantReviewResponse> teamRestaurantReviewResponses =
-                TeamRestaurantReviewResponse.from(reviews, reviewPhotoPaths);
+                TeamRestaurantReviewResponse.from(reviews, reviewPhotoPaths, reviewTimeLabels);
         return ListResponse.from(teamRestaurantReviewResponses);
     }
 

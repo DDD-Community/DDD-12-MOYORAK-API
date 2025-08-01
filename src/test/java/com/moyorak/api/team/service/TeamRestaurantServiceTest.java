@@ -24,7 +24,6 @@ import com.moyorak.api.team.domain.TeamRestaurantSearchFixture;
 import com.moyorak.api.team.domain.TeamUser;
 import com.moyorak.api.team.domain.TeamUserFixture;
 import com.moyorak.api.team.domain.TeamUserStatus;
-import com.moyorak.api.team.dto.TeamRestaurantResponse;
 import com.moyorak.api.team.dto.TeamRestaurantSaveRequest;
 import com.moyorak.api.team.dto.TeamRestaurantUpdateRequest;
 import com.moyorak.api.team.repository.TeamRestaurantRepository;
@@ -49,42 +48,13 @@ class TeamRestaurantServiceTest {
     @Mock private TeamUserRepository teamUserRepository;
     @Mock private RestaurantRepository restaurantRepository;
     @Mock private TeamRestaurantSearchRepository teamRestaurantSearchRepository;
-    @Mock private TeamRestaurantEventPublisher teamRestaurantEventPublisher;
-
-    final Long teamId = 1L;
-    final Long teamRestaurantId = 1L;
-    final Long userId = 1L;
 
     @Nested
-    @DisplayName("팀 맛집 상세 조회 시,")
+    @DisplayName("팀 맛집 조회 시,")
     class GetTeamRestaurant {
-
-        @Test
-        @DisplayName("정상적으로 조회되면 응답 DTO를 반환합니다.")
-        void returnTeamRestaurantResponse() {
-            // given
-            final Restaurant restaurant =
-                    RestaurantFixture.fixture(
-                            "http://place.map.kakao.com/123456",
-                            "우가우가 차차차",
-                            "우가우가시 차차차동 24번길",
-                            "우가우가 차차로 123",
-                            RestaurantCategory.KOREAN,
-                            127.043616,
-                            37.503095);
-            final TeamRestaurant teamRestaurant =
-                    TeamRestaurantFixture.fixture(
-                            teamRestaurantId, "맛있네요", 4.5, 5, 5, 5.5, 5, true, teamId, restaurant);
-            given(teamRestaurantRepository.findByTeamIdAndIdAndUse(teamId, teamRestaurantId, true))
-                    .willReturn(Optional.of(teamRestaurant));
-
-            // when
-            final TeamRestaurantResponse response =
-                    teamRestaurantService.getTeamRestaurant(userId, teamId, teamRestaurantId);
-
-            // then
-            assertThat(response.name()).isEqualTo(teamRestaurant.getRestaurant().getName());
-        }
+        private final Long teamId = 1L;
+        private final Long teamRestaurantId = 1L;
+        private final Long userId = 1L;
 
         @Test
         @DisplayName("팀 맛집이 존재하지 않으면 예외가 발생합니다.")
@@ -96,8 +66,8 @@ class TeamRestaurantServiceTest {
             // when & then
             assertThatThrownBy(
                             () ->
-                                    teamRestaurantService.getTeamRestaurant(
-                                            userId, teamId, teamRestaurantId))
+                                    teamRestaurantService.getValidatedTeamRestaurant(
+                                            teamId, teamRestaurantId))
                     .isInstanceOf(TeamRestaurantNotFoundException.class);
         }
 
@@ -115,8 +85,8 @@ class TeamRestaurantServiceTest {
             // when & then
             assertThatThrownBy(
                             () ->
-                                    teamRestaurantService.getTeamRestaurant(
-                                            userId, teamId, teamRestaurantId))
+                                    teamRestaurantService.getValidatedTeamRestaurant(
+                                            teamId, teamRestaurantId))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("연결된 식당 정보가 존재하지 않습니다.");
         }
@@ -152,8 +122,8 @@ class TeamRestaurantServiceTest {
             // when & then
             assertThatThrownBy(
                             () ->
-                                    teamRestaurantService.getTeamRestaurant(
-                                            userId, teamId, teamRestaurantId))
+                                    teamRestaurantService.getValidatedTeamRestaurant(
+                                            teamId, teamRestaurantId))
                     .isInstanceOf(TeamRestaurantNotFoundException.class);
         }
     }
