@@ -69,7 +69,7 @@ public class TeamRestaurantService {
     }
 
     @Transactional
-    public void save(
+    public Long save(
             final Long userId,
             final Long teamId,
             final TeamRestaurantSaveRequest teamRestaurantSaveRequest) {
@@ -103,6 +103,8 @@ public class TeamRestaurantService {
                 teamRestaurantRepository.save(
                         teamRestaurantSaveRequest.toTeamRestaurant(teamId, restaurant, distance));
         teamRestaurantSearchRepository.save(TeamRestaurantSearch.from(TeamRestaurant, restaurant));
+
+        return TeamRestaurant.getId();
     }
 
     private TeamUser validateTeamUser(final Long userId, final Long teamId) {
