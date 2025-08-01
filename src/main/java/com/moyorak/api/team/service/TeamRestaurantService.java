@@ -12,7 +12,6 @@ import com.moyorak.api.team.domain.TeamUser;
 import com.moyorak.api.team.dto.TeamRestaurantListRequest;
 import com.moyorak.api.team.dto.TeamRestaurantLocation;
 import com.moyorak.api.team.dto.TeamRestaurantLocationsResponse;
-import com.moyorak.api.team.dto.TeamRestaurantResponse;
 import com.moyorak.api.team.dto.TeamRestaurantSaveRequest;
 import com.moyorak.api.team.dto.TeamRestaurantUpdateRequest;
 import com.moyorak.api.team.repository.TeamRestaurantRepository;
@@ -32,17 +31,6 @@ public class TeamRestaurantService {
     private final TeamUserRepository teamUserRepository;
     private final RestaurantRepository restaurantRepository;
     private final TeamRestaurantSearchRepository teamRestaurantSearchRepository;
-    private final TeamRestaurantEventPublisher teamRestaurantEventPublisher;
-
-    @Transactional(readOnly = true)
-    public TeamRestaurantResponse getTeamRestaurant(
-            Long userId, Long teamId, Long teamRestaurantId) {
-        final TeamRestaurant teamRestaurant = getValidatedTeamRestaurant(teamId, teamRestaurantId);
-
-        // 조회 이벤트 발행
-        teamRestaurantEventPublisher.publishViewEvent(userId, teamId, teamRestaurantId);
-        return TeamRestaurantResponse.from(teamRestaurant);
-    }
 
     @Transactional(readOnly = true)
     public Page<TeamRestaurant> getTeamRestaurants(

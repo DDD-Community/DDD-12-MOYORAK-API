@@ -2,6 +2,7 @@ package com.moyorak.api.auth.service;
 
 import com.moyorak.api.auth.domain.User;
 import com.moyorak.api.auth.dto.SignUpRequest;
+import com.moyorak.api.auth.dto.SignUpResponse;
 import com.moyorak.api.auth.repository.UserRepository;
 import com.moyorak.config.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +16,7 @@ public class UserService {
     private final UserRepository userRepository;
 
     @Transactional
-    public void signUp(final SignUpRequest request) {
+    public SignUpResponse signUp(final SignUpRequest request) {
         // 등록된 이메일인지 확인
         final boolean isRegistered =
                 userRepository.findByEmailAndUse(request.email(), true).isPresent();
@@ -26,6 +27,6 @@ public class UserService {
 
         final User user = request.toEntity();
 
-        userRepository.save(user);
+        return SignUpResponse.create(userRepository.save(user).getId());
     }
 }

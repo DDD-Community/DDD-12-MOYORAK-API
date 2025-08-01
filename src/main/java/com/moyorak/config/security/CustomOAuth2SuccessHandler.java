@@ -2,8 +2,8 @@ package com.moyorak.config.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.moyorak.api.auth.domain.UserPrincipal;
+import com.moyorak.api.auth.dto.OAuthResponse;
 import com.moyorak.api.auth.dto.SignInResponse;
-import com.moyorak.api.auth.dto.SignUpResponse;
 import com.moyorak.api.auth.service.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -34,14 +34,14 @@ class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler {
         if (isNew) {
             final String profileImage = userPrincipal.getAttribute("picture");
 
-            final SignUpResponse signUpResponse =
-                    SignUpResponse.create(
+            final OAuthResponse oAuthResponse =
+                    OAuthResponse.create(
                             userPrincipal.getUsername(), userPrincipal.getName(), profileImage);
 
             response.setStatus(HttpServletResponse.SC_OK);
             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
             response.setCharacterEncoding(StandardCharsets.UTF_8.name());
-            response.getWriter().write(objectMapper.writeValueAsString(signUpResponse));
+            response.getWriter().write(objectMapper.writeValueAsString(oAuthResponse));
 
             return;
         }
