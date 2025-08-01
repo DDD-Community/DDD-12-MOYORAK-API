@@ -31,6 +31,7 @@ import com.moyorak.api.team.repository.TeamRestaurantRepository;
 import com.moyorak.api.team.repository.TeamRestaurantSearchRepository;
 import com.moyorak.api.team.repository.TeamUserRepository;
 import com.moyorak.config.exception.BusinessException;
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -165,13 +166,28 @@ class TeamRestaurantServiceTest {
         private final Long userId = 1L;
         private final Long teamId = 1L;
         private final Long restaurantId = 1L;
+        private final String summary = "맛집입니다.";
+        private final Long servingTimeId = 1L;
+        private final Long waitingTimeId = 1L;
+        private final Integer score = 1;
+        private final List<String> photoPaths =
+                List.of("https://somepath/review.jpg", "https://somepath/review2.jpg");
+        private final String extraText = "여기 참 맛있습니다.";
 
         @Test
         @DisplayName("정상 등록된다.")
         void success() {
             // given
             final TeamRestaurantSaveRequest request =
-                    new TeamRestaurantSaveRequest(restaurantId, "맛집입니다.");
+                    new TeamRestaurantSaveRequest(
+                            restaurantId,
+                            summary,
+                            userId,
+                            servingTimeId,
+                            waitingTimeId,
+                            score,
+                            photoPaths,
+                            extraText);
             final Company company = CompanyFixture.fixture(1L, "우가우가회사", 127.0, 37.5, true);
             final Team team = TeamFixture.fixture(teamId, company, true);
             final TeamUser approvedTeamUser = TeamUserFixture.fixtureApproved(userId, team);
@@ -204,7 +220,15 @@ class TeamRestaurantServiceTest {
         void isInvalidTeamUser() {
             // given
             final TeamRestaurantSaveRequest request =
-                    new TeamRestaurantSaveRequest(restaurantId, "맛집입니다.");
+                    new TeamRestaurantSaveRequest(
+                            restaurantId,
+                            summary,
+                            userId,
+                            servingTimeId,
+                            waitingTimeId,
+                            score,
+                            photoPaths,
+                            extraText);
             final Team team = TeamFixture.fixture(teamId, null, true);
             final TeamUser notApproved =
                     TeamUserFixture.fixture(userId, team, TeamUserStatus.PENDING, true);
@@ -223,7 +247,15 @@ class TeamRestaurantServiceTest {
         void isAlreadyExisting() {
             // given
             final TeamRestaurantSaveRequest request =
-                    new TeamRestaurantSaveRequest(restaurantId, "맛집입니다.");
+                    new TeamRestaurantSaveRequest(
+                            restaurantId,
+                            summary,
+                            userId,
+                            servingTimeId,
+                            waitingTimeId,
+                            score,
+                            photoPaths,
+                            extraText);
             final Team team = TeamFixture.fixture(teamId, null, true);
             final TeamUser approvedTeamUser = TeamUserFixture.fixtureApproved(userId, team);
             final Restaurant restaurant =
@@ -251,7 +283,15 @@ class TeamRestaurantServiceTest {
         void restaurantNotFound() {
             // given
             final TeamRestaurantSaveRequest request =
-                    new TeamRestaurantSaveRequest(restaurantId, "맛집입니다.");
+                    new TeamRestaurantSaveRequest(
+                            restaurantId,
+                            summary,
+                            userId,
+                            servingTimeId,
+                            waitingTimeId,
+                            score,
+                            photoPaths,
+                            extraText);
             final Team team = TeamFixture.fixture(teamId, null, true);
             final TeamUser approvedTeamUser = TeamUserFixture.fixtureApproved(userId, team);
 
