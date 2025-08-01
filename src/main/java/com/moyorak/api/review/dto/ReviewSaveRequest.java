@@ -24,4 +24,15 @@ public record ReviewSaveRequest(
             final Integer servingTime, final Integer waitingTime, final Long teamRestaurantId) {
         return Review.create(score, servingTime, waitingTime, extraText, userId, teamRestaurantId);
     }
+
+    public static ReviewSaveRequest create(
+            final Long userId,
+            final Long servingTimeId,
+            final Long waitingTimeId,
+            final Integer score,
+            final List<String> photoPaths,
+            final String extraText) {
+        return new ReviewSaveRequest(
+                userId, servingTimeId, waitingTimeId, score, photoPaths, extraText);
+    }
 }
