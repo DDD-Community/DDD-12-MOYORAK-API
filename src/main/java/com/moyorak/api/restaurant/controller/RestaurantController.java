@@ -3,6 +3,7 @@ package com.moyorak.api.restaurant.controller;
 import com.moyorak.api.restaurant.dto.ExternalRestaurantSearchRequest;
 import com.moyorak.api.restaurant.dto.ExternalRestaurantSearchResponse;
 import com.moyorak.api.restaurant.dto.RestaurantSaveRequest;
+import com.moyorak.api.restaurant.dto.RestaurantSaveResponse;
 import com.moyorak.api.restaurant.dto.RestaurantSearchRequest;
 import com.moyorak.api.restaurant.dto.RestaurantSearchResponse;
 import com.moyorak.api.restaurant.service.RestaurantSearchService;
@@ -38,8 +39,9 @@ class RestaurantController {
 
     @PostMapping
     @Operation(summary = "음식점 데이터 저장", description = "음식점 데이터를 저장합니다.")
-    public void save(@Valid @RequestBody final RestaurantSaveRequest restaurantSaveRequest) {
-        restaurantService.save(restaurantSaveRequest);
+    public RestaurantSaveResponse save(
+            @Valid @RequestBody final RestaurantSaveRequest restaurantSaveRequest) {
+        return restaurantService.save(restaurantSaveRequest);
     }
 
     @GetMapping("/search")

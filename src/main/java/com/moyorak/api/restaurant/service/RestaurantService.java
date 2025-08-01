@@ -3,6 +3,7 @@ package com.moyorak.api.restaurant.service;
 import com.moyorak.api.restaurant.domain.Restaurant;
 import com.moyorak.api.restaurant.domain.RestaurantSearch;
 import com.moyorak.api.restaurant.dto.RestaurantSaveRequest;
+import com.moyorak.api.restaurant.dto.RestaurantSaveResponse;
 import com.moyorak.api.restaurant.repository.RestaurantRepository;
 import com.moyorak.api.restaurant.repository.RestaurantSearchRepository;
 import com.moyorak.config.exception.BusinessException;
@@ -18,7 +19,7 @@ public class RestaurantService {
     private final RestaurantSearchRepository restaurantSearchRepository;
 
     @Transactional
-    public void save(final RestaurantSaveRequest restaurantSaveRequest) {
+    public RestaurantSaveResponse save(final RestaurantSaveRequest restaurantSaveRequest) {
 
         final Restaurant restaurant = restaurantSaveRequest.toRestaurant();
 
@@ -37,5 +38,7 @@ public class RestaurantService {
         final Restaurant saved = restaurantRepository.save(restaurant);
         restaurantSearchRepository.save(
                 RestaurantSearch.create(saved.getId(), saved.getName(), saved.getRoadAddress()));
+
+        return RestaurantSaveResponse.create(saved.getId());
     }
 }
