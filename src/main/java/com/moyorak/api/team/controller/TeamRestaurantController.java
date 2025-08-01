@@ -10,11 +10,13 @@ import com.moyorak.api.team.dto.TeamRestaurantReviewPhotoRequest;
 import com.moyorak.api.team.dto.TeamRestaurantReviewRequest;
 import com.moyorak.api.team.dto.TeamRestaurantReviewResponse;
 import com.moyorak.api.team.dto.TeamRestaurantSaveRequest;
+import com.moyorak.api.team.dto.TeamRestaurantSaveResponse;
 import com.moyorak.api.team.dto.TeamRestaurantSearchRequest;
 import com.moyorak.api.team.dto.TeamRestaurantSearchResponse;
 import com.moyorak.api.team.dto.TeamRestaurantUpdateRequest;
 import com.moyorak.api.team.service.TeamRestaurantListFacade;
 import com.moyorak.api.team.service.TeamRestaurantReviewFacade;
+import com.moyorak.api.team.service.TeamRestaurantSaveFacade;
 import com.moyorak.api.team.service.TeamRestaurantSearchFacade;
 import com.moyorak.api.team.service.TeamRestaurantService;
 import com.moyorak.global.domain.ListResponse;
@@ -47,6 +49,7 @@ class TeamRestaurantController {
     private final TeamRestaurantSearchFacade teamRestaurantSearchFacade;
     private final TeamRestaurantReviewFacade teamRestaurantReviewFacade;
     private final TeamRestaurantListFacade teamRestaurantListFacade;
+    private final TeamRestaurantSaveFacade teamRestaurantSaveFacade;
 
     @GetMapping("/{teamId}/restaurants")
     @Operation(summary = "팀 맛집 목록 조회", description = "팀 맛집 목록 조회를 합니다.")
@@ -88,11 +91,12 @@ class TeamRestaurantController {
 
     @PostMapping("/{teamId}/restaurants")
     @Operation(summary = "팀 맛집 등록", description = "팀 맛집을 등록합니다.")
-    public void saveTeamRestaurant(
+    public TeamRestaurantSaveResponse saveTeamRestaurant(
             @Valid @RequestBody final TeamRestaurantSaveRequest teamRestaurantSaveRequest,
             @PathVariable @Positive final Long teamId,
             @AuthenticationPrincipal final UserPrincipal userPrincipal) {
-        teamRestaurantService.save(userPrincipal.getId(), teamId, teamRestaurantSaveRequest);
+        return teamRestaurantSaveFacade.save(
+                userPrincipal.getId(), teamId, teamRestaurantSaveRequest);
     }
 
     @GetMapping("/{teamId}/restaurants/search")
