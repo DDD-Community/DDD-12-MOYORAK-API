@@ -1,5 +1,6 @@
 package com.moyorak.api.review.service;
 
+import com.moyorak.api.image.ImageStore;
 import com.moyorak.api.review.domain.FirstReviewPhotoPaths;
 import com.moyorak.api.review.domain.ReviewPhoto;
 import com.moyorak.api.review.dto.FirstReviewPhotoId;
@@ -19,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class ReviewPhotoService {
 
     private final ReviewPhotoRepository reviewPhotoRepository;
+    private final ImageStore imageStore;
 
     @Transactional(readOnly = true)
     public FirstReviewPhotoPaths findFirstReviewPhotoPaths(final List<Long> teamRestaurantIds) {
@@ -43,7 +45,9 @@ public class ReviewPhotoService {
     @Transactional(readOnly = true)
     public Page<PhotoPath> getAllReviewPhotoPathsByTeamRestaurantId(
             Long teamRestaurantId, Pageable pageable) {
-        return reviewPhotoRepository.findPhotoPathsByTeamRestaurantId(teamRestaurantId, pageable);
+        return reviewPhotoRepository
+                .findPhotoPathsByTeamRestaurantId(teamRestaurantId, pageable)
+                .map(p -> new PhotoPath(imageStore.getUrlFromStringPath(p.path())));
     }
 
     @Transactional
