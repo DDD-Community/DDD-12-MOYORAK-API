@@ -1,7 +1,6 @@
 package com.moyorak.api.auth.service;
 
 import com.moyorak.api.auth.domain.MealTag;
-import com.moyorak.api.auth.domain.MealTagSummary;
 import com.moyorak.api.auth.domain.MealTagType;
 import com.moyorak.api.auth.dto.MealTagSaveRequest;
 import com.moyorak.api.auth.repository.MealTagRepository;
@@ -21,6 +20,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class MealTagService {
+
+    public static final long MAX_ITEMS_PER_TYPE = 10L;
 
     private final MealTagRepository mealTagRepository;
 
@@ -100,11 +101,11 @@ public class MealTagService {
     }
 
     private void validateWithinLimit(long finalCount, MealTagType type) {
-        if (finalCount > MealTagSummary.MAX_ITEMS_PER_TYPE) {
+        if (finalCount > MAX_ITEMS_PER_TYPE) {
             throw new BusinessException(
                     String.format(
                             "%s 타입은 최대 %d개까지만 등록 가능합니다.",
-                            type.getDescription(), MealTagSummary.MAX_ITEMS_PER_TYPE));
+                            type.getDescription(), MAX_ITEMS_PER_TYPE));
         }
     }
 }

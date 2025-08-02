@@ -18,7 +18,7 @@ import org.springframework.util.ObjectUtils;
 public record MealTagSaveRequest(
         @NotNull @Schema(description = "회원 고유 ID", example = "13") Long userId,
         @Valid List<MealTagDetailsSaveRequest> details) {
-    public static final long MAX_ITEMS_PER_TYPE = 11;
+    public static final long MAX_ITEMS_PER_TYPE = 10;
 
     public MealTagSaveRequest {
         // 중복 제거를 하기위해 생성자에 입력 받은 List를 Set으로 대입하여 처리
