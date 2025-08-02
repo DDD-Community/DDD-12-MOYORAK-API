@@ -26,7 +26,7 @@ import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignReques
 public class S3Adapter {
 
     public static final Duration CREATE_IMAGE_URL_EXPIRATION = Duration.ofMinutes(3);
-    public static final Duration READ_IMAGE_URL_EXPIRATION = Duration.ofSeconds(30);
+    public static final Duration READ_IMAGE_URL_EXPIRATION = Duration.ofSeconds(120);
 
     private final S3Presigner s3Presigner;
     private final S3Client s3Client;
