@@ -9,11 +9,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
+import org.springframework.web.util.UriComponentsBuilder;
 
 @Component
 @RequiredArgsConstructor
@@ -21,6 +22,8 @@ class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
     private final AuthService authService;
     private final ObjectMapper objectMapper;
+
+    private final SecurityProperties securityProperties;
 
     @Override
     public void onAuthenticationSuccess(
@@ -38,19 +41,33 @@ class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler {
                     OAuthResponse.create(
                             userPrincipal.getUsername(), userPrincipal.getName(), profileImage);
 
-            response.setStatus(HttpServletResponse.SC_OK);
-            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-            response.setCharacterEncoding(StandardCharsets.UTF_8.name());
-            response.getWriter().write(objectMapper.writeValueAsString(oAuthResponse));
+            final String encodedName =
+                    Base64.getUrlEncoder()
+                            .withoutPadding()
+                            .encodeToString(oAuthResponse.name().getBytes(StandardCharsets.UTF_8));
+
+            final String targetUrl =
+                    UriComponentsBuilder.fromUriString(securityProperties.getRedirectUrl())
+                            .queryParam("email", oAuthResponse.email())
+                            .queryParam("name", encodedName)
+                            .queryParam("profileImage", oAuthResponse.profileImage())
+                            .build()
+                            .toUriString();
+
+            response.sendRedirect(targetUrl);
 
             return;
         }
 
         final SignInResponse signInResponse = authService.generate(userPrincipal.getId());
 
-        response.setStatus(HttpServletResponse.SC_OK);
-        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        response.setCharacterEncoding(StandardCharsets.UTF_8.name());
-        response.getWriter().write(objectMapper.writeValueAsString(signInResponse));
+        final String targetUrl =
+                UriComponentsBuilder.fromUriString(securityProperties.getRedirectUrl())
+                        .queryParam("accessToken", signInResponse.accessToken())
+                        .queryParam("refreshToken", signInResponse.refreshToken())
+                        .build()
+                        .toUriString();
+
+        response.sendRedirect(targetUrl);
     }
 }
