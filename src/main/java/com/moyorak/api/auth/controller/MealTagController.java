@@ -9,7 +9,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,7 +23,7 @@ class MealTagController {
 
     private final MealTagService mealTagService;
 
-    @PostMapping("/meal/tags")
+    @PutMapping("/meal/tags")
     @Operation(summary = "[알러지, 비선호 음식] 알러지, 비선호 음식 등록", description = "알러지, 비선호 음식 리스트를 저장합니다.")
     public void foodFlagRegister(
             @AuthenticationPrincipal final UserPrincipal userPrincipal,
