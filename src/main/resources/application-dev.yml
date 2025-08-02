@@ -30,3 +30,7 @@ jwt:
 
 security:
   redirect-url: https://ddd-12-moyorak-client-u3xz.vercel.app/redirect
+
+server:
+  forward-headers-strategy: native
+  
