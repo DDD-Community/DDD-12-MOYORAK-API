@@ -27,3 +27,6 @@ jwt:
   expiration: 86400000
   refresh-secret: ${JWT_REFRESH_SECRET}
   refresh-expiration: 604800000
+
+security:
+  redirect-url: https://ddd-12-moyorak-client-u3xz.vercel.app/redirect

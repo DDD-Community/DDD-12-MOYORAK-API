@@ -45,3 +45,6 @@ aws:
     bucket: ${S3_BUCKET_NAME}
     uri: ${S3_BUCKET_URI}
     directory: ${S3_BUCKET_DIRECTORY}
+
+security:
+  redirect-url: http://localhost:8080/redirect-url
