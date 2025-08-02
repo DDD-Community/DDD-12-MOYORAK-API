@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.BDDMockito.given;
 
+import com.moyorak.api.image.service.ImageService;
 import com.moyorak.api.restaurant.domain.Restaurant;
 import com.moyorak.api.restaurant.domain.RestaurantCategory;
 import com.moyorak.api.restaurant.domain.RestaurantFixture;
@@ -26,6 +27,7 @@ import com.moyorak.api.team.dto.TeamRestaurantReviewRequest;
 import com.moyorak.api.team.dto.TeamRestaurantReviewRequestFixture;
 import com.moyorak.api.team.dto.TeamRestaurantReviewResponse;
 import com.moyorak.global.domain.ListResponse;
+import java.awt.*;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -49,6 +51,7 @@ class TeamRestaurantReviewFacadeTest {
     @Mock private TeamRestaurantService teamRestaurantService;
 
     @Mock private ReviewPhotoService reviewPhotoService;
+    @Mock private ImageService imageService;
 
     Long teamId;
     Long teamRestaurantId;
@@ -101,10 +104,10 @@ class TeamRestaurantReviewFacadeTest {
             final List<Long> reviewIds = List.of(1L);
             final List<ReviewPhotoPath> photoPaths =
                     List.of(new ReviewPhotoPath(1L, "s3://review1/photo1.jpg"));
-            final ReviewPhotoPaths reviewPhotoPaths = ReviewPhotoPaths.create(photoPaths);
 
             given(reviewPhotoService.getReviewPhotoPathsGroupedByReviewId(reviewIds))
-                    .willReturn(reviewPhotoPaths);
+                    .willReturn(photoPaths);
+            final ReviewPhotoPaths reviewPhotoPaths = ReviewPhotoPaths.create(photoPaths);
 
             final ReviewServingTime reviewServingTime =
                     ReviewServingTimeFixture.fixture(1L, "5분이내", true, 5);
@@ -128,7 +131,7 @@ class TeamRestaurantReviewFacadeTest {
                     it -> {
                         it.assertThat(teamRestaurantReviewResponse.id()).isEqualTo(1L);
                         it.assertThat(teamRestaurantReviewResponse.photoUrls())
-                                .contains("s3://review1/photo1.jpg");
+                                .doesNotContain("s3://review1/photo1.jpg");
                         it.assertThat(teamRestaurantReviewResponse.servingTime()).isEqualTo("5분이내");
                         it.assertThat(teamRestaurantReviewResponse.waitingTime()).isEqualTo("5분이내");
                     });
@@ -161,6 +164,8 @@ class TeamRestaurantReviewFacadeTest {
                                     teamRestaurant.getId(),
                                     teamRestaurantReviewPhotoRequest.toPageableAndDateSorted()))
                     .willReturn(photoPaths);
+
+            given(imageService.getUrlsFomPhotoPaths(photoPaths)).willReturn(photoPaths);
 
             // when
             final ListResponse<PhotoPath> result =

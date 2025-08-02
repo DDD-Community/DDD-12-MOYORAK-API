@@ -2,7 +2,6 @@ package com.moyorak.api.review.service;
 
 import com.moyorak.api.review.domain.FirstReviewPhotoPaths;
 import com.moyorak.api.review.domain.ReviewPhoto;
-import com.moyorak.api.review.domain.ReviewPhotoPaths;
 import com.moyorak.api.review.dto.FirstReviewPhotoId;
 import com.moyorak.api.review.dto.FirstReviewPhotoPath;
 import com.moyorak.api.review.dto.PhotoPath;
@@ -37,11 +36,8 @@ public class ReviewPhotoService {
     }
 
     @Transactional(readOnly = true)
-    public ReviewPhotoPaths getReviewPhotoPathsGroupedByReviewId(final List<Long> reviewIds) {
-        final List<ReviewPhotoPath> reviewPhotos =
-                reviewPhotoRepository.findPhotoPathsByReviewIds(reviewIds);
-
-        return ReviewPhotoPaths.create(reviewPhotos);
+    public List<ReviewPhotoPath> getReviewPhotoPathsGroupedByReviewId(final List<Long> reviewIds) {
+        return reviewPhotoRepository.findPhotoPathsByReviewIds(reviewIds);
     }
 
     @Transactional(readOnly = true)
