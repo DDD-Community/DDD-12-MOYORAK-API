@@ -4,11 +4,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.BDDMockito.given;
 
-import com.moyorak.api.image.service.ImageService;
+import com.moyorak.api.image.ImageStore;
 import com.moyorak.api.restaurant.domain.Restaurant;
 import com.moyorak.api.restaurant.domain.RestaurantCategory;
 import com.moyorak.api.restaurant.domain.RestaurantFixture;
-import com.moyorak.api.review.domain.ReviewPhotoPaths;
 import com.moyorak.api.review.domain.ReviewServingTime;
 import com.moyorak.api.review.domain.ReviewServingTimeFixture;
 import com.moyorak.api.review.domain.ReviewWaitingTime;
@@ -27,7 +26,6 @@ import com.moyorak.api.team.dto.TeamRestaurantReviewRequest;
 import com.moyorak.api.team.dto.TeamRestaurantReviewRequestFixture;
 import com.moyorak.api.team.dto.TeamRestaurantReviewResponse;
 import com.moyorak.global.domain.ListResponse;
-import java.awt.*;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -51,7 +49,7 @@ class TeamRestaurantReviewFacadeTest {
     @Mock private TeamRestaurantService teamRestaurantService;
 
     @Mock private ReviewPhotoService reviewPhotoService;
-    @Mock private ImageService imageService;
+    @Mock private ImageStore imageStore;
 
     Long teamId;
     Long teamRestaurantId;
@@ -107,8 +105,6 @@ class TeamRestaurantReviewFacadeTest {
 
             given(reviewPhotoService.getReviewPhotoPathsGroupedByReviewId(reviewIds))
                     .willReturn(photoPaths);
-            final ReviewPhotoPaths reviewPhotoPaths = ReviewPhotoPaths.create(photoPaths);
-
             final ReviewServingTime reviewServingTime =
                     ReviewServingTimeFixture.fixture(1L, "5분이내", true, 5);
             final ReviewWaitingTime reviewWaitingTime =
@@ -165,7 +161,10 @@ class TeamRestaurantReviewFacadeTest {
                                     teamRestaurantReviewPhotoRequest.toPageableAndDateSorted()))
                     .willReturn(photoPaths);
 
-            given(imageService.getUrlsFomPhotoPaths(photoPaths)).willReturn(photoPaths);
+            given(imageStore.getUrlFromStringPath("s3://review/photo1.jpg"))
+                    .willReturn("https://cdn.moyorak.com/review/photo1.jpg");
+            given(imageStore.getUrlFromStringPath("s3://review/photo2.jpg"))
+                    .willReturn("https://cdn.moyorak.com/review/photo2.jpg");
 
             // when
             final ListResponse<PhotoPath> result =
@@ -178,8 +177,8 @@ class TeamRestaurantReviewFacadeTest {
                         it.assertThat(result.getData()).hasSize(2);
                         it.assertThat(result.getData())
                                 .containsExactly(
-                                        new PhotoPath("s3://review/photo1.jpg"),
-                                        new PhotoPath("s3://review/photo2.jpg"));
+                                        new PhotoPath("https://cdn.moyorak.com/review/photo1.jpg"),
+                                        new PhotoPath("https://cdn.moyorak.com/review/photo2.jpg"));
                     });
         }
     }

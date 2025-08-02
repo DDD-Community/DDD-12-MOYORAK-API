@@ -8,11 +8,7 @@ import com.moyorak.api.image.dto.ImagePresignedUrlRequest;
 import com.moyorak.api.image.dto.ImagePresignedUrlResponse;
 import com.moyorak.api.image.dto.ImageSaveRequest;
 import com.moyorak.api.image.dto.ImageSaveResponse;
-import com.moyorak.api.review.dto.PhotoPath;
-import com.moyorak.api.review.dto.ReviewPhotoPath;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -35,14 +31,5 @@ public class ImageService {
 
     public ImagePresignedUrlListResponse getUrls(final ImagePresignedUrlListRequest requests) {
         return imageStore.getUrls(requests);
-    }
-
-    // TODO 리뷰 도메인쪽으로 이동해야함
-    public List<ReviewPhotoPath> getUrlsFomReview(final List<ReviewPhotoPath> reviewPhotoPaths) {
-        return imageStore.getUrlsFomReview(reviewPhotoPaths);
-    }
-
-    public Page<PhotoPath> getUrlsFomPhotoPaths(final Page<PhotoPath> photoPaths) {
-        return imageStore.getUrlsFomPhotoPaths(photoPaths);
     }
 }

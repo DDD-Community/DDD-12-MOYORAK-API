@@ -7,16 +7,12 @@ import com.moyorak.api.image.dto.ImagePresignedUrlRequest;
 import com.moyorak.api.image.dto.ImagePresignedUrlResponse;
 import com.moyorak.api.image.dto.ImageSaveRequest;
 import com.moyorak.api.image.dto.ImageSaveResponse;
-import com.moyorak.api.review.dto.PhotoPath;
-import com.moyorak.api.review.dto.ReviewPhotoPath;
 import com.moyorak.config.exception.BusinessException;
 import com.moyorak.infra.aws.s3.S3Adapter;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -53,18 +49,7 @@ public class ImageStore {
                 requests.paths().stream().map(this::getUrl).collect(Collectors.toList()));
     }
 
-    // TODO 리뷰 도메인쪽으로 이동후에는 삭제
-    public List<ReviewPhotoPath> getUrlsFomReview(final List<ReviewPhotoPath> reviewPhotoPaths) {
-        return reviewPhotoPaths.stream()
-                .map(
-                        r ->
-                                new ReviewPhotoPath(
-                                        r.reviewId(),
-                                        s3Adapter.getPresignedUrl(r.reviewPhotoPath())))
-                .toList();
-    }
-
-    public Page<PhotoPath> getUrlsFomPhotoPaths(final Page<PhotoPath> photoPaths) {
-        return photoPaths.map(p -> new PhotoPath(s3Adapter.getPresignedUrl(p.path())));
+    public String getUrlFromStringPath(final String path) {
+        return s3Adapter.getPresignedUrl(path);
     }
 }
