@@ -59,4 +59,8 @@ public class MealTag extends AuditInformation {
 
         return mealTag;
     }
+
+    public void delete() {
+        this.use = false;
+    }
 }
