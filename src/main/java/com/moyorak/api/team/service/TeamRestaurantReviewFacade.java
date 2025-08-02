@@ -70,6 +70,6 @@ public class TeamRestaurantReviewFacade {
         final Page<PhotoPath> reviewPhotoPaths =
                 reviewPhotoService.getAllReviewPhotoPathsByTeamRestaurantId(
                         teamRestaurant.getId(), request.toPageableAndDateSorted());
-        return ListResponse.from(PhotoPath.convertPathUrl(imageStore, reviewPhotoPaths));
+        return ListResponse.from(reviewPhotoPaths);
     }
 }
