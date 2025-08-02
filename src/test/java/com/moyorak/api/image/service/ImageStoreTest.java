@@ -3,6 +3,7 @@ package com.moyorak.api.image.service;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.moyorak.api.image.ImageStore;
 import com.moyorak.api.image.dto.ImageDeleteRequest;
 import com.moyorak.api.image.dto.ImageDeleteRequestFixture;
 import com.moyorak.config.exception.BusinessException;
@@ -16,9 +17,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-class ImageServiceTest {
+class ImageStoreTest {
 
-    @InjectMocks private ImageService imageService;
+    @InjectMocks private ImageStore imageStore;
 
     @Mock private S3Adapter s3Adapter;
 
@@ -34,7 +35,7 @@ class ImageServiceTest {
             final ImageDeleteRequest request = ImageDeleteRequestFixture.fixture(3L);
 
             // when & then
-            assertThatThrownBy(() -> imageService.remove(userId, request))
+            assertThatThrownBy(() -> imageStore.remove(userId, request))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("사용자 ID가 일치하지 않습니다.");
         }
@@ -47,7 +48,7 @@ class ImageServiceTest {
             final ImageDeleteRequest request = ImageDeleteRequestFixture.fixture(userId);
 
             // when & then
-            assertDoesNotThrow(() -> imageService.remove(userId, request));
+            assertDoesNotThrow(() -> imageStore.remove(userId, request));
         }
     }
 }
