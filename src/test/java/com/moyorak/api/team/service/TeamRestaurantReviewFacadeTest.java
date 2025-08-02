@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.BDDMockito.given;
 
+import com.moyorak.api.image.ImageStore;
 import com.moyorak.api.restaurant.domain.Restaurant;
 import com.moyorak.api.restaurant.domain.RestaurantCategory;
 import com.moyorak.api.restaurant.domain.RestaurantFixture;
@@ -48,6 +49,7 @@ class TeamRestaurantReviewFacadeTest {
     @Mock private TeamRestaurantService teamRestaurantService;
 
     @Mock private ReviewPhotoService reviewPhotoService;
+    @Mock private ImageStore imageStore;
 
     Long teamId;
     Long teamRestaurantId;
@@ -103,6 +105,9 @@ class TeamRestaurantReviewFacadeTest {
 
             given(reviewPhotoService.getReviewPhotoPathsGroupedByReviewId(reviewIds))
                     .willReturn(photoPaths);
+            given(imageStore.getUrlFromStringPath("s3://review1/photo1.jpg"))
+                    .willReturn("https://cdn.moyorak.com/review1/photo1.jpg");
+
             final ReviewServingTime reviewServingTime =
                     ReviewServingTimeFixture.fixture(1L, "5분이내", true, 5);
             final ReviewWaitingTime reviewWaitingTime =
