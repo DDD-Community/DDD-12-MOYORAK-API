@@ -68,7 +68,9 @@ class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         return uri.startsWith("/api/auth/sign-in")
                 || uri.startsWith("/api/auth/refresh")
-                || uri.startsWith("/api/user/sign-up");
+                || uri.startsWith("/api/user/sign-up")
+                || uri.startsWith("/api/companies/\\d+$")
+                || uri.startsWith("/api/companies/\\d+$/teams");
     }
 
     private void validToken(final Authentication authentication, final String token) {

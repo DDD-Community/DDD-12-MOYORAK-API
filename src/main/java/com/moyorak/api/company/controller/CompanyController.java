@@ -5,7 +5,6 @@ import com.moyorak.api.company.dto.CompanySearchListResponse;
 import com.moyorak.api.company.dto.CompanySearchRequest;
 import com.moyorak.api.company.service.CompanyService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/companies")
 @RequiredArgsConstructor
-@SecurityRequirement(name = "JWT")
 @Tag(name = "[회사] 회사 API", description = "회사를 위한 API 입니다.")
 class CompanyController {
 
