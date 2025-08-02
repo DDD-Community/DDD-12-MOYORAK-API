@@ -1,11 +1,13 @@
 package com.moyorak.api.team.service;
 
+import com.moyorak.api.image.service.ImageService;
 import com.moyorak.api.review.domain.ReviewPhotoPaths;
 import com.moyorak.api.review.domain.ReviewServingTime;
 import com.moyorak.api.review.domain.ReviewTimeLabels;
 import com.moyorak.api.review.domain.ReviewTimeRangeMapper;
 import com.moyorak.api.review.domain.ReviewWaitingTime;
 import com.moyorak.api.review.dto.PhotoPath;
+import com.moyorak.api.review.dto.ReviewPhotoPath;
 import com.moyorak.api.review.dto.ReviewWithUserProjection;
 import com.moyorak.api.review.service.ReviewPhotoService;
 import com.moyorak.api.review.service.ReviewService;
@@ -27,6 +29,7 @@ public class TeamRestaurantReviewFacade {
     private final ReviewService reviewService;
     private final TeamRestaurantService teamRestaurantService;
     private final ReviewPhotoService reviewPhotoService;
+    private final ImageService imageService;
 
     @Transactional(readOnly = true)
     public ListResponse<TeamRestaurantReviewResponse> getTeamRestaurantReviews(
@@ -49,8 +52,10 @@ public class TeamRestaurantReviewFacade {
         final ReviewTimeLabels reviewTimeLabels =
                 ReviewTimeLabels.create(reviews.getContent(), reviewTimeRangeMapper);
         // 리뷰 별 리뷰 사진들 정보 가져오기
-        final ReviewPhotoPaths reviewPhotoPaths =
-                reviewPhotoService.getReviewPhotoPathsGroupedByReviewId(reviewIds);
+        final List<ReviewPhotoPath> reviewPhotoPathList =
+                imageService.getUrlsFomReview(
+                        reviewPhotoService.getReviewPhotoPathsGroupedByReviewId(reviewIds));
+        final ReviewPhotoPaths reviewPhotoPaths = ReviewPhotoPaths.create(reviewPhotoPathList);
 
         final Page<TeamRestaurantReviewResponse> teamRestaurantReviewResponses =
                 TeamRestaurantReviewResponse.from(reviews, reviewPhotoPaths, reviewTimeLabels);
@@ -63,8 +68,9 @@ public class TeamRestaurantReviewFacade {
         final TeamRestaurant teamRestaurant =
                 teamRestaurantService.getValidatedTeamRestaurant(teamId, teamRestaurantId);
         final Page<PhotoPath> reviewPhotoPaths =
-                reviewPhotoService.getAllReviewPhotoPathsByTeamRestaurantId(
-                        teamRestaurant.getId(), request.toPageableAndDateSorted());
+                imageService.getUrlsFomPhotoPaths(
+                        reviewPhotoService.getAllReviewPhotoPathsByTeamRestaurantId(
+                                teamRestaurant.getId(), request.toPageableAndDateSorted()));
 
         return ListResponse.from(reviewPhotoPaths);
     }

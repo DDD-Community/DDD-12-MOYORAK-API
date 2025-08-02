@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 
 import com.moyorak.api.review.domain.FirstReviewPhotoPaths;
-import com.moyorak.api.review.domain.ReviewPhotoPaths;
 import com.moyorak.api.review.dto.FirstReviewPhotoId;
 import com.moyorak.api.review.dto.FirstReviewPhotoPath;
 import com.moyorak.api.review.dto.ReviewPhotoPath;
@@ -102,15 +101,13 @@ class ReviewPhotoServiceTest {
                     .willReturn(reviewPhotoPathList);
 
             // when
-            ReviewPhotoPaths reviewPhotoPaths =
+            List<ReviewPhotoPath> reviewPhotoPaths =
                     reviewPhotoService.getReviewPhotoPathsGroupedByReviewId(reviewIds);
 
             // then
-            assertThat(reviewPhotoPaths.getPhotoPaths(reviewId1))
-                    .containsExactlyInAnyOrder(
-                            "s3://review1/photo1.jpg", "s3://review1/photo2.jpg");
-            assertThat(reviewPhotoPaths.getPhotoPaths(reviewId2))
-                    .containsExactly("s3://review2/photo3.jpg");
+            assertThat(reviewPhotoPaths.get(0).reviewId()).isEqualTo(reviewId1);
+            assertThat(reviewPhotoPaths.get(0).reviewPhotoPath())
+                    .isEqualTo("s3://review1/photo1.jpg");
         }
 
         @Test
@@ -121,12 +118,11 @@ class ReviewPhotoServiceTest {
             given(reviewPhotoRepository.findPhotoPathsByReviewIds(reviewIds)).willReturn(List.of());
 
             // when
-            ReviewPhotoPaths reviewPhotoPaths =
+            List<ReviewPhotoPath> reviewPhotoPaths =
                     reviewPhotoService.getReviewPhotoPathsGroupedByReviewId(reviewIds);
 
             // then
-            assertThat(reviewPhotoPaths.getPhotoPaths(reviewId1)).isEmpty();
-            assertThat(reviewPhotoPaths.getPhotoPaths(999L)).isEmpty(); // 존재하지 않는 ID
+            assertThat(reviewPhotoPaths.size()).isEqualTo(0);
         }
     }
 }
