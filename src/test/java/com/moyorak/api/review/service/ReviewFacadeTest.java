@@ -16,7 +16,7 @@ import com.moyorak.api.review.dto.ReviewSaveRequest;
 import com.moyorak.api.review.dto.ReviewSaveRequestFixture;
 import com.moyorak.api.team.domain.TeamRestaurant;
 import com.moyorak.api.team.domain.TeamRestaurantFixture;
-import com.moyorak.api.team.repository.TeamRestaurantRepository;
+import com.moyorak.api.team.service.TeamRestaurantSearchService;
 import com.moyorak.api.team.service.TeamRestaurantService;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -35,7 +35,7 @@ class ReviewFacadeTest {
     @Mock private ReviewPhotoService reviewPhotoService;
 
     @Mock private TeamRestaurantService teamRestaurantService;
-    @Mock private TeamRestaurantRepository teamRestaurantRepository;
+    @Mock private TeamRestaurantSearchService teamRestaurantSearchService;
 
     @Test
     @DisplayName("리뷰 생성 성공 시, 평균 값 및 사진 등록까지 처리된다")
@@ -86,11 +86,6 @@ class ReviewFacadeTest {
                 TeamRestaurantFixture.fixture(
                         teamRestaurantId, "맛있네요", 4.5, 5, 5, 5.5, 5, true, teamId, restaurant);
 
-        final Integer beforeReviewCount = teamRestaurant.getReviewCount();
-        final double beforeAverageReviewScore = teamRestaurant.getAverageReviewScore();
-        final double beforeAverageServingTime = teamRestaurant.getAverageServingTime();
-        final double beforeAverageWaitingTime = teamRestaurant.getAverageWaitingTime();
-
         given(reviewService.getReviewServingTime(servingId)).willReturn(servingTime);
         given(reviewService.getReviewWaitingTime(waitingId)).willReturn(waitingTime);
 
@@ -111,5 +106,11 @@ class ReviewFacadeTest {
         verify(teamRestaurantService)
                 .updateAverageValue(
                         teamRestaurantId, reviewScore, servingTimeValue, waitingTimeValue);
+
+        verify(teamRestaurantService, times(2))
+                .getValidatedTeamRestaurant(teamId, teamRestaurantId); // 총 2회 호출됨
+
+        verify(teamRestaurantSearchService)
+                .updateAverageReviewScore(teamRestaurantId, teamRestaurant.getAverageReviewScore());
     }
 }
