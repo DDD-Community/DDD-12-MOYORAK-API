@@ -3,6 +3,7 @@ package com.moyorak.api.review.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 
+import com.moyorak.api.image.ImageStore;
 import com.moyorak.api.review.domain.FirstReviewPhotoPaths;
 import com.moyorak.api.review.dto.FirstReviewPhotoId;
 import com.moyorak.api.review.dto.FirstReviewPhotoPath;
@@ -24,13 +25,16 @@ class ReviewPhotoServiceTest {
 
     @Mock private ReviewPhotoRepository reviewPhotoRepository;
 
+    @Mock private ImageStore imageStore;
+
     @Nested
     @DisplayName("첫번째 리뷰 이미지 조회시")
     class FindFirstReviewPhoto {
 
         private final Long teamRestaurantId = 1L;
         private final Long photoId = 100L;
-        private final String photoPath = "s3://somepath/photo.jpg";
+        private final String photoPath = "dev/somepath/photo.jpg";
+        private final String photoUrl = "http://photo.jpg";
 
         @Test
         @DisplayName("이미지가 없는 경우 photoPath가 null인 결과를 반환한다")
@@ -56,7 +60,7 @@ class ReviewPhotoServiceTest {
         }
 
         @Test
-        @DisplayName("이미지가 존재하는 경우 photoPath를 포함한 결과를 반환한다")
+        @DisplayName("이미지가 존재하는 경우 photoURL를 포함한 결과를 반환한다")
         void hasPhoto() {
             // given
             final List<Long> teamRestaurantIds = List.of(teamRestaurantId);
@@ -69,13 +73,15 @@ class ReviewPhotoServiceTest {
             given(reviewPhotoRepository.findFirstReviewPhotoPathsByIdIn(List.of(photoId)))
                     .willReturn(List.of(new FirstReviewPhotoPath(teamRestaurantId, photoPath)));
 
+            given(imageStore.getUrlFromStringPath(photoPath)).willReturn(photoUrl);
+
             // when
             final FirstReviewPhotoPaths result =
                     reviewPhotoService.findFirstReviewPhotoPaths(teamRestaurantIds);
 
             // then\
             final String reviewPhotoPath = result.getPhotoPath(teamRestaurantId);
-            assertThat(reviewPhotoPath).isEqualTo(photoPath);
+            assertThat(reviewPhotoPath).isEqualTo(photoUrl);
         }
     }
 
