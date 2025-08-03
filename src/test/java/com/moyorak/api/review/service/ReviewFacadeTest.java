@@ -221,4 +221,75 @@ class ReviewFacadeTest {
         verify(teamRestaurantSearchService)
                 .updateAverageReviewScore(teamRestaurantId, teamRestaurant.getAverageReviewScore());
     }
+
+    @DisplayName("리뷰 삭제 성공 시, 상태 변경 및 평균값이 재계산되어야 한다")
+    @Test
+    void deleteReview_success() {
+        // given
+        final Long teamId = 1L;
+        final Long teamRestaurantId = 10L;
+        final Long reviewId = 1L;
+        final Long userId = 9L;
+
+        final int score = 4;
+        final int servingTime = 10;
+        final int waitingTime = 8;
+
+        final Review review =
+                ReviewFixture.fixture(
+                        reviewId,
+                        score,
+                        servingTime,
+                        waitingTime,
+                        "맛있어요!",
+                        userId,
+                        teamRestaurantId);
+
+        final Restaurant restaurant =
+                RestaurantFixture.fixture(
+                        "http://place.map.kakao.com/123456",
+                        "테스트 식당",
+                        "서울시 어딘가",
+                        "서울시 도로명 주소",
+                        RestaurantCategory.KOREAN,
+                        127.0,
+                        37.0);
+
+        final TeamRestaurant teamRestaurant =
+                TeamRestaurantFixture.fixture(
+                        teamRestaurantId, "맛집", 4.5, 5, 5, 5.5, 5, true, teamId, restaurant);
+
+        final List<ReviewPhoto> reviewPhotos =
+                List.of(
+                        ReviewPhotoFixture.fixture(1L, "s3://photo1.jpg", true, reviewId),
+                        ReviewPhotoFixture.fixture(2L, "s3://photo2.jpg", true, reviewId));
+
+        given(teamRestaurantService.getValidatedTeamRestaurant(teamId, teamRestaurantId))
+                .willReturn(teamRestaurant);
+        given(reviewService.getReview(reviewId)).willReturn(review);
+        given(reviewPhotoService.getReviewPhotosByReviewId(reviewId)).willReturn(reviewPhotos);
+
+        // when
+        reviewFacade.deleteReview(teamId, teamRestaurantId, reviewId, userId);
+
+        // then
+        verify(teamRestaurantService, times(2))
+                .getValidatedTeamRestaurant(teamId, teamRestaurantId);
+        verify(reviewService).getReview(reviewId);
+        verify(reviewPhotoService).getReviewPhotosByReviewId(reviewId);
+
+        verify(teamRestaurantService)
+                .updateAverageValue(
+                        eq(-1),
+                        eq(teamRestaurantId),
+                        eq(score),
+                        eq(0),
+                        eq(servingTime),
+                        eq(0),
+                        eq(waitingTime),
+                        eq(0));
+
+        verify(teamRestaurantSearchService)
+                .updateAverageReviewScore(teamRestaurantId, teamRestaurant.getAverageReviewScore());
+    }
 }
