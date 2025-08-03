@@ -165,4 +165,23 @@ public class TeamRestaurantService {
         teamRestaurantRepository.updateAverageValue(
                 teamRestaurantId, reviewScore, servingTime, waitingTime);
     }
+
+    @Transactional
+    public void recalculateStatsForUpdatedReview(
+            final Long teamRestaurantId,
+            final Integer previousReviewScore,
+            final Integer reviewScore,
+            final Integer previousServingTime,
+            final Integer servingTime,
+            final Integer previousWaitingTime,
+            final Integer waitingTime) {
+        teamRestaurantRepository.recalculateStatsForUpdatedReview(
+                teamRestaurantId,
+                previousReviewScore,
+                reviewScore,
+                previousServingTime,
+                servingTime,
+                previousWaitingTime,
+                waitingTime);
+    }
 }

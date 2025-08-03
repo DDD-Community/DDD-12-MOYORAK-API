@@ -1,7 +1,9 @@
 package com.moyorak.api.review.controller;
 
+import com.moyorak.api.auth.domain.UserPrincipal;
 import com.moyorak.api.review.dto.ReviewSaveRequest;
 import com.moyorak.api.review.dto.ReviewServingTimeResponse;
+import com.moyorak.api.review.dto.ReviewUpdateRequest;
 import com.moyorak.api.review.dto.ReviewWaitingTimeResponse;
 import com.moyorak.api.review.service.ReviewFacade;
 import com.moyorak.api.review.service.ReviewService;
@@ -12,10 +14,12 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -49,5 +53,17 @@ public class ReviewController {
             @PathVariable @Positive final Long teamRestaurantId,
             @RequestBody @Valid final ReviewSaveRequest reviewSaveRequest) {
         reviewFacade.createReview(teamId, teamRestaurantId, reviewSaveRequest);
+    }
+
+    @PutMapping("/teams/{teamId}/restaurants/{teamRestaurantId}/reviews/{reviewId}")
+    @Operation(summary = "리뷰 수정", description = "리뷰를 수정 합니다.")
+    public void updateReview(
+            @PathVariable @Positive final Long teamId,
+            @PathVariable @Positive final Long teamRestaurantId,
+            @PathVariable @Positive final Long reviewId,
+            @RequestBody @Valid final ReviewUpdateRequest reviewUpdateRequest,
+            @AuthenticationPrincipal final UserPrincipal userPrincipal) {
+        reviewFacade.updateReview(
+                teamId, teamRestaurantId, reviewId, reviewUpdateRequest, userPrincipal.getId());
     }
 }

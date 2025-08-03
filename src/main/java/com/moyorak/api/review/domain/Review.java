@@ -9,6 +9,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -53,6 +54,29 @@ public class Review extends AuditInformation {
     @Comment("식당 고유 ID")
     @Column(name = "team_restaurant_id", nullable = false)
     private Long teamRestaurantId;
+
+    public boolean isMine(final Long userId) {
+        return this.userId.equals(userId);
+    }
+
+    public void updateReview(
+            final String extraText,
+            final Integer servingTime,
+            final Integer waitingTime,
+            final Integer score) {
+        if (!Objects.equals(this.extraText, extraText)) {
+            this.extraText = extraText;
+        }
+        if (!Objects.equals(this.servingTime, servingTime)) {
+            this.servingTime = servingTime;
+        }
+        if (!Objects.equals(this.waitingTime, waitingTime)) {
+            this.waitingTime = waitingTime;
+        }
+        if (!Objects.equals(this.score, score)) {
+            this.score = score;
+        }
+    }
 
     @Builder(access = AccessLevel.PRIVATE)
     private Review(

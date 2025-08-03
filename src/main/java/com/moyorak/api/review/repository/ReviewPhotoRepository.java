@@ -78,4 +78,10 @@ public interface ReviewPhotoRepository extends JpaRepository<ReviewPhoto, Long> 
                             "ReviewPhotoRepository.findByReviewPhotosByReviewIds: 팀 맛집 ID 로 리뷰 사진 path 조회"))
     Page<PhotoPath> findPhotoPathsByTeamRestaurantId(
             @Param("teamRestaurantId") Long teamRestaurantId, Pageable pageable);
+
+    @QueryHints(
+            @QueryHint(
+                    name = "org.hibernate.comment",
+                    value = "ReviewPhotoRepository.findReviewPhotosByReviewId: 리뷰 ID 로 리뷰 사진 조회"))
+    List<ReviewPhoto> findReviewPhotosByReviewId(Long reviewId);
 }

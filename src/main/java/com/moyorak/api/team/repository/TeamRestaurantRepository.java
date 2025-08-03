@@ -78,4 +78,31 @@ WHERE tr.id IN :ids AND tr.use = :use
             @Param("reviewScore") Integer reviewScore,
             @Param("servingTime") Integer servingTime,
             @Param("waitingTime") Integer waitingTime);
+
+    @Modifying(clearAutomatically = true)
+    @Query(
+            """
+UPDATE TeamRestaurant tr
+SET
+    tr.totalReviewScore = tr.totalReviewScore -:previousReviewScore + :reviewScore,
+    tr.totalServingTime = tr.totalServingTime -:previousServingTime + :servingTime,
+    tr.totalWaitingTime = tr.totalWaitingTime -:previousWaitingTime + :waitingTime,
+    tr.averageReviewScore = ROUND((tr.totalReviewScore -:previousReviewScore + :reviewScore) * 1.0 / (tr.reviewCount), 1),
+    tr.averageServingTime = ROUND((tr.totalServingTime -:previousServingTime + :servingTime) * 1.0 / (tr.reviewCount), 1),
+    tr.averageWaitingTime = ROUND((tr.totalWaitingTime -:previousWaitingTime + :waitingTime) * 1.0 / (tr.reviewCount), 1)
+WHERE tr.id = :teamRestaurantId
+""")
+    @QueryHints(
+            @QueryHint(
+                    name = "org.hibernate.comment",
+                    value =
+                            "TeamRestaurantRepository.recalculateStatsForUpdatedReview : 팀 식당의 리뷰 갯수와 평균 값을 업데이트 합니다."))
+    void recalculateStatsForUpdatedReview(
+            @Param("teamRestaurantId") Long teamRestaurantId,
+            @Param("previousReviewScore") Integer previousReviewScore,
+            @Param("reviewScore") Integer reviewScore,
+            @Param("previousServingTime") Integer previousServingTime,
+            @Param("servingTime") Integer servingTime,
+            @Param("previousWaitingTime") Integer previousWaitingTime,
+            @Param("waitingTime") Integer waitingTime);
 }
