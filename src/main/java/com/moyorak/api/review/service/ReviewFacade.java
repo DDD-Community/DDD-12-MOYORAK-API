@@ -49,9 +49,13 @@ public class ReviewFacade {
 
         // 전체 리뷰 갯수 증가, 평균 값 업데이트
         teamRestaurantService.updateAverageValue(
+                1,
                 teamRestaurantId,
+                0,
                 review.getScore(),
+                0,
                 reviewServingTime.getServingTimeValue(),
+                0,
                 reviewWaitingTime.getWaitingTimeValue());
 
         // 업데이트 된 정보 조히 및 검색 테이블에 저장
@@ -99,7 +103,8 @@ public class ReviewFacade {
         // 새로운 리뷰 사진 등록
         reviewPhotoService.createReviewPhoto(newPhotoPaths, reviewId);
         // 팀 맛집 평균 값 수정
-        teamRestaurantService.recalculateStatsForUpdatedReview(
+        teamRestaurantService.updateAverageValue(
+                0,
                 teamRestaurantId,
                 review.getScore(),
                 reviewUpdateRequest.score(),
@@ -107,6 +112,45 @@ public class ReviewFacade {
                 reviewServingTime.getServingTimeValue(),
                 review.getWaitingTime(),
                 reviewWaitingTime.getWaitingTimeValue());
+
+        // 업데이트 된 정보 조히 및 검색 테이블에 저장
+        final TeamRestaurant updatedTeamRestaurant =
+                teamRestaurantService.getValidatedTeamRestaurant(teamId, teamRestaurantId);
+        teamRestaurantSearchService.updateAverageReviewScore(
+                teamRestaurantId, updatedTeamRestaurant.getAverageReviewScore());
+    }
+
+    @Transactional
+    public void deleteReview(
+            final Long teamId,
+            final Long teamRestaurantId,
+            final Long reviewId,
+            final Long userId) {
+        // 유효성 체크
+        teamRestaurantService.getValidatedTeamRestaurant(teamId, teamRestaurantId);
+        Review review = reviewService.getReview(reviewId);
+
+        if (!review.isMine(userId)) {
+            throw new BusinessException("본인 리뷰가 아닙니다.");
+        }
+        // 리뷰 상태값 변경
+        review.toggleUse();
+
+        // 리뷰 이미지 상태값 변경
+        final List<ReviewPhoto> reviewPhotoList =
+                reviewPhotoService.getReviewPhotosByReviewId(reviewId);
+        reviewPhotoList.forEach(ReviewPhoto::toggleUse);
+
+        // 팀 맛집 평균 값 수정
+        teamRestaurantService.updateAverageValue(
+                -1,
+                teamRestaurantId,
+                review.getScore(),
+                0,
+                review.getServingTime(),
+                0,
+                review.getWaitingTime(),
+                0);
 
         // 업데이트 된 정보 조히 및 검색 테이블에 저장
         final TeamRestaurant updatedTeamRestaurant =

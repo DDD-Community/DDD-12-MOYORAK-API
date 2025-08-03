@@ -109,7 +109,14 @@ class ReviewFacadeTest {
                 .createReviewPhoto(List.of("s3://photo1.jpg", "s3://photo2.jpg"), reviewId);
         verify(teamRestaurantService)
                 .updateAverageValue(
-                        teamRestaurantId, reviewScore, servingTimeValue, waitingTimeValue);
+                        1,
+                        teamRestaurantId,
+                        0,
+                        reviewScore,
+                        0,
+                        servingTimeValue,
+                        0,
+                        waitingTimeValue);
 
         verify(teamRestaurantService, times(2))
                 .getValidatedTeamRestaurant(teamId, teamRestaurantId); // 총 2회 호출됨
@@ -198,7 +205,8 @@ class ReviewFacadeTest {
 
         // 동작 확인
         verify(teamRestaurantService)
-                .recalculateStatsForUpdatedReview(
+                .updateAverageValue(
+                        eq(0),
                         eq(teamRestaurantId),
                         anyInt(),
                         eq(newScore),

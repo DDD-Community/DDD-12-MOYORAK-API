@@ -16,6 +16,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -65,5 +66,15 @@ public class ReviewController {
             @AuthenticationPrincipal final UserPrincipal userPrincipal) {
         reviewFacade.updateReview(
                 teamId, teamRestaurantId, reviewId, reviewUpdateRequest, userPrincipal.getId());
+    }
+
+    @DeleteMapping("/teams/{teamId}/restaurants/{teamRestaurantId}/reviews/{reviewId}")
+    @Operation(summary = "리뷰 수정", description = "리뷰를 수정 합니다.")
+    public void deleteReview(
+            @PathVariable @Positive final Long teamId,
+            @PathVariable @Positive final Long teamRestaurantId,
+            @PathVariable @Positive final Long reviewId,
+            @AuthenticationPrincipal final UserPrincipal userPrincipal) {
+        reviewFacade.deleteReview(teamId, teamRestaurantId, reviewId, userPrincipal.getId());
     }
 }

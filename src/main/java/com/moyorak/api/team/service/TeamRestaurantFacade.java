@@ -113,9 +113,13 @@ public class TeamRestaurantFacade {
 
         // 전체 리뷰 갯수 증가, 평균 값 업데이트
         teamRestaurantService.updateAverageValue(
+                1,
                 teamRestaurantId,
+                0,
                 review.getScore(),
+                0,
                 reviewServingTime.getServingTimeValue(),
+                0,
                 reviewWaitingTime.getWaitingTimeValue());
 
         // 검색에 리뷰 평균 값 업데이트

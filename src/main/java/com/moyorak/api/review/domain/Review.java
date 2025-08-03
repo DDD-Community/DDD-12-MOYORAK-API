@@ -59,6 +59,10 @@ public class Review extends AuditInformation {
         return this.userId.equals(userId);
     }
 
+    public void toggleUse() {
+        this.use = !this.use;
+    }
+
     public void updateReview(
             final String extraText,
             final Integer servingTime,

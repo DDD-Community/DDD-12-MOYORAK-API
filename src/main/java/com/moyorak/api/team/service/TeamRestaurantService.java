@@ -158,16 +158,7 @@ public class TeamRestaurantService {
 
     @Transactional
     public void updateAverageValue(
-            final Long teamRestaurantId,
-            final Integer reviewScore,
-            final Integer servingTime,
-            final Integer waitingTime) {
-        teamRestaurantRepository.updateAverageValue(
-                teamRestaurantId, reviewScore, servingTime, waitingTime);
-    }
-
-    @Transactional
-    public void recalculateStatsForUpdatedReview(
+            final Integer reviewCount,
             final Long teamRestaurantId,
             final Integer previousReviewScore,
             final Integer reviewScore,
@@ -175,7 +166,8 @@ public class TeamRestaurantService {
             final Integer servingTime,
             final Integer previousWaitingTime,
             final Integer waitingTime) {
-        teamRestaurantRepository.recalculateStatsForUpdatedReview(
+        teamRestaurantRepository.updateAverageValue(
+                reviewCount,
                 teamRestaurantId,
                 previousReviewScore,
                 reviewScore,
