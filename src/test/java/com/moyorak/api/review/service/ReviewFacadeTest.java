@@ -8,12 +8,16 @@ import com.moyorak.api.restaurant.domain.RestaurantCategory;
 import com.moyorak.api.restaurant.domain.RestaurantFixture;
 import com.moyorak.api.review.domain.Review;
 import com.moyorak.api.review.domain.ReviewFixture;
+import com.moyorak.api.review.domain.ReviewPhoto;
+import com.moyorak.api.review.domain.ReviewPhotoFixture;
 import com.moyorak.api.review.domain.ReviewServingTime;
 import com.moyorak.api.review.domain.ReviewServingTimeFixture;
 import com.moyorak.api.review.domain.ReviewWaitingTime;
 import com.moyorak.api.review.domain.ReviewWaitingTimeFixture;
 import com.moyorak.api.review.dto.ReviewSaveRequest;
 import com.moyorak.api.review.dto.ReviewSaveRequestFixture;
+import com.moyorak.api.review.dto.ReviewUpdateRequest;
+import com.moyorak.api.review.dto.ReviewUpdateRequestFixture;
 import com.moyorak.api.team.domain.TeamRestaurant;
 import com.moyorak.api.team.domain.TeamRestaurantFixture;
 import com.moyorak.api.team.service.TeamRestaurantSearchService;
@@ -109,6 +113,102 @@ class ReviewFacadeTest {
 
         verify(teamRestaurantService, times(2))
                 .getValidatedTeamRestaurant(teamId, teamRestaurantId); // 총 2회 호출됨
+
+        verify(teamRestaurantSearchService)
+                .updateAverageReviewScore(teamRestaurantId, teamRestaurant.getAverageReviewScore());
+    }
+
+    @Test
+    @DisplayName("리뷰 수정 성공 시, 사진 추가 및 평균값이 재계산되어야 한다")
+    void updateReview_success() {
+        // given
+        final Long teamId = 1L;
+        final Long teamRestaurantId = 10L;
+        final Long reviewId = 100L;
+        final Long newReviewServingTimeId = 100L;
+        final Long newReviewWaitingTimeId = 100L;
+        final Long userId = 999L;
+
+        final int oldScore = 3;
+        final int newScore = 4;
+
+        final int oldServingTime = 5;
+        final int newServingTime = 10;
+
+        final int oldWaitingTime = 7;
+        final int newWaitingTime = 8;
+
+        final ReviewUpdateRequest request =
+                ReviewUpdateRequestFixture.fixture(
+                        newReviewServingTimeId,
+                        newReviewWaitingTimeId,
+                        newScore,
+                        List.of("s3://new1.jpg", "s3://new2.jpg"),
+                        "업데이트 내용");
+
+        final Review review =
+                ReviewFixture.fixture(
+                        reviewId,
+                        oldScore,
+                        oldServingTime,
+                        oldWaitingTime,
+                        "맛있다",
+                        userId,
+                        teamRestaurantId);
+
+        final ReviewServingTime servingTime =
+                ReviewServingTimeFixture.fixture(
+                        newReviewServingTimeId, "10~15분", true, newServingTime);
+        final ReviewWaitingTime waitingTime =
+                ReviewWaitingTimeFixture.fixture(
+                        newReviewWaitingTimeId, "5~10분", true, newWaitingTime);
+
+        final List<ReviewPhoto> existingPhotos =
+                List.of(
+                        ReviewPhotoFixture.fixture(1L, "s3://old1.jpg", true, reviewId),
+                        ReviewPhotoFixture.fixture(2L, "s3://old2.jpg", true, reviewId));
+        final Restaurant restaurant =
+                RestaurantFixture.fixture(
+                        "http://place.map.kakao.com/123456",
+                        "우가우가 차차차",
+                        "우가우가시 차차차동 24번길",
+                        "우가우가 차차로 123",
+                        RestaurantCategory.KOREAN,
+                        127.043616,
+                        37.503095);
+        final TeamRestaurant teamRestaurant =
+                TeamRestaurantFixture.fixture(
+                        teamRestaurantId, "맛있네요", 4.5, 5, 5, 5.5, 5, true, teamId, restaurant);
+
+        given(teamRestaurantService.getValidatedTeamRestaurant(teamId, teamRestaurantId))
+                .willReturn(teamRestaurant);
+        given(reviewService.getReview(reviewId)).willReturn(review);
+        given(reviewService.getReviewServingTime(request.servingTimeId())).willReturn(servingTime);
+        given(reviewService.getReviewWaitingTime(request.waitingTimeId())).willReturn(waitingTime);
+        given(reviewPhotoService.getReviewPhotosByReviewId(reviewId)).willReturn(existingPhotos);
+
+        // when
+        reviewFacade.updateReview(teamId, teamRestaurantId, reviewId, request, userId);
+
+        // then
+        verify(reviewService).getReview(reviewId);
+
+        verify(reviewPhotoService)
+                .createReviewPhoto(List.of("s3://new1.jpg", "s3://new2.jpg"), reviewId);
+
+        // 동작 확인
+        verify(teamRestaurantService)
+                .recalculateStatsForUpdatedReview(
+                        eq(teamRestaurantId),
+                        anyInt(),
+                        eq(newScore),
+                        anyInt(),
+                        eq(newServingTime),
+                        anyInt(),
+                        eq(newWaitingTime));
+
+        verify(teamRestaurantService, times(2))
+                .getValidatedTeamRestaurant(teamId, teamRestaurantId);
 
         verify(teamRestaurantSearchService)
                 .updateAverageReviewScore(teamRestaurantId, teamRestaurant.getAverageReviewScore());
