@@ -30,9 +30,15 @@ public class ReviewPhotoService {
         final List<Long> reviewPhotoIds =
                 firstReviewPhotoIds.stream().map(FirstReviewPhotoId::reviewPhotoId).toList();
 
-        // 포토 ID -> 포토 Path
+        // 포토 ID -> 포토 Path -> url로 변경
         final List<FirstReviewPhotoPath> firstReviewPhotoPaths =
-                reviewPhotoRepository.findFirstReviewPhotoPathsByIdIn(reviewPhotoIds);
+                reviewPhotoRepository.findFirstReviewPhotoPathsByIdIn(reviewPhotoIds).stream()
+                        .map(
+                                path ->
+                                        new FirstReviewPhotoPath(
+                                                path.teamRestaurantId(),
+                                                imageStore.getUrlFromStringPath(path.path())))
+                        .toList();
 
         return FirstReviewPhotoPaths.create(teamRestaurantIds, firstReviewPhotoPaths);
     }
