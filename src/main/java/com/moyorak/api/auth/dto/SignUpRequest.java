@@ -13,10 +13,7 @@ public record SignUpRequest(
         @NotBlank @Schema(description = "회원 이름", example = "홍길동") String name,
         @NotNull @Schema(description = "회원 성별", example = "FEMALE") Gender gender,
         @NotNull @Schema(description = "회원 생일", example = "1990-11-07") LocalDate birthday,
-        @NotNull @Schema(description = "프로필 이미지 URL", example = "http://...") String profileImage
-
-        // TODO: 알러지, 비선호, 회사 정보, 팀 정보가 개발되면 추가가 필요합니다.
-        ) {
+        @NotNull @Schema(description = "프로필 이미지 URL", example = "http://...") String profileImage) {
 
     public User toEntity() {
         return User.registeredUser(email, name, gender, birthday, profileImage);
