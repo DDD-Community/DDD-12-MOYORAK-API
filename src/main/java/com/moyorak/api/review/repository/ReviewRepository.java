@@ -3,6 +3,7 @@ package com.moyorak.api.review.repository;
 import com.moyorak.api.review.domain.Review;
 import com.moyorak.api.review.dto.ReviewWithUserProjection;
 import jakarta.persistence.QueryHint;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -28,4 +29,10 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 """)
     Page<ReviewWithUserProjection> findReviewWithUserByTeamRestaurantId(
             @Param("teamRestaurantId") Long teamRestaurantId, Pageable pageable);
+
+    @QueryHints(
+            @QueryHint(
+                    name = "org.hibernate.comment",
+                    value = "ReviewRepository.findByIdAndUseIsTrue: ID 로 리뷰 조회"))
+    Optional<Review> findByIdAndUseIsTrue(Long id);
 }

@@ -90,4 +90,13 @@ class TeamUserController {
         teamUserManagementService.updateRole(
                 userPrincipal.getId(), teamId, teamMemberId, request.role());
     }
+
+    @DeleteMapping("/teams/{teamId}/team-members/{teamMemberId}")
+    @Operation(summary = "팀 멤버 강퇴", description = "팀 멤버를 강퇴합니다.")
+    public void expel(
+            @PathVariable @Positive final Long teamId,
+            @PathVariable @Positive final Long teamMemberId,
+            @AuthenticationPrincipal final UserPrincipal userPrincipal) {
+        teamUserManagementService.expel(userPrincipal.getId(), teamId, teamMemberId);
+    }
 }

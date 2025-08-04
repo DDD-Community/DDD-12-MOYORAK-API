@@ -113,6 +113,11 @@ public class TeamUser extends AuditInformation {
         use = false;
     }
 
+    public void expel() {
+        status = TeamUserStatus.WITHDRAWN;
+        use = false;
+    }
+
     public void changeRole(TeamRole role) {
         this.role = role;
     }

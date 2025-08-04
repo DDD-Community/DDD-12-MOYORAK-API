@@ -50,7 +50,7 @@ public class TeamUserManagementService {
     public ListResponse<TeamUserResponse> getTeamUsers(
             final Long userId, final Long teamId, final TeamUserListRequest request) {
 
-        TeamUser teamUserAdmin = getTeamUser(userId, teamId);
+        final TeamUser teamUserAdmin = getTeamUser(userId, teamId);
 
         validateApprovedTeamUserAdmin(teamUserAdmin);
 
@@ -95,6 +95,27 @@ public class TeamUserManagementService {
         }
 
         teamUser.reject();
+    }
+
+    @Transactional
+    public void expel(final Long userId, final Long teamId, final Long targetTeamUserId) {
+        final TeamUser teamUserAdmin = getTeamUser(userId, teamId);
+        validateApprovedTeamUserAdmin(teamUserAdmin);
+
+        if (Objects.equals(teamUserAdmin.getId(), targetTeamUserId)) {
+            throw new BusinessException("본인을 강퇴할 수 없습니다.");
+        }
+
+        final TeamUser teamUser =
+                teamUserRepository
+                        .findByIdAndUseAndStatus(targetTeamUserId, true, TeamUserStatus.APPROVED)
+                        .orElseThrow(TeamUserNotFoundException::new);
+
+        if (!teamUser.isTeam(teamId)) {
+            throw new NotTeamUserException();
+        }
+
+        teamUser.expel();
     }
 
     private TeamUser getTeamUser(final Long userId, final Long teamId) {
