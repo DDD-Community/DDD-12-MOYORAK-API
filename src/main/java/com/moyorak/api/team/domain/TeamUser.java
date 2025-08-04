@@ -94,8 +94,13 @@ public class TeamUser extends AuditInformation {
         return Objects.equals(team.getId(), teamId);
     }
 
-    public void changeStatus(TeamUserStatus status) {
-        this.status = status;
+    public void approve() {
+        this.status = TeamUserStatus.APPROVED;
+    }
+
+    public void reject() {
+        status = TeamUserStatus.REJECTED;
+        use = false;
     }
 
     public void restore() {

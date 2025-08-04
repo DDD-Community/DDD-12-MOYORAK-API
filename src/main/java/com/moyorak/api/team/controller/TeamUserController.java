@@ -71,6 +71,15 @@ class TeamUserController {
         teamUserManagementService.approveRequestJoin(userPrincipal.getId(), teamId, teamMemberId);
     }
 
+    @PutMapping("/teams/{teamId}/team-members/{teamMemberId}/reject")
+    @Operation(summary = "팀 가입 신청을 거절합니다.", description = "팀 가입 신청을 거절 합니다.")
+    public void rejectRequestJoin(
+            @PathVariable @Positive final Long teamId,
+            @PathVariable @Positive final Long teamMemberId,
+            @AuthenticationPrincipal final UserPrincipal userPrincipal) {
+        teamUserManagementService.rejectRequestJoin(userPrincipal.getId(), teamId, teamMemberId);
+    }
+
     @PutMapping("/teams/{teamId}/team-members/{teamMemberId}/role")
     @Operation(summary = "팀 멤버 역할 변경", description = "팀 멤버 역할을 변경합니다.")
     public void updateRole(
