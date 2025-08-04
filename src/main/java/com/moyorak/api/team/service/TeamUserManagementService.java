@@ -76,7 +76,25 @@ public class TeamUserManagementService {
             throw new BusinessException("해당 팀의 팀원이 아닙니다.");
         }
 
-        teamUser.changeStatus(TeamUserStatus.APPROVED);
+        teamUser.approve();
+    }
+
+    @Transactional
+    public void rejectRequestJoin(final Long userId, final Long teamId, final Long teamMemberId) {
+
+        final TeamUser teamUserAdmin = getTeamUser(userId, teamId);
+
+        validateApprovedTeamUserAdmin(teamUserAdmin);
+
+        final TeamUser teamUser =
+                teamUserRepository
+                        .findByIdAndUseAndStatus(teamMemberId, true, TeamUserStatus.PENDING)
+                        .orElseThrow(TeamUserNotFoundException::new);
+        if (!teamUser.isTeam(teamId)) {
+            throw new BusinessException("해당 팀의 팀원이 아닙니다.");
+        }
+
+        teamUser.reject();
     }
 
     @Transactional

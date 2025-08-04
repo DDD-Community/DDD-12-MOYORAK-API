@@ -7,6 +7,7 @@ import lombok.Getter;
 public enum TeamUserStatus implements CommonEnum {
     PENDING("대기"),
     APPROVED("가입"),
+    REJECTED("거절"),
     WITHDRAWN("탈퇴");
 
     private final String description;
