@@ -49,6 +49,11 @@ public class ReviewPhotoService {
     }
 
     @Transactional(readOnly = true)
+    public List<ReviewPhoto> getReviewPhotosByReviewId(final Long reviewId) {
+        return reviewPhotoRepository.findReviewPhotosByReviewIdAndUseIsTrue(reviewId);
+    }
+
+    @Transactional(readOnly = true)
     public Page<PhotoPath> getAllReviewPhotoPathsByTeamRestaurantId(
             Long teamRestaurantId, Pageable pageable) {
         return reviewPhotoRepository

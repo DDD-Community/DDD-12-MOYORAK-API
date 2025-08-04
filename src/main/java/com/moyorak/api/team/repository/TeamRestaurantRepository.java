@@ -57,16 +57,16 @@ WHERE tr.id IN :ids AND tr.use = :use
     @Modifying(clearAutomatically = true)
     @Query(
             """
-    UPDATE TeamRestaurant tr
-    SET
-        tr.reviewCount = tr.reviewCount + 1,
-        tr.totalReviewScore = tr.totalReviewScore + :reviewScore,
-        tr.totalServingTime = tr.totalServingTime + :servingTime,
-        tr.totalWaitingTime = tr.totalWaitingTime + :waitingTime,
-        tr.averageReviewScore = ROUND((tr.totalReviewScore + :reviewScore) * 1.0 / (tr.reviewCount + 1), 1),
-        tr.averageServingTime = ROUND((tr.totalServingTime + :servingTime) * 1.0 / (tr.reviewCount + 1), 1),
-        tr.averageWaitingTime = ROUND((tr.totalWaitingTime + :waitingTime) * 1.0 / (tr.reviewCount + 1), 1)
-    WHERE tr.id = :teamRestaurantId
+UPDATE TeamRestaurant tr
+SET
+    tr.reviewCount = tr.reviewCount + :reviewCount,
+    tr.totalReviewScore = tr.totalReviewScore -:previousReviewScore + :reviewScore,
+    tr.totalServingTime = tr.totalServingTime -:previousServingTime + :servingTime,
+    tr.totalWaitingTime = tr.totalWaitingTime -:previousWaitingTime + :waitingTime,
+    tr.averageReviewScore = ROUND((tr.totalReviewScore -:previousReviewScore + :reviewScore) * 1.0 / (tr.reviewCount + :reviewCount), 1),
+    tr.averageServingTime = ROUND((tr.totalServingTime -:previousServingTime + :servingTime) * 1.0 / (tr.reviewCount + :reviewCount), 1),
+    tr.averageWaitingTime = ROUND((tr.totalWaitingTime -:previousWaitingTime + :waitingTime) * 1.0 / (tr.reviewCount + :reviewCount), 1)
+WHERE tr.id = :teamRestaurantId
 """)
     @QueryHints(
             @QueryHint(
@@ -74,8 +74,12 @@ WHERE tr.id IN :ids AND tr.use = :use
                     value =
                             "TeamRestaurantRepository.updateAverageValue : 팀 식당의 리뷰 갯수와 평균 값을 업데이트 합니다."))
     void updateAverageValue(
+            @Param("reviewCount") Integer reviewCount,
             @Param("teamRestaurantId") Long teamRestaurantId,
+            @Param("previousReviewScore") Integer previousReviewScore,
             @Param("reviewScore") Integer reviewScore,
+            @Param("previousServingTime") Integer previousServingTime,
             @Param("servingTime") Integer servingTime,
+            @Param("previousWaitingTime") Integer previousWaitingTime,
             @Param("waitingTime") Integer waitingTime);
 }
