@@ -328,4 +328,163 @@ class TeamUserManagementServiceTest {
             assertThat(pendingUser.getStatus()).isEqualTo(TeamUserStatus.APPROVED);
         }
     }
+
+    @Nested
+    @DisplayName("expel 호출 시")
+    class Expel {
+
+        final Long teamId = 1L;
+        final Long requesterUserId = 3L;
+        final Long targetTeamUserId = 20L;
+
+        @Test
+        @DisplayName("요청한 사용자가 팀원이 아닌 경우 TeamUserNotFoundException 발생")
+        void adminNotTeamUser() {
+            // given
+            given(teamUserRepository.findByUserIdAndTeamIdAndUse(requesterUserId, teamId, true))
+                    .willReturn(Optional.empty());
+
+            // when & then
+            assertThatThrownBy(
+                            () ->
+                                    teamUserManagementService.expel(
+                                            requesterUserId, teamId, targetTeamUserId))
+                    .isInstanceOf(TeamUserNotFoundException.class)
+                    .hasMessage("팀 멤버가 아닙니다.");
+        }
+
+        @Test
+        @DisplayName("요청한 사용자가 APPROVED 상태가 아닌 경우 TeamUserNotFoundException 발생")
+        void adminNotApproved() {
+            // given
+            final TeamUser withdrawnAdmin =
+                    TeamUserFixture.fixture(TeamUserStatus.WITHDRAWN, TeamRole.TEAM_ADMIN, true);
+
+            given(teamUserRepository.findByUserIdAndTeamIdAndUse(requesterUserId, teamId, true))
+                    .willReturn(Optional.of(withdrawnAdmin));
+
+            // when & then
+            assertThatThrownBy(
+                            () ->
+                                    teamUserManagementService.expel(
+                                            requesterUserId, teamId, targetTeamUserId))
+                    .isInstanceOf(TeamUserNotFoundException.class)
+                    .hasMessage("팀 멤버가 아닙니다.");
+        }
+
+        @Test
+        @DisplayName("요청한 사용자가 관리자 권한이 아닌 경우 NotTeamAdminException 발생")
+        void notAdmin() {
+            // given
+            final TeamUser teamMember =
+                    TeamUserFixture.fixture(TeamUserStatus.APPROVED, TeamRole.TEAM_MEMBER, true);
+
+            given(teamUserRepository.findByUserIdAndTeamIdAndUse(requesterUserId, teamId, true))
+                    .willReturn(Optional.of(teamMember));
+
+            // when & then
+            assertThatThrownBy(
+                            () ->
+                                    teamUserManagementService.expel(
+                                            requesterUserId, teamId, targetTeamUserId))
+                    .isInstanceOf(NotTeamAdminException.class)
+                    .hasMessage("팀 관리자가 아닙니다.");
+        }
+
+        @Test
+        @DisplayName("자기 자신을 강퇴하려는 경우 BusinessException 발생")
+        void expelSelf() {
+            // given
+            final Team team = TeamFixture.fixture(teamId, true);
+            final TeamUser admin =
+                    TeamUserFixture.fixture(
+                            targetTeamUserId,
+                            team,
+                            requesterUserId,
+                            TeamUserStatus.APPROVED,
+                            TeamRole.TEAM_ADMIN,
+                            true);
+
+            given(teamUserRepository.findByUserIdAndTeamIdAndUse(requesterUserId, teamId, true))
+                    .willReturn(Optional.of(admin));
+
+            // when & then
+            assertThatThrownBy(
+                            () ->
+                                    teamUserManagementService.expel(
+                                            requesterUserId, teamId, targetTeamUserId))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("본인을 강퇴할 수 없습니다.");
+        }
+
+        @Test
+        @DisplayName("대상 유저가 존재하지 않으면 NotTeamUserException 발생")
+        void targetNotFound() {
+            // given
+            final Team team = TeamFixture.fixture(teamId, true);
+            final TeamUser admin =
+                    TeamUserFixture.fixture(
+                            1L,
+                            team,
+                            requesterUserId,
+                            TeamUserStatus.APPROVED,
+                            TeamRole.TEAM_ADMIN,
+                            true);
+
+            given(teamUserRepository.findByUserIdAndTeamIdAndUse(requesterUserId, teamId, true))
+                    .willReturn(Optional.of(admin));
+            given(
+                            teamUserRepository.findByIdAndUseAndStatus(
+                                    targetTeamUserId, true, TeamUserStatus.APPROVED))
+                    .willReturn(Optional.empty());
+
+            // when & then
+            assertThatThrownBy(
+                            () ->
+                                    teamUserManagementService.expel(
+                                            requesterUserId, teamId, targetTeamUserId))
+                    .isInstanceOf(TeamUserNotFoundException.class)
+                    .hasMessage("팀 멤버가 아닙니다.");
+        }
+
+        @Test
+        @DisplayName("대상 유저가 다른 팀 소속일 경우 BusinessException 발생")
+        void targetNotSameTeam() {
+            // given
+            final Team team = TeamFixture.fixture(teamId, true);
+            final TeamUser admin =
+                    TeamUserFixture.fixture(
+                            1L,
+                            team,
+                            requesterUserId,
+                            TeamUserStatus.APPROVED,
+                            TeamRole.TEAM_ADMIN,
+                            true);
+
+            final Team otherTeam = TeamFixture.fixture(99L, true);
+            final TeamUser target =
+                    TeamUserFixture.fixture(
+                            targetTeamUserId,
+                            otherTeam,
+                            requesterUserId,
+                            TeamUserStatus.APPROVED,
+                            TeamRole.TEAM_MEMBER,
+                            true);
+
+            given(teamUserRepository.findByUserIdAndTeamIdAndUse(requesterUserId, teamId, true))
+                    .willReturn(Optional.of(admin));
+            given(
+                            teamUserRepository.findByIdAndUseAndStatus(
+                                    targetTeamUserId, true, TeamUserStatus.APPROVED))
+                    .willReturn(Optional.of(target));
+
+            // when & then
+            assertThatThrownBy(
+                            () ->
+                                    teamUserManagementService.expel(
+                                            requesterUserId, teamId, targetTeamUserId))
+                    .isInstanceOf(NotTeamUserException.class)
+                    .hasMessage("해당 팀의 팀원이 아닙니다.");
+        }
+    }
 }
