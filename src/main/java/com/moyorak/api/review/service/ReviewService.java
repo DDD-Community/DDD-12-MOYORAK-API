@@ -86,7 +86,7 @@ public class ReviewService {
     @Transactional(readOnly = true)
     public Review getReview(final Long id) {
         return reviewRepository
-                .findById(id)
+                .findByIdAndUseIsTrue(id)
                 .orElseThrow(() -> new BusinessException("리뷰가 존재하지 않습니다."));
     }
 }

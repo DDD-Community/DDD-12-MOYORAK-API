@@ -44,7 +44,7 @@ public class ReviewPhotoService {
 
     @Transactional(readOnly = true)
     public List<ReviewPhoto> getReviewPhotosByReviewId(final Long reviewId) {
-        return reviewPhotoRepository.findReviewPhotosByReviewId(reviewId);
+        return reviewPhotoRepository.findReviewPhotosByReviewIdAndUseIsTrue(reviewId);
     }
 
     @Transactional(readOnly = true)

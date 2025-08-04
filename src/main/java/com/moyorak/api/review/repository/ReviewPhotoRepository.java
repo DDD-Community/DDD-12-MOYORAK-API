@@ -82,6 +82,7 @@ public interface ReviewPhotoRepository extends JpaRepository<ReviewPhoto, Long> 
     @QueryHints(
             @QueryHint(
                     name = "org.hibernate.comment",
-                    value = "ReviewPhotoRepository.findReviewPhotosByReviewId: 리뷰 ID 로 리뷰 사진 조회"))
-    List<ReviewPhoto> findReviewPhotosByReviewId(Long reviewId);
+                    value =
+                            "ReviewPhotoRepository.findReviewPhotosByReviewIdAndUseIsTrue: 리뷰 ID 로 리뷰 사진 조회"))
+    List<ReviewPhoto> findReviewPhotosByReviewIdAndUseIsTrue(Long reviewId);
 }

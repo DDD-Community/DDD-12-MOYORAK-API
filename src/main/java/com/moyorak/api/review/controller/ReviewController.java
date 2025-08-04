@@ -69,7 +69,7 @@ public class ReviewController {
     }
 
     @DeleteMapping("/teams/{teamId}/restaurants/{teamRestaurantId}/reviews/{reviewId}")
-    @Operation(summary = "리뷰 수정", description = "리뷰를 수정 합니다.")
+    @Operation(summary = "리뷰 삭제", description = "리뷰를 삭제 합니다.")
     public void deleteReview(
             @PathVariable @Positive final Long teamId,
             @PathVariable @Positive final Long teamRestaurantId,
