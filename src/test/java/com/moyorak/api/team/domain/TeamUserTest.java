@@ -93,4 +93,24 @@ class TeamUserTest {
             assertThat(user.getStatus()).isEqualTo(TeamUserStatus.WITHDRAWN);
         }
     }
+
+    @Nested
+    @DisplayName("expel 메서드는")
+    class Expel {
+
+        @Test
+        @DisplayName("status를 WITHDRAWN으로, use를 false로 변경한다.")
+        void updateStatusAndUse() {
+            // given
+            final TeamUser user =
+                    TeamUserFixture.fixture(TeamUserStatus.APPROVED, TeamRole.TEAM_ADMIN, true);
+
+            // when
+            user.expel();
+
+            // then
+            assertThat(user.isUse()).isFalse();
+            assertThat(user.getStatus()).isEqualTo(TeamUserStatus.WITHDRAWN);
+        }
+    }
 }
