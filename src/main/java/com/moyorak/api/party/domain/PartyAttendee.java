@@ -24,10 +24,10 @@ public class PartyAttendee extends AuditInformation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Comment("참가 여부")
+    @Comment("사용 여부")
     @Convert(converter = BooleanYnConverter.class)
-    @Column(name = "attending_yn", nullable = false, columnDefinition = "char(1)")
-    private boolean attending = true;
+    @Column(name = "use_yn", nullable = false, columnDefinition = "char(1)")
+    private boolean use = true;
 
     @Comment("팀 고유 ID")
     @Column(name = "party_id", nullable = false, columnDefinition = "bigint")
