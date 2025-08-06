@@ -29,7 +29,7 @@ public class PartyAttendee extends AuditInformation {
     @Column(name = "use_yn", nullable = false, columnDefinition = "char(1)")
     private boolean use = true;
 
-    @Comment("팀 고유 ID")
+    @Comment("파티 고유 ID")
     @Column(name = "party_id", nullable = false, columnDefinition = "bigint")
     private Long partyId;
 
