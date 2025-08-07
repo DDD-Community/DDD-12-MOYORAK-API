@@ -2,6 +2,7 @@ package com.moyorak.api.company.service;
 
 import com.moyorak.api.company.domain.Company;
 import com.moyorak.api.company.domain.CompanySearch;
+import com.moyorak.api.company.dto.CompanyPositionResponse;
 import com.moyorak.api.company.dto.CompanySaveRequest;
 import com.moyorak.api.company.dto.CompanySearchListResponse;
 import com.moyorak.api.company.dto.CompanySearchRequest;
@@ -45,5 +46,14 @@ public class CompanyService {
                 companySearchRepository.findByConditions(request.companyId(), request.name());
 
         return CompanySearchListResponse.from(companySearches);
+    }
+
+    @Transactional(readOnly = true)
+    public CompanyPositionResponse getCompanyPosition(final Long companyId) {
+        final Company company =
+                companyRepository
+                        .findByIdAndUseTrue(companyId)
+                        .orElseThrow(() -> new BusinessException("회사가 존재하지 않습니다."));
+        return CompanyPositionResponse.from(company);
     }
 }

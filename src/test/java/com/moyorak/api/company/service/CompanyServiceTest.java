@@ -129,4 +129,23 @@ class CompanyServiceTest {
                     });
         }
     }
+
+    @Nested
+    @DisplayName("회사 위치(위도, 경도) 조회 시")
+    class GetPosition {
+
+        final Long companyId = 1L;
+
+        @Test
+        @DisplayName("회사가 존재하지 않으면 예외를 반환한다.")
+        void noCompany() {
+            // given
+            given(companyRepository.findByIdAndUseTrue(companyId)).willReturn(Optional.empty());
+
+            // when & then
+            assertThatThrownBy(() -> companyService.getCompanyPosition(companyId))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("회사가 존재하지 않습니다.");
+        }
+    }
 }
