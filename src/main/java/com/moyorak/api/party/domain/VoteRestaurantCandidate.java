@@ -25,9 +25,9 @@ public class VoteRestaurantCandidate extends AuditInformation {
     @Column(name = "id", nullable = false, columnDefinition = "bigint")
     private Long id;
 
-    @Comment("식당 고유 ID")
-    @Column(name = "restaurant_id", nullable = false, columnDefinition = "bigint")
-    private Long restaurantId;
+    @Comment("팀 맛집 고유 ID")
+    @Column(name = "team_restaurant_id", nullable = false, columnDefinition = "bigint")
+    private Long teamRestaurantId;
 
     @Comment("투표 고유 ID")
     @Column(name = "vote_id", nullable = false, columnDefinition = "bigint")
