@@ -1,6 +1,5 @@
 package com.moyorak.api.party.service;
 
-import com.moyorak.api.party.domain.Party;
 import com.moyorak.api.party.dto.PartyGeneralInfoProjection;
 import com.moyorak.api.party.repository.PartyRepository;
 import java.util.List;
@@ -12,10 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class PartyService {
     private final PartyRepository partyRepository;
-
-    public List<Party> findByTeamId(final Long teamId) {
-        return partyRepository.findAllByTeamIdAndUseIsTrue(teamId);
-    }
 
     @Transactional(readOnly = true)
     public List<PartyGeneralInfoProjection> findPartyGeneralInfos(Long teamId) {
