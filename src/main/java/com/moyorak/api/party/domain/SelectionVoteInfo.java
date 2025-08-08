@@ -26,6 +26,10 @@ public class SelectionVoteInfo extends AuditInformation {
     @Column(name = "id", nullable = false, columnDefinition = "bigint")
     private Long id;
 
+    @Comment("투표 시작 시간")
+    @Column(name = "start_date", nullable = false)
+    private LocalDateTime startDate;
+
     @Comment("투표 마감 시간")
     @Column(name = "expired_date", nullable = false)
     private LocalDateTime expiredDate;
