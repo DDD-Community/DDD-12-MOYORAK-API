@@ -1,6 +1,6 @@
 package com.moyorak.api.party.service;
 
-import com.moyorak.api.party.domain.PartyAttendee;
+import com.moyorak.api.party.dto.PartyAttendeeWithUserProfile;
 import com.moyorak.api.party.repository.PartyAttendeeRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +13,8 @@ public class PartyAttendeeService {
     private final PartyAttendeeRepository partyAttendeeRepository;
 
     @Transactional(readOnly = true)
-    public List<PartyAttendee> findByPartyIds(List<Long> partyIds) {
-        return partyAttendeeRepository.findByPartyIdIn(partyIds);
+    public List<PartyAttendeeWithUserProfile> findPartyAttendeeWithUserByPartyIds(
+            List<Long> partyIds) {
+        return partyAttendeeRepository.findPartyAttendeeWithUser(partyIds);
     }
 }

@@ -1,6 +1,6 @@
 package com.moyorak.api.party.service;
 
-import com.moyorak.api.party.domain.PartyAttendee;
+import com.moyorak.api.party.dto.PartyAttendeeWithUserProfile;
 import com.moyorak.api.party.dto.PartyGeneralInfoProjection;
 import com.moyorak.api.party.dto.PartyListRequest;
 import com.moyorak.api.party.dto.PartyListResponse;
@@ -29,7 +29,8 @@ public class PartyFacade {
         final List<PartyRestaurantProjection> partyRestaurantProjections =
                 partyRestaurantService.findPartyRestaurantInfo(partyIds);
 
-        final List<PartyAttendee> partyAttendees = partyAttendeeService.findByPartyIds(partyIds);
+        final List<PartyAttendeeWithUserProfile> partyAttendees =
+                partyAttendeeService.findPartyAttendeeWithUserByPartyIds(partyIds);
 
         final PartyListStore partyListStore =
                 PartyListStore.create(partyRestaurantProjections, partyAttendees, userId);

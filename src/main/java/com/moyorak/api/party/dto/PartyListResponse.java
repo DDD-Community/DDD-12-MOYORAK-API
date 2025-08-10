@@ -20,6 +20,7 @@ public record PartyListResponse(
         @Schema(description = "파티 참가자 수", example = "1") Long attendeeCount,
         @Schema(description = "파티 투표 후보 식당")
                 List<PartyRestaurantResponse> partyRestaurantResponseList,
+        @Schema(description = "유저 프로필 사진 리스트") List<String> userProfileList,
         @Schema(description = "유저 파티 참가 여부", example = "true") Boolean isParticipating) {
     public static List<PartyListResponse> from(
             List<PartyGeneralInfoProjection> partyGeneralInfoProjection,
@@ -36,6 +37,7 @@ public record PartyListResponse(
                                         p.attendeeCount(),
                                         PartyRestaurantResponse.fromList(
                                                 partyListStore.getRestaurantProjection(p.id())),
+                                        partyListStore.getUserProfile(p.id()),
                                         partyListStore.getParticipation(p.id()))))
                 .toList();
     }
