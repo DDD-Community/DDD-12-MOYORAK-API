@@ -4,12 +4,12 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
-import com.moyorak.api.party.domain.PartyAttendee;
-import com.moyorak.api.party.domain.PartyAttendeeFixture;
+import com.moyorak.api.party.domain.PartyAttendeeWithUserFixture;
 import com.moyorak.api.party.domain.PartyGeneralInfoProjectionFixture;
 import com.moyorak.api.party.domain.PartyRestaurantProjectionFixture;
 import com.moyorak.api.party.domain.VoteStatus;
 import com.moyorak.api.party.domain.VoteType;
+import com.moyorak.api.party.dto.PartyAttendeeWithUserProfile;
 import com.moyorak.api.party.dto.PartyGeneralInfoProjection;
 import com.moyorak.api.party.dto.PartyListRequest;
 import com.moyorak.api.party.dto.PartyListRequestFixture;
@@ -72,9 +72,10 @@ class PartyFacadeTest {
             given(partyRestaurantService.findPartyRestaurantInfo(partyIds))
                     .willReturn(List.of(restaurantProjection));
 
-            final PartyAttendee attendee =
-                    PartyAttendeeFixture.fixture(partyAttendeeId, true, partyId, userId);
-            given(partyAttendeeService.findByPartyIds(partyIds)).willReturn(List.of(attendee));
+            final PartyAttendeeWithUserProfile attendee =
+                    PartyAttendeeWithUserFixture.fixture(partyId, userId, "http://test.path");
+            given(partyAttendeeService.findPartyAttendeeWithUserByPartyIds(partyIds))
+                    .willReturn(List.of(attendee));
 
             // when
             final ListResponse<PartyListResponse> result =
@@ -97,7 +98,7 @@ class PartyFacadeTest {
 
             verify(partyService).findPartyGeneralInfos(teamId);
             verify(partyRestaurantService).findPartyRestaurantInfo(partyIds);
-            verify(partyAttendeeService).findByPartyIds(partyIds);
+            verify(partyAttendeeService).findPartyAttendeeWithUserByPartyIds(partyIds);
         }
 
         @Test
@@ -107,7 +108,8 @@ class PartyFacadeTest {
             given(partyService.findPartyGeneralInfos(teamId)).willReturn(List.of());
 
             given(partyRestaurantService.findPartyRestaurantInfo(List.of())).willReturn(List.of());
-            given(partyAttendeeService.findByPartyIds(List.of())).willReturn(List.of());
+            given(partyAttendeeService.findPartyAttendeeWithUserByPartyIds(List.of()))
+                    .willReturn(List.of());
 
             // when
             final ListResponse<PartyListResponse> result =
@@ -123,7 +125,7 @@ class PartyFacadeTest {
             // 상호작용 검증
             verify(partyService).findPartyGeneralInfos(teamId);
             verify(partyRestaurantService).findPartyRestaurantInfo(List.of());
-            verify(partyAttendeeService).findByPartyIds(List.of());
+            verify(partyAttendeeService).findPartyAttendeeWithUserByPartyIds(List.of());
         }
     }
 }
