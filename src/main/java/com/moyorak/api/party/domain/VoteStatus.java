@@ -5,6 +5,7 @@ import lombok.Getter;
 
 @Getter
 public enum VoteStatus implements CommonEnum {
+    READY("투표 전"),
     VOTING("투표 중"),
     DONE("종료");
 

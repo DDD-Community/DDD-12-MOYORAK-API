@@ -11,6 +11,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -31,10 +32,6 @@ public class Vote extends AuditInformation {
     @Column(name = "party_id", nullable = false, columnDefinition = "bigint")
     private Long partyId;
 
-    @Comment("선정된 식당 후보 ID")
-    @Column(name = "selected_candidate_id", columnDefinition = "bigint")
-    private Long selectedCandidateId;
-
     @Comment("투표 방식")
     @Convert(converter = VoteTypeConverter.class)
     @Column(name = "type", nullable = false, columnDefinition = "varchar(16)")
@@ -49,4 +46,31 @@ public class Vote extends AuditInformation {
     @Convert(converter = BooleanYnConverter.class)
     @Column(name = "use_yn", nullable = false, columnDefinition = "char(1)")
     private boolean use = true;
+
+    public void changeStatusByNowForSelectionVote(
+            final LocalDateTime now, final SelectionVoteInfo info) {
+        if (now.isBefore(info.getStartDate())) {
+            status = VoteStatus.READY;
+            return;
+        }
+
+        if (now.isBefore(info.getExpiredDate())) {
+            status = VoteStatus.VOTING;
+            return;
+        }
+
+        status = VoteStatus.DONE;
+    }
+
+    public void changeStatusByNowForRandomVote(final LocalDateTime now, final RandomVoteInfo info) {
+        status = now.isBefore(info.getRandomDate()) ? VoteStatus.READY : VoteStatus.DONE;
+    }
+
+    public boolean isDone() {
+        return status == VoteStatus.DONE;
+    }
+
+    public boolean isSelectVote() {
+        return type == VoteType.SELECT;
+    }
 }
