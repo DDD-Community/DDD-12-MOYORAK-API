@@ -35,8 +35,20 @@ public class RandomVoteInfo extends AuditInformation {
     @Column(name = "vote_id", nullable = false, columnDefinition = "bigint")
     private Long voteId;
 
+    @Comment("선정된 식당 후보 ID")
+    @Column(name = "selected_candidate_id", columnDefinition = "bigint")
+    private Long selectedCandidateId;
+
     @Comment("사용 여부")
     @Convert(converter = BooleanYnConverter.class)
     @Column(name = "use_yn", nullable = false, columnDefinition = "char(1)")
     private boolean use = true;
+
+    public void confirmRandomCandidate(final Long candidateId) {
+        selectedCandidateId = candidateId;
+    }
+
+    public boolean hasSelectedCandidate() {
+        return selectedCandidateId != null;
+    }
 }
