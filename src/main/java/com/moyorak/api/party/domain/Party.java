@@ -24,6 +24,10 @@ public class Party extends AuditInformation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Comment("팀 고유 ID")
+    @Column(name = "team_id", nullable = false, columnDefinition = "bigint")
+    private Long teamId;
+
     @Comment("파티 이름")
     @Column(name = "title", nullable = false, columnDefinition = "varchar(512)")
     private String title;

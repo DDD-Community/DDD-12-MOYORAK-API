@@ -6,10 +6,10 @@ import com.moyorak.api.party.domain.Vote;
 import com.moyorak.api.party.domain.VoteRestaurantCandidate;
 import com.moyorak.api.party.dto.VoteDetail;
 import com.moyorak.api.party.dto.VoteInfo;
+import com.moyorak.api.party.repository.PartyRestaurantRepository;
 import com.moyorak.api.party.repository.RandomVoteInfoRepository;
 import com.moyorak.api.party.repository.SelectionVoteInfoRepository;
 import com.moyorak.api.party.repository.VoteRepository;
-import com.moyorak.api.party.repository.VoteRestaurantCandidateRepository;
 import com.moyorak.config.exception.BusinessException;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -25,9 +25,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class VoteService {
 
     private final VoteRepository voteRepository;
-    private final VoteRestaurantCandidateRepository candidateRepository;
     private final SelectionVoteInfoRepository selectionVoteInfoRepository;
     private final RandomVoteInfoRepository randomVoteInfoRepository;
+    private final PartyRestaurantRepository partyRestaurantRepository;
 
     @Transactional
     public VoteDetail getVoteDetail(final Long partyId, final LocalDateTime now) {
@@ -39,7 +39,7 @@ public class VoteService {
 
         // 후보 식당 가져오기
         final List<VoteRestaurantCandidate> candidates =
-                candidateRepository.findAllByVoteIdAndUseTrue(vote.getId());
+                partyRestaurantRepository.findAllByVoteIdAndUseTrue(vote.getId());
 
         // 선택 투표인 경우
         if (vote.isSelectVote()) {

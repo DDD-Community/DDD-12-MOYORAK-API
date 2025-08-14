@@ -14,10 +14,10 @@ import com.moyorak.api.party.domain.VoteRestaurantCandidateFixture;
 import com.moyorak.api.party.domain.VoteStatus;
 import com.moyorak.api.party.domain.VoteType;
 import com.moyorak.api.party.dto.VoteDetail;
+import com.moyorak.api.party.repository.PartyRestaurantRepository;
 import com.moyorak.api.party.repository.RandomVoteInfoRepository;
 import com.moyorak.api.party.repository.SelectionVoteInfoRepository;
 import com.moyorak.api.party.repository.VoteRepository;
-import com.moyorak.api.party.repository.VoteRestaurantCandidateRepository;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -36,7 +36,7 @@ class VoteServiceTest {
 
     @Mock private VoteRepository voteRepository;
 
-    @Mock private VoteRestaurantCandidateRepository candidateRepository;
+    @Mock private PartyRestaurantRepository partyRestaurantRepository;
 
     @Mock private SelectionVoteInfoRepository selectionVoteInfoRepository;
 
@@ -76,7 +76,8 @@ class VoteServiceTest {
 
                 given(voteRepository.findByPartyIdAndUseTrue(partyId))
                         .willReturn(Optional.of(vote));
-                given(candidateRepository.findAllByVoteIdAndUseTrue(voteId)).willReturn(candidates);
+                given(partyRestaurantRepository.findAllByVoteIdAndUseTrue(voteId))
+                        .willReturn(candidates);
                 given(selectionVoteInfoRepository.findByVoteIdAndUseTrue(voteId))
                         .willReturn(Optional.of(selectionVoteInfo));
 
@@ -116,7 +117,8 @@ class VoteServiceTest {
 
                 given(voteRepository.findByPartyIdAndUseTrue(partyId))
                         .willReturn(Optional.of(vote));
-                given(candidateRepository.findAllByVoteIdAndUseTrue(voteId)).willReturn(candidates);
+                given(partyRestaurantRepository.findAllByVoteIdAndUseTrue(voteId))
+                        .willReturn(candidates);
                 given(selectionVoteInfoRepository.findByVoteIdAndUseTrue(voteId))
                         .willReturn(Optional.of(selectionVoteInfo));
 
@@ -141,6 +143,7 @@ class VoteServiceTest {
             private final Long partyId = 1L;
             private final Long voteId = 1L;
             private final LocalDateTime now = LocalDateTime.of(2025, 8, 14, 12, 0, 0);
+            private final Long randomVoteInfoId = 1L;
 
             @Test
             @DisplayName("현재 시간이 랜덤 추첨 시간 이후면 투표 상태를 DONE으로 변경하고 후보 식당에서 랜덤 선택한다.(update=1)")
@@ -154,18 +157,18 @@ class VoteServiceTest {
                 final LocalDateTime randomDate = now.minusMinutes(10);
 
                 final RandomVoteInfo randomVoteInfo =
-                        RandomVoteInfoFixture.fixture(randomDate, mealDate, voteId, true, null);
+                        RandomVoteInfoFixture.fixture(
+                                randomVoteInfoId, randomDate, mealDate, voteId, true, null);
 
                 final VoteRestaurantCandidate c1 =
                         VoteRestaurantCandidateFixture.fixture(123L, voteId, 11L, true);
-                final VoteRestaurantCandidate c2 =
-                        VoteRestaurantCandidateFixture.fixture(122L, voteId, 12L, true);
-                final List<VoteRestaurantCandidate> candidates = List.of(c1, c2);
+                final List<VoteRestaurantCandidate> candidates = List.of(c1);
 
-                final Long randomId = c2.getId();
+                final Long randomId = c1.getId();
 
                 given(voteRepository.findByPartyIdAndUseTrue(voteId)).willReturn(Optional.of(vote));
-                given(candidateRepository.findAllByVoteIdAndUseTrue(voteId)).willReturn(candidates);
+                given(partyRestaurantRepository.findAllByVoteIdAndUseTrue(voteId))
+                        .willReturn(candidates);
                 given(randomVoteInfoRepository.findByVoteIdAndUseTrue(voteId))
                         .willReturn(Optional.of(randomVoteInfo));
                 given(
@@ -196,18 +199,18 @@ class VoteServiceTest {
                 final LocalDateTime randomDate = now.minusMinutes(10);
 
                 final RandomVoteInfo randomVoteInfo =
-                        RandomVoteInfoFixture.fixture(randomDate, mealDate, voteId, true, null);
+                        RandomVoteInfoFixture.fixture(
+                                randomVoteInfoId, randomDate, mealDate, voteId, true, null);
 
                 final VoteRestaurantCandidate c1 =
                         VoteRestaurantCandidateFixture.fixture(123L, voteId, 11L, true);
-                final VoteRestaurantCandidate c2 =
-                        VoteRestaurantCandidateFixture.fixture(122L, voteId, 12L, true);
-                final List<VoteRestaurantCandidate> candidates = List.of(c1, c2);
+                final List<VoteRestaurantCandidate> candidates = List.of(c1);
 
-                final Long randomId = c2.getId();
+                final Long randomId = c1.getId();
 
                 given(voteRepository.findByPartyIdAndUseTrue(voteId)).willReturn(Optional.of(vote));
-                given(candidateRepository.findAllByVoteIdAndUseTrue(voteId)).willReturn(candidates);
+                given(partyRestaurantRepository.findAllByVoteIdAndUseTrue(voteId))
+                        .willReturn(candidates);
                 given(randomVoteInfoRepository.findByVoteIdAndUseTrue(voteId))
                         .willReturn(Optional.of(randomVoteInfo));
                 given(
