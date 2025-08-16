@@ -36,4 +36,13 @@ public class PartyAttendee extends AuditInformation {
     @Comment("회원 고유 ID")
     @Column(name = "member_id", nullable = false, columnDefinition = "bigint")
     private Long userId;
+
+    public static PartyAttendee create(final Long partyId, final Long userId) {
+        PartyAttendee partyAttendee = new PartyAttendee();
+
+        partyAttendee.partyId = partyId;
+        partyAttendee.userId = userId;
+
+        return partyAttendee;
+    }
 }

@@ -1,8 +1,17 @@
 package com.moyorak.api.party.service;
 
+import com.moyorak.api.party.domain.Party;
+import com.moyorak.api.party.domain.PartyAttendee;
+import com.moyorak.api.party.dto.PartyAttendRequest;
 import com.moyorak.api.party.dto.PartyAttendeeWithUserProfile;
 import com.moyorak.api.party.repository.PartyAttendeeRepository;
+import com.moyorak.api.party.repository.PartyRepository;
+import com.moyorak.api.team.domain.NotTeamUserException;
+import com.moyorak.api.team.domain.TeamUser;
+import com.moyorak.api.team.repository.TeamUserRepository;
+import com.moyorak.config.exception.BusinessException;
 import java.util.List;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,11 +19,47 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class PartyAttendeeService {
+
     private final PartyAttendeeRepository partyAttendeeRepository;
+    private final TeamUserRepository teamUserRepository;
+    private final PartyRepository partyRepository;
 
     @Transactional(readOnly = true)
     public List<PartyAttendeeWithUserProfile> findPartyAttendeeWithUserByPartyIds(
             List<Long> partyIds) {
         return partyAttendeeRepository.findPartyAttendeeWithUser(partyIds);
+    }
+
+    @Transactional
+    public void attend(final PartyAttendRequest request, final Long teamId) {
+        final boolean isPresent =
+                partyAttendeeRepository
+                        .findByPartyIdAndUserIdAndUseTrue(request.partyId(), request.userId())
+                        .isPresent();
+
+        if (isPresent) {
+            throw new BusinessException("이미 파티에 참여하고 있습니다.");
+        }
+
+        final TeamUser teamUser =
+                teamUserRepository
+                        .findByUserIdAndTeamIdAndUse(request.userId(), teamId, true)
+                        .orElseThrow(NotTeamUserException::new);
+
+        final Party party =
+                partyRepository
+                        .findByIdAndUseTrue(request.partyId())
+                        .orElseThrow(() -> new BusinessException("파티가 존재하지 않습니다."));
+
+        validateSameTeam(teamUser, party);
+
+        final PartyAttendee partyAttendee = request.toPartyAttendee();
+        partyAttendeeRepository.save(partyAttendee);
+    }
+
+    private void validateSameTeam(final TeamUser teamUser, final Party party) {
+        if (!Objects.equals(teamUser.getTeam().getId(), party.getId())) {
+            throw new NotTeamUserException();
+        }
     }
 }

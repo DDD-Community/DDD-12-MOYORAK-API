@@ -11,8 +11,6 @@ import org.springframework.data.jpa.repository.QueryHints;
 
 public interface PartyRepository extends JpaRepository<Party, Long> {
 
-    Optional<Party> findByIdAndUseTrue(Long id);
-
     @Query(
             """
         SELECT new com.moyorak.api.party.dto.PartyGeneralInfoProjection(
@@ -42,4 +40,10 @@ public interface PartyRepository extends JpaRepository<Party, Long> {
                     name = "org.hibernate.comment",
                     value = "PartyRepository.findPartyGeneralInfos: 팀 ID 로 파티 일반 정보 조회"))
     List<PartyGeneralInfoProjection> findPartyGeneralInfos(Long teamId);
+
+    @QueryHints(
+            @QueryHint(
+                    name = "org.hibernate.comment",
+                    value = "PartyRepository.findByIdAndUseTrue: 파티 ID 로 파티 일반 정보 조회"))
+    Optional<Party> findByIdAndUseTrue(Long id);
 }
