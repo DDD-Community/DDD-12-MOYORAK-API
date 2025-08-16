@@ -4,6 +4,7 @@ import com.moyorak.api.auth.domain.UserPrincipal;
 import com.moyorak.api.party.dto.PartyListRequest;
 import com.moyorak.api.party.dto.PartyListResponse;
 import com.moyorak.api.party.dto.PartyResponse;
+import com.moyorak.api.party.dto.PartySaveRequest;
 import com.moyorak.api.party.service.PartyFacade;
 import com.moyorak.global.domain.ListResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -16,6 +17,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -42,5 +45,13 @@ class PartyController {
             @Valid PartyListRequest partyListRequest,
             @AuthenticationPrincipal final UserPrincipal userPrincipal) {
         return partyFacade.getParties(teamId, userPrincipal.getId(), partyListRequest);
+    }
+
+    @PostMapping("/teams/{teamId}/parties")
+    @Operation(summary = "파티 생성", description = "파티를 생성합니다.")
+    public void register(
+            @PathVariable @Positive final Long teamId,
+            @RequestBody @Valid final PartySaveRequest request) {
+        partyFacade.partyRegister(teamId, request);
     }
 }
