@@ -3,6 +3,7 @@ package com.moyorak.api.party.controller;
 import com.moyorak.api.auth.domain.UserPrincipal;
 import com.moyorak.api.party.dto.PartyAttendRequest;
 import com.moyorak.api.party.service.PartyAttendeeService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.Positive;
@@ -25,6 +26,7 @@ class PartyAttendeeController {
     private final PartyAttendeeService partyAttendeeService;
 
     @PostMapping("/teams/{teamId}/parties/{partyId}")
+    @Operation(summary = "[파티 참석자] 파티 참석", description = "파티 참석을 합니다.")
     public void save(
             @PathVariable @Positive final Long partyId,
             @PathVariable @Positive final Long teamId,
