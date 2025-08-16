@@ -32,4 +32,11 @@ public interface PartyRestaurantRepository extends CrudRepository<VoteRestaurant
                     value =
                             "PartyRestaurantRepository.findPartyRestaurantInfo: 파티 ID들 로 파티 투표 후보 식당들 정보 조회"))
     List<PartyRestaurantProjection> findPartyRestaurantInfo(List<Long> partyIds);
+
+    @QueryHints(
+            @QueryHint(
+                    name = "org.hibernate.comment",
+                    value =
+                            "VoteRestaurantCandidateRepository.findAllByVoteIdAndUseTrue : 투표 ID로 후보 식당 리스트를 조회합니다."))
+    List<VoteRestaurantCandidate> findAllByVoteIdAndUseTrue(Long voteId);
 }
