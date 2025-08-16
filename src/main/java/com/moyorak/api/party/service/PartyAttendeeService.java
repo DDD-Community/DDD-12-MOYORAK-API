@@ -4,6 +4,7 @@ import com.moyorak.api.party.domain.Party;
 import com.moyorak.api.party.domain.PartyAttendee;
 import com.moyorak.api.party.dto.PartyAttendRequest;
 import com.moyorak.api.party.dto.PartyAttendeeWithUserProfile;
+import com.moyorak.api.party.dto.PartySaveUsersRequest;
 import com.moyorak.api.party.repository.PartyAttendeeRepository;
 import com.moyorak.api.party.repository.PartyRepository;
 import com.moyorak.api.team.domain.NotTeamUserException;
@@ -61,5 +62,21 @@ public class PartyAttendeeService {
         if (!Objects.equals(teamUser.getTeam().getId(), party.getId())) {
             throw new NotTeamUserException();
         }
+    }
+
+    /**
+     * 파티 참여 회원을 지정합니다.
+     *
+     * @param partyId 파티 고유 ID
+     * @param users 파티 참여 회원 고유 ID 리스트
+     */
+    @Transactional
+    public void registerUsers(final Long partyId, final PartySaveUsersRequest users) {
+        final List<PartyAttendee> partyAttendees =
+                users.getIds().stream()
+                        .map(it -> PartyAttendee.create(partyId, it.getUserId()))
+                        .toList();
+
+        partyAttendeeRepository.saveAll(partyAttendees);
     }
 }
