@@ -15,11 +15,11 @@ on:
       port:
         description: '허용할 포트 (예: 80)'
         required: true
-        default: '80'
+        default: '443'
         type: choice
         options:
           - '22'
-          - '80'
+          - '443'
 
 jobs:
   authorize-ip:
