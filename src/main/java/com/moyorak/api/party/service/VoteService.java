@@ -4,6 +4,7 @@ import com.moyorak.api.party.domain.RandomVoteInfo;
 import com.moyorak.api.party.domain.SelectionVoteInfo;
 import com.moyorak.api.party.domain.Vote;
 import com.moyorak.api.party.domain.VoteRestaurantCandidate;
+import com.moyorak.api.party.domain.VoteType;
 import com.moyorak.api.party.dto.VoteDetail;
 import com.moyorak.api.party.dto.VoteInfo;
 import com.moyorak.api.party.repository.PartyRestaurantRepository;
@@ -120,5 +121,17 @@ public class VoteService {
                             .orElseThrow(() -> new BusinessException("랜덤 투표 정보가 존재하지 않습니다."));
             vote.changeStatusByNowForRandomVote(now, randomVoteInfo);
         }
+    }
+
+    /**
+     * 투표를 생성합니다.
+     *
+     * @param partyId 파티 고유 ID
+     * @param voteType 파티 타입
+     * @return 투표 고유 ID
+     */
+    @Transactional
+    public Long register(final Long partyId, final VoteType voteType) {
+        return voteRepository.save(Vote.create(partyId, voteType)).getId();
     }
 }

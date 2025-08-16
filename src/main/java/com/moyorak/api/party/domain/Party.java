@@ -10,6 +10,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
@@ -40,4 +41,16 @@ public class Party extends AuditInformation {
     @Convert(converter = BooleanYnConverter.class)
     @Column(name = "use_yn", nullable = false, columnDefinition = "char(1)")
     private boolean use = true;
+
+    @Builder(access = AccessLevel.PRIVATE)
+    Party(Long teamId, String title, String content, boolean use) {
+        this.teamId = teamId;
+        this.title = title;
+        this.content = content;
+        this.use = use;
+    }
+
+    public static Party create(final Long teamId, final String title, final String content) {
+        return Party.builder().teamId(teamId).title(title).content(content).build();
+    }
 }

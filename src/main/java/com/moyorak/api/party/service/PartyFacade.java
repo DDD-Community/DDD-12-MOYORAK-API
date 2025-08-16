@@ -12,6 +12,7 @@ import com.moyorak.api.party.dto.PartyListResponse;
 import com.moyorak.api.party.dto.PartyListStore;
 import com.moyorak.api.party.dto.PartyResponse;
 import com.moyorak.api.party.dto.PartyRestaurantProjection;
+import com.moyorak.api.party.dto.PartySaveRequest;
 import com.moyorak.api.party.dto.RestaurantCandidateResponse;
 import com.moyorak.api.party.dto.VoteDetail;
 import com.moyorak.api.party.dto.Voter;
@@ -19,6 +20,7 @@ import com.moyorak.api.review.domain.FirstReviewPhotoPaths;
 import com.moyorak.api.review.service.ReviewPhotoService;
 import com.moyorak.api.team.domain.TeamRestaurantSummaries;
 import com.moyorak.api.team.service.TeamRestaurantService;
+import com.moyorak.api.team.service.TeamService;
 import com.moyorak.config.exception.BusinessException;
 import com.moyorak.global.domain.ListResponse;
 import java.time.LocalDateTime;
@@ -40,6 +42,7 @@ public class PartyFacade {
     private final PartyRestaurantService partyRestaurantService;
     private final PartyAttendeeService partyAttendeeService;
     private final MealTagService mealTagService;
+    private final TeamService teamService;
 
     @Transactional
     public PartyResponse getParty(final Long partyId) {
@@ -92,6 +95,34 @@ public class PartyFacade {
 
         return ListResponse.from(
                 PartyListResponse.toPage(partyListResponses, partyListRequest.toPageable()));
+    }
+
+    /**
+     * 파티를 생성합니다.
+     *
+     * @param teamId 팀 고유 ID
+     * @param request 파티 생성 요청 DTO
+     */
+    @Transactional
+    public void partyRegister(final Long teamId, final PartySaveRequest request) {
+        // 1. 팀 존재 여부 확인
+        if (!teamService.existTeam(teamId)) {
+            throw new BusinessException("존재하지 않는 팀입니다.");
+        }
+
+        // 2. 파티 생성
+        final Long partyId =
+                partyService.register(teamId, request.getTitle(), request.getContent());
+
+        // 3. 투표 생성
+        final Long voteId = voteService.register(partyId, request.getVoteType());
+
+        // 4. 파티 회원 등록
+        partyAttendeeService.registerUsers(partyId, request.getUserSelections().getUsers());
+
+        // 5. 파티 식당 등록
+        partyRestaurantService.registerRestaurants(
+                voteId, request.getRestaurantSelections().getRestaurants());
     }
 
     @Transactional(readOnly = true)

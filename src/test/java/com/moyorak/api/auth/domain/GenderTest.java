@@ -45,6 +45,21 @@ class GenderTest {
             assertThat(result).isEqualTo(expectedResult);
         }
 
+        @Test
+        @DisplayName("탈퇴를 의미하는 UNREGISTER를 입력하면, Gender의 UNREGISTER로 반한합니다.")
+        void unregisterSuccess() {
+            // given
+            final String input = "UNREGISTER";
+
+            final Gender expectedResult = Gender.UNREGISTER;
+
+            // when
+            final Gender result = Gender.from(input);
+
+            // then
+            assertThat(result).isEqualTo(expectedResult);
+        }
+
         @ParameterizedTest
         @NullAndEmptySource
         @ValueSource(strings = " ")

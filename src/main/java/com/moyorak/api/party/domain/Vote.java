@@ -13,6 +13,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
@@ -46,6 +47,17 @@ public class Vote extends AuditInformation {
     @Convert(converter = BooleanYnConverter.class)
     @Column(name = "use_yn", nullable = false, columnDefinition = "char(1)")
     private boolean use = true;
+
+    @Builder(access = AccessLevel.PRIVATE)
+    Vote(Long partyId, VoteType type, VoteStatus status) {
+        this.partyId = partyId;
+        this.type = type;
+        this.status = status;
+    }
+
+    public static Vote create(final Long partyId, final VoteType voteType) {
+        return Vote.builder().partyId(partyId).type(voteType).status(VoteStatus.READY).build();
+    }
 
     public void changeStatusByNowForSelectionVote(
             final LocalDateTime now, final SelectionVoteInfo info) {

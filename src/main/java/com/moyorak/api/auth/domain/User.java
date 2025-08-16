@@ -43,7 +43,7 @@ public class User extends AuditInformation {
     @NotNull
     @Comment("성별")
     @Enumerated(value = EnumType.STRING)
-    @Column(name = "gender", nullable = false, columnDefinition = "varchar(6)")
+    @Column(name = "gender", nullable = false, columnDefinition = "varchar(10)")
     private Gender gender;
 
     @NotNull
@@ -51,9 +51,8 @@ public class User extends AuditInformation {
     @Column(name = "birthday", nullable = false, columnDefinition = "date")
     private LocalDate birthday;
 
-    @NotNull
     @Comment("프로필 이미지 URL")
-    @Column(name = "profile_image", nullable = false, columnDefinition = "varchar(256)")
+    @Column(name = "profile_image", columnDefinition = "varchar(256)")
     private String profileImage;
 
     @NotNull
@@ -91,5 +90,16 @@ public class User extends AuditInformation {
                 .birthday(birthday)
                 .profileImage(profileImage)
                 .build();
+    }
+
+    /** 회원 탈퇴 */
+    public void unregister() {
+        this.email = "UNREGISTER";
+        this.name = "UNREGISTER";
+        this.gender = Gender.UNREGISTER;
+        this.birthday = LocalDate.of(9999, 12, 31);
+        this.profileImage = null;
+
+        this.use = false;
     }
 }

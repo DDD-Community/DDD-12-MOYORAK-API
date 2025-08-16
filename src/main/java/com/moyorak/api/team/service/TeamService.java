@@ -61,4 +61,15 @@ public class TeamService {
 
         return teamRepository.save(request.toEntity(company)).getId();
     }
+
+    /**
+     * 팀 ID 존재 여부 조회
+     *
+     * @param teamId 팀 고유 ID
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public boolean existTeam(final Long teamId) {
+        return teamRepository.existsById(teamId);
+    }
 }

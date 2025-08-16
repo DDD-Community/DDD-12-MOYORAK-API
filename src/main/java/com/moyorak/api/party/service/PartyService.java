@@ -33,4 +33,19 @@ public class PartyService {
     public List<PartyGeneralInfoProjection> findPartyGeneralInfos(Long teamId) {
         return partyRepository.findPartyGeneralInfos(teamId);
     }
+
+    /**
+     * 파티를 생성합니다.
+     *
+     * @param teamId 팀 고유 ID
+     * @param title 파티 투표 제목
+     * @param content 파티 설명
+     * @return 파티 고유 ID
+     */
+    @Transactional
+    public Long register(final Long teamId, final String title, final String content) {
+        final Party party = Party.create(teamId, title, content);
+
+        return partyRepository.save(party).getId();
+    }
 }
