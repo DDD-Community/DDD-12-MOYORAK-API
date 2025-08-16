@@ -152,11 +152,10 @@ class PartyFacadeTest {
         private final PartyListRequest request = PartyListRequestFixture.fixture(5, 1);
 
         @Test
-        @DisplayName("팀이 일치하고, 참가자가 존재하면 정상적으로 응답한다")
+        @DisplayName("참가자가 존재하면 정상적으로 응답한다")
         void successWhenAttendeesExist() {
             // given
             final Party party = PartyFixture.fixture(partyId, teamId);
-            given(party.getTeamId()).willReturn(teamId);
             given(partyService.getParty(partyId)).willReturn(party);
 
             final PartyAttendeeWithUserProfile attendee =
@@ -189,8 +188,7 @@ class PartyFacadeTest {
         @DisplayName("해당 팀의 파티가 아니면 예외를 던진다")
         void failWhenTeamMismatch() {
             // given
-            final Party party = PartyFixture.fixture(partyId, teamId);
-            given(party.getTeamId()).willReturn(999L);
+            final Party party = PartyFixture.fixture(partyId, 999L);
             given(partyService.getParty(partyId)).willReturn(party);
 
             // when & then
@@ -208,7 +206,6 @@ class PartyFacadeTest {
         void successWhenNoAttendees() {
             // given
             final Party party = PartyFixture.fixture(partyId, teamId);
-            given(party.getTeamId()).willReturn(teamId);
             given(partyService.getParty(partyId)).willReturn(party);
 
             given(partyAttendeeService.findPartyAttendeeWithUserByPartyIds(List.of(partyId)))
