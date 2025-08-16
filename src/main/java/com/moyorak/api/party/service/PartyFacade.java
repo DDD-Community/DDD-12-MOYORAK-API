@@ -64,11 +64,12 @@ public class PartyFacade {
         return PartyResponse.from(partyInfo, voteDetail.voteInfo(), candidateResponses, voters);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public ListResponse<PartyListResponse> getParties(
             final Long teamId, final Long userId, final PartyListRequest partyListRequest) {
         final List<PartyGeneralInfoProjection> parties = partyService.findPartyGeneralInfos(teamId);
-
+        final LocalDateTime now = LocalDateTime.now();
+        parties.forEach(p -> voteService.updateVoteStatus(p.id(), now));
         final List<Long> partyIds = parties.stream().map(PartyGeneralInfoProjection::id).toList();
 
         final List<PartyRestaurantProjection> partyRestaurantProjections =

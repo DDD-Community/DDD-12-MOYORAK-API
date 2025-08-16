@@ -35,6 +35,7 @@ class PartyFacadeTest {
     @Mock private PartyService partyService;
     @Mock private PartyAttendeeService partyAttendeeService;
     @Mock private PartyRestaurantService partyRestaurantService;
+    @Mock private VoteService voteService;
 
     @Nested
     @DisplayName("파티 목록 조회 시")
@@ -50,7 +51,6 @@ class PartyFacadeTest {
         void success() {
             // given
             final Long partyId = 1L;
-            final Long partyAttendeeId = 1L;
 
             final PartyGeneralInfoProjection generalInfo =
                     PartyGeneralInfoProjectionFixture.fixture(
@@ -96,6 +96,7 @@ class PartyFacadeTest {
                         it.assertThat(result.getData()).hasSize(1);
                     });
 
+            verify(voteService).updateVoteStatus(eq(partyId), any(LocalDateTime.class));
             verify(partyService).findPartyGeneralInfos(teamId);
             verify(partyRestaurantService).findPartyRestaurantInfo(partyIds);
             verify(partyAttendeeService).findPartyAttendeeWithUserByPartyIds(partyIds);
