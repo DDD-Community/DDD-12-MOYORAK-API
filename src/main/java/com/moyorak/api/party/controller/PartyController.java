@@ -16,7 +16,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -40,7 +39,7 @@ class PartyController {
     @Operation(summary = "파티 목록 조회", description = "파티 목록을 조회 합니다.")
     public ListResponse<PartyListResponse> getParties(
             @PathVariable @Positive final Long teamId,
-            @RequestBody @Valid PartyListRequest partyListRequest,
+            @Valid PartyListRequest partyListRequest,
             @AuthenticationPrincipal final UserPrincipal userPrincipal) {
         return partyFacade.getParties(teamId, userPrincipal.getId(), partyListRequest);
     }
