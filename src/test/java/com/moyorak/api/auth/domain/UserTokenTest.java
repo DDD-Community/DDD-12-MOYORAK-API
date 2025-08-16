@@ -49,14 +49,19 @@ class UserTokenTest {
     @DisplayName("토큰을 초기화합니다.")
     void clear() {
         // given
-        final String token = "EXAMPLE-TOKEN";
-        final UserToken userToken = UserTokenFixture.fixture(1L, token);
+        final String accessToken = "EXAMPLE-TOKEN";
+        final String refreshToken = "EXAMPLE-REFRESH-TOKEN";
+        final UserToken userToken = UserTokenFixture.fixture(1L, accessToken, refreshToken);
 
         // when
         userToken.clear();
 
         // then
-        assertThat(userToken.getAccessToken()).isNull();
+        assertSoftly(
+                it -> {
+                    it.assertThat(userToken.getAccessToken()).isNull();
+                    it.assertThat(userToken.getRefreshToken()).isNull();
+                });
     }
 
     @Nested
