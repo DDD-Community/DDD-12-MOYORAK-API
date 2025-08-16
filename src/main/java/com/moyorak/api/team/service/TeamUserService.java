@@ -98,7 +98,7 @@ public class TeamUserService {
             throw new BusinessException("해당 팀의 팀원이 아닙니다.");
         }
 
-        teamUser.changeStatus(TeamUserStatus.APPROVED);
+        teamUser.approve();
     }
 
     /**
