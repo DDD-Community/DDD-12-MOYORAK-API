@@ -4,6 +4,7 @@ import com.moyorak.api.team.domain.TeamUser;
 import com.moyorak.api.team.domain.TeamUserStatus;
 import com.moyorak.api.team.dto.TeamUserResponse;
 import jakarta.persistence.QueryHint;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,12 +13,10 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.data.repository.query.Param;
 
-import java.util.Optional;
-
 public interface TeamUserRepository extends JpaRepository<TeamUser, Long> {
 
     @Query(
-        """
+            """
                     SELECT tu
                     FROM TeamUser tu
                     JOIN FETCH tu.team t
@@ -27,24 +26,24 @@ public interface TeamUserRepository extends JpaRepository<TeamUser, Long> {
                     and tu.use = :use
             """)
     Optional<TeamUser> findWithTeamAndCompany(
-        @Param("teamId") Long teamId, @Param("userId") Long userId, @Param("use") boolean use);
+            @Param("teamId") Long teamId, @Param("userId") Long userId, @Param("use") boolean use);
 
     @Query(
-        """
+            """
                     SELECT tu
                     FROM TeamUser tu
                     JOIN Team t ON tu.team.id = t.id
                     WHERE tu.userId = :userId AND tu.team.id = :teamId AND tu.use = :use
             """)
     @QueryHints(
-        @QueryHint(
-            name = "org.hibernate.comment",
-            value = "TeamUserRepository.findByUserIdAndTeamIdAndUse : 팀 멤버를 조회합니다."))
+            @QueryHint(
+                    name = "org.hibernate.comment",
+                    value = "TeamUserRepository.findByUserIdAndTeamIdAndUse : 팀 멤버를 조회합니다."))
     Optional<TeamUser> findByUserIdAndTeamIdAndUse(
-        @Param("userId") Long userId, @Param("teamId") Long teamId, @Param("use") boolean use);
+            @Param("userId") Long userId, @Param("teamId") Long teamId, @Param("use") boolean use);
 
     @Query(
-        """
+            """
             SELECT new com.moyorak.api.team.dto.TeamUserResponse(tu.id, u.name, u.email, u.profileImage, tu.status)
             FROM TeamUser tu
             JOIN User u ON tu.userId = u.id
@@ -52,17 +51,17 @@ public interface TeamUserRepository extends JpaRepository<TeamUser, Long> {
             AND tu.use = :use AND u.use = true
             """)
     @QueryHints(
-        @QueryHint(
-            name = "org.hibernate.comment",
-            value = "TeamUserRepository.findByConditions : 팀 멤버 리스트를 조회합니다."))
+            @QueryHint(
+                    name = "org.hibernate.comment",
+                    value = "TeamUserRepository.findByConditions : 팀 멤버 리스트를 조회합니다."))
     Page<TeamUserResponse> findByConditions(
-        @Param("teamId") Long teamId,
-        @Param("status") TeamUserStatus status,
-        @Param("use") boolean use,
-        Pageable pageable);
+            @Param("teamId") Long teamId,
+            @Param("status") TeamUserStatus status,
+            @Param("use") boolean use,
+            Pageable pageable);
 
     @Query(
-        """
+            """
         SELECT exists(
             SELECT 1
             FROM TeamUser tu
@@ -73,29 +72,29 @@ public interface TeamUserRepository extends JpaRepository<TeamUser, Long> {
         )
     """)
     @QueryHints(
-        @QueryHint(
-            name = "org.hibernate.comment",
-            value = "TeamUserRepository.isTeamAdmin : 팀에 관리자로 존재하는 데이터가 있는지 조회합니다."))
+            @QueryHint(
+                    name = "org.hibernate.comment",
+                    value = "TeamUserRepository.isTeamAdmin : 팀에 관리자로 존재하는 데이터가 있는지 조회합니다."))
     boolean isTeamAdmin(@Param("userId") Long userId);
 
     @QueryHints(
-        @QueryHint(
-            name = "org.hibernate.comment",
-            value = "TeamUserRepository.findByIdAndUseAndStatus : 팀 멤버를 조회합니다."))
+            @QueryHint(
+                    name = "org.hibernate.comment",
+                    value = "TeamUserRepository.findByIdAndUseAndStatus : 팀 멤버를 조회합니다."))
     Optional<TeamUser> findByIdAndUseAndStatus(Long id, boolean use, TeamUserStatus status);
 
     boolean existsByUserIdAndUseIsTrue(Long userId);
 
     @Modifying
     @Query(
-        """
+            """
                   UPDATE TeamUser tu
                   SET tu.userId = null
                   WHERE tu.userId = :userId
             """)
     @QueryHints(
-        @QueryHint(
-            name = "org.hibernate.comment",
-            value = "TeamUserRepository.clearUserId : 과거 팀에 속해있던 정보를 clear합니다."))
+            @QueryHint(
+                    name = "org.hibernate.comment",
+                    value = "TeamUserRepository.clearUserId : 과거 팀에 속해있던 정보를 clear합니다."))
     int clearUserId(final Long userId);
 }
