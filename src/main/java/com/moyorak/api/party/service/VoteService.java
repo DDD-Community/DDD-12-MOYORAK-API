@@ -73,28 +73,29 @@ public class VoteService {
             final Vote vote,
             final RandomVoteInfo randomVoteInfo,
             final List<VoteRestaurantCandidate> candidates) {
-        if (!randomVoteInfo.hasSelectedCandidate() && vote.isDone()) {
 
-            if (candidates.isEmpty()) {
-                return;
-            }
-
-            final int index = ThreadLocalRandom.current().nextInt(candidates.size());
-            final Long pickId = candidates.get(index).getId();
-
-            final int updated =
-                    randomVoteInfoRepository.updateSelectedCandidate(
-                            randomVoteInfo.getId(), pickId);
-
-            if (updated == 1) {
-                randomVoteInfo.confirmRandomCandidate(pickId);
-                return;
-            }
-
-            // 다른 트랜잭션이 이미 변경한 경우 ID를 직접 DB에 Share lock을 통해 최신 커밋 조회
-            final Long selectedCandidateId =
-                    randomVoteInfoRepository.findSelectedCandidateIdById(randomVoteInfo.getId());
-            randomVoteInfo.confirmRandomCandidate(selectedCandidateId);
+        if (!vote.isDone() || randomVoteInfo.hasSelectedCandidate()) {
+            return;
         }
+
+        if (candidates.isEmpty()) {
+            return;
+        }
+
+        final int index = ThreadLocalRandom.current().nextInt(candidates.size());
+        final Long pickId = candidates.get(index).getId();
+
+        final int updated =
+                randomVoteInfoRepository.updateSelectedCandidate(randomVoteInfo.getId(), pickId);
+
+        if (updated == 1) {
+            randomVoteInfo.confirmRandomCandidate(pickId);
+            return;
+        }
+
+        // 다른 트랜잭션이 이미 변경한 경우 ID를 직접 DB에 Share lock을 통해 최신 커밋 조회
+        final Long selectedCandidateId =
+                randomVoteInfoRepository.findSelectedCandidateIdById(randomVoteInfo.getId());
+        randomVoteInfo.confirmRandomCandidate(selectedCandidateId);
     }
 }
