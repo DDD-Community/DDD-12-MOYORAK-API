@@ -1,5 +1,9 @@
 package com.moyorak.api.party.service;
 
+import com.moyorak.api.auth.domain.MealTagType;
+import com.moyorak.api.auth.service.MealTagService;
+import com.moyorak.api.party.domain.Party;
+import com.moyorak.api.party.dto.PartyAttendeeListResponse;
 import com.moyorak.api.party.dto.PartyAttendeeWithUserProfile;
 import com.moyorak.api.party.dto.PartyGeneralInfoProjection;
 import com.moyorak.api.party.dto.PartyInfo;
@@ -15,9 +19,11 @@ import com.moyorak.api.review.domain.FirstReviewPhotoPaths;
 import com.moyorak.api.review.service.ReviewPhotoService;
 import com.moyorak.api.team.domain.TeamRestaurantSummaries;
 import com.moyorak.api.team.service.TeamRestaurantService;
+import com.moyorak.config.exception.BusinessException;
 import com.moyorak.global.domain.ListResponse;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,6 +39,7 @@ public class PartyFacade {
     private final VoteRecordService voteRecordService;
     private final PartyRestaurantService partyRestaurantService;
     private final PartyAttendeeService partyAttendeeService;
+    private final MealTagService mealTagService;
 
     @Transactional
     public PartyResponse getParty(final Long partyId) {
@@ -88,5 +95,20 @@ public class PartyFacade {
     }
 
     @Transactional(readOnly = true)
-    public void getPartyAttendees() {}
+    public List<PartyAttendeeListResponse> getPartyAttendees(
+            final Long partyId, final Long teamId) {
+        final Party party = partyService.getParty(partyId);
+        if (!party.getTeamId().equals(teamId)) {
+            throw new BusinessException("해당 팀의 파티가 아닙니다.");
+        }
+        final List<PartyAttendeeWithUserProfile> partyAttendees =
+                partyAttendeeService.findPartyAttendeeWithUserByPartyIds(List.of(partyId));
+
+        final List<Long> userIds =
+                partyAttendees.stream().map(PartyAttendeeWithUserProfile::userId).toList();
+        final Map<Long, Map<MealTagType, List<String>>> mealTagMap =
+                mealTagService.getMealTags(userIds);
+
+        return PartyAttendeeListResponse.fromList(partyAttendees, mealTagMap);
+    }
 }

@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -107,5 +108,23 @@ public class MealTagService {
                             "%s 타입은 최대 %d개까지만 등록 가능합니다.",
                             type.getDescription(), MAX_ITEMS_PER_TYPE));
         }
+    }
+
+    @Transactional(readOnly = true)
+    public Map<Long, Map<MealTagType, List<String>>> getMealTags(final List<Long> userIds) {
+        final List<MealTag> existingTags = mealTagRepository.findByUserIdInAndUse(userIds, true);
+
+        return existingTags.stream()
+                .collect(
+                        Collectors.groupingBy(
+                                MealTag::getUserId,
+                                Collectors.groupingBy(
+                                        MealTag::getType,
+                                        Collectors.collectingAndThen(
+                                                Collectors.mapping(
+                                                        MealTag::getItem,
+                                                        Collectors.toCollection(
+                                                                LinkedHashSet::new)),
+                                                ArrayList::new))));
     }
 }

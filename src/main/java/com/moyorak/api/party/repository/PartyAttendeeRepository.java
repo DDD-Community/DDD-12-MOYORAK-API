@@ -15,6 +15,7 @@ public interface PartyAttendeeRepository extends CrudRepository<PartyAttendee, L
 SELECT new com.moyorak.api.party.dto.PartyAttendeeWithUserProfile(
       p.partyId,
       p.userId,
+      u.name,
       u.profileImage
 )
 FROM PartyAttendee p

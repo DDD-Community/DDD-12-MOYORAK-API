@@ -43,6 +43,7 @@ class PartyFacadeTest {
 
         private final Long teamId = 1L;
         private final Long userId = 9L;
+        private final String userName = "홍길동";
 
         private final PartyListRequest request = PartyListRequestFixture.fixture(5, 1);
 
@@ -73,7 +74,8 @@ class PartyFacadeTest {
                     .willReturn(List.of(restaurantProjection));
 
             final PartyAttendeeWithUserProfile attendee =
-                    PartyAttendeeWithUserFixture.fixture(partyId, userId, "http://test.path");
+                    PartyAttendeeWithUserFixture.fixture(
+                            partyId, userId, userName, "http://test.path");
             given(partyAttendeeService.findPartyAttendeeWithUserByPartyIds(partyIds))
                     .willReturn(List.of(attendee));
 

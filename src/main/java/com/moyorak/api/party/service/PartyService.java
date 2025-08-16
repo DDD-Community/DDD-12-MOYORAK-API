@@ -18,11 +18,15 @@ public class PartyService {
 
     @Transactional(readOnly = true)
     public PartyInfo getPartyInfo(final Long partyId) {
-        final Party party =
-                partyRepository
-                        .findByIdAndUseTrue(partyId)
-                        .orElseThrow(() -> new BusinessException("파티가 존재하지 않습니다."));
+        final Party party = getParty(partyId);
         return PartyInfo.from(party);
+    }
+
+    @Transactional(readOnly = true)
+    public Party getParty(final Long partyId) {
+        return partyRepository
+                .findByIdAndUseTrue(partyId)
+                .orElseThrow(() -> new BusinessException("파티가 존재하지 않습니다."));
     }
 
     @Transactional(readOnly = true)
