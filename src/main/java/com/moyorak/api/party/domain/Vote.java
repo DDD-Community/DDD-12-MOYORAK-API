@@ -67,7 +67,7 @@ public class Vote extends AuditInformation {
     }
 
     public boolean isDone() {
-        return status == VoteStatus.DONE;
+        return status.isDone();
     }
 
     public boolean isSelectVote() {

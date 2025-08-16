@@ -14,4 +14,8 @@ public enum VoteStatus implements CommonEnum {
     VoteStatus(String description) {
         this.description = description;
     }
+
+    public boolean isDone() {
+        return this == DONE;
+    }
 }
