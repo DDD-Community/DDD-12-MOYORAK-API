@@ -10,6 +10,7 @@ import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,4 +35,10 @@ class PartyAttendeeController {
         partyAttendeeService.attend(
                 PartyAttendRequest.create(partyId, userPrincipal.getId()), teamId);
     }
+
+    @GetMapping("/teams/{teamId}/parties/{partyId}/party-attendees")
+    @Operation(summary = "[파티 참석자] 파티 참석자 조회", description = "파티 참석자를 조회 합니다.")
+    public void getPartyAttendees(
+            @PathVariable @Positive final Long partyId,
+            @PathVariable @Positive final Long teamId) {}
 }

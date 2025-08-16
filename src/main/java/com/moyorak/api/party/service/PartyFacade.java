@@ -86,4 +86,7 @@ public class PartyFacade {
         return ListResponse.from(
                 PartyListResponse.toPage(partyListResponses, partyListRequest.toPageable()));
     }
+
+    @Transactional(readOnly = true)
+    public void getPartyAttendees() {}
 }
