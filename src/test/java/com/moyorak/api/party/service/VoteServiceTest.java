@@ -1,6 +1,5 @@
 package com.moyorak.api.party.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 
 import com.moyorak.api.party.domain.RandomVoteInfo;
@@ -14,6 +13,7 @@ import com.moyorak.api.party.domain.VoteRestaurantCandidateFixture;
 import com.moyorak.api.party.domain.VoteStatus;
 import com.moyorak.api.party.domain.VoteType;
 import com.moyorak.api.party.dto.VoteDetail;
+import com.moyorak.api.party.dto.VoteInfo;
 import com.moyorak.api.party.repository.PartyRestaurantRepository;
 import com.moyorak.api.party.repository.RandomVoteInfoRepository;
 import com.moyorak.api.party.repository.SelectionVoteInfoRepository;
@@ -21,6 +21,7 @@ import com.moyorak.api.party.repository.VoteRepository;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -85,14 +86,19 @@ class VoteServiceTest {
                 final VoteDetail result = voteService.getVoteDetail(partyId, now);
 
                 // then
-                assertThat(result).isNotNull();
-                assertThat(result.voteInfo()).isNotNull();
-                assertThat(result.voteInfo().id()).isEqualTo(voteId);
-                assertThat(result.voteInfo().voteType()).isEqualTo(VoteType.SELECT);
-                assertThat(result.voteInfo().voteStatus()).isEqualTo(VoteStatus.VOTING);
-                assertThat(result.voteInfo().mealDate()).isEqualTo(selectionVoteInfo.getMealDate());
-                assertThat(result.voteInfo().startDate()).isEqualTo(startDate);
-                assertThat(result.voteInfo().expiredDate()).isEqualTo(expiredDate);
+                SoftAssertions.assertSoftly(
+                        it -> {
+                            it.assertThat(result).isNotNull();
+                            VoteInfo info = result.voteInfo();
+                            it.assertThat(info).isNotNull();
+                            it.assertThat(info.id()).isEqualTo(voteId);
+                            it.assertThat(info.voteType()).isEqualTo(VoteType.SELECT);
+                            it.assertThat(info.voteStatus()).isEqualTo(VoteStatus.VOTING);
+                            it.assertThat(info.mealDate())
+                                    .isEqualTo(selectionVoteInfo.getMealDate());
+                            it.assertThat(info.startDate()).isEqualTo(startDate);
+                            it.assertThat(info.expiredDate()).isEqualTo(expiredDate);
+                        });
             }
 
             @Test
@@ -126,14 +132,19 @@ class VoteServiceTest {
                 final VoteDetail result = voteService.getVoteDetail(partyId, now);
 
                 // then
-                assertThat(result).isNotNull();
-                assertThat(result.voteInfo()).isNotNull();
-                assertThat(result.voteInfo().id()).isEqualTo(voteId);
-                assertThat(result.voteInfo().voteType()).isEqualTo(VoteType.SELECT);
-                assertThat(result.voteInfo().voteStatus()).isEqualTo(VoteStatus.DONE);
-                assertThat(result.voteInfo().mealDate()).isEqualTo(selectionVoteInfo.getMealDate());
-                assertThat(result.voteInfo().startDate()).isEqualTo(startDate);
-                assertThat(result.voteInfo().expiredDate()).isEqualTo(expiredDate);
+                SoftAssertions.assertSoftly(
+                        it -> {
+                            it.assertThat(result).isNotNull();
+                            VoteInfo info = result.voteInfo();
+                            it.assertThat(info).isNotNull();
+                            it.assertThat(info.id()).isEqualTo(voteId);
+                            it.assertThat(info.voteType()).isEqualTo(VoteType.SELECT);
+                            it.assertThat(info.voteStatus()).isEqualTo(VoteStatus.DONE);
+                            it.assertThat(info.mealDate())
+                                    .isEqualTo(selectionVoteInfo.getMealDate());
+                            it.assertThat(info.startDate()).isEqualTo(startDate);
+                            it.assertThat(info.expiredDate()).isEqualTo(expiredDate);
+                        });
             }
         }
 
@@ -180,10 +191,14 @@ class VoteServiceTest {
                 VoteDetail result = voteService.getVoteDetail(partyId, now);
 
                 // then
-                assertThat(result.voteInfo().voteType()).isEqualTo(VoteType.RANDOM);
-                assertThat(result.voteInfo().voteStatus()).isEqualTo(VoteStatus.DONE);
-                assertThat(result.voteInfo().randomDate()).isEqualTo(randomDate);
-                assertThat(result.voteInfo().selectedCandidateId()).isEqualTo(randomId);
+                SoftAssertions.assertSoftly(
+                        it -> {
+                            VoteInfo info = result.voteInfo();
+                            it.assertThat(info.voteType()).isEqualTo(VoteType.RANDOM);
+                            it.assertThat(info.voteStatus()).isEqualTo(VoteStatus.DONE);
+                            it.assertThat(info.randomDate()).isEqualTo(randomDate);
+                            it.assertThat(info.selectedCandidateId()).isEqualTo(randomId);
+                        });
             }
 
             @Test
@@ -224,10 +239,14 @@ class VoteServiceTest {
                 VoteDetail result = voteService.getVoteDetail(partyId, now);
 
                 // then
-                assertThat(result.voteInfo().voteType()).isEqualTo(VoteType.RANDOM);
-                assertThat(result.voteInfo().voteStatus()).isEqualTo(VoteStatus.DONE);
-                assertThat(result.voteInfo().randomDate()).isEqualTo(randomDate);
-                assertThat(result.voteInfo().selectedCandidateId()).isEqualTo(randomId);
+                SoftAssertions.assertSoftly(
+                        it -> {
+                            VoteInfo info = result.voteInfo();
+                            it.assertThat(info.voteType()).isEqualTo(VoteType.RANDOM);
+                            it.assertThat(info.voteStatus()).isEqualTo(VoteStatus.DONE);
+                            it.assertThat(info.randomDate()).isEqualTo(randomDate);
+                            it.assertThat(info.selectedCandidateId()).isEqualTo(randomId);
+                        });
             }
         }
     }
