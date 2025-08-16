@@ -27,7 +27,9 @@ class PartyAttendeeController {
     @PostMapping("/teams/{teamId}/parties/{partyId}")
     public void save(
             @PathVariable @Positive final Long partyId,
+            @PathVariable @Positive final Long teamId,
             @AuthenticationPrincipal final UserPrincipal userPrincipal) {
-        partyAttendeeService.attend(PartyAttendRequest.create(partyId, userPrincipal.getId()));
+        partyAttendeeService.attend(
+                PartyAttendRequest.create(partyId, userPrincipal.getId()), teamId);
     }
 }

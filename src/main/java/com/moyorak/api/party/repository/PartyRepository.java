@@ -4,6 +4,7 @@ import com.moyorak.api.party.domain.Party;
 import com.moyorak.api.party.dto.PartyGeneralInfoProjection;
 import jakarta.persistence.QueryHint;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.data.repository.CrudRepository;
@@ -40,4 +41,10 @@ public interface PartyRepository extends CrudRepository<Party, Long> {
                     name = "org.hibernate.comment",
                     value = "PartyRepository.findPartyGeneralInfos: 팀 ID 로 파티 일반 정보 조회"))
     List<PartyGeneralInfoProjection> findPartyGeneralInfos(Long teamId);
+
+    @QueryHints(
+            @QueryHint(
+                    name = "org.hibernate.comment",
+                    value = "PartyRepository.findByIdAndUseTrue: 파티 ID 로 파티 일반 정보 조회"))
+    Optional<Party> findByIdAndUseTrue(Long id);
 }
