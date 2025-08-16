@@ -98,4 +98,27 @@ public class VoteService {
                 randomVoteInfoRepository.findSelectedCandidateIdById(randomVoteInfo.getId());
         randomVoteInfo.confirmRandomCandidate(selectedCandidateId);
     }
+
+    @Transactional
+    public void updateVoteStatus(final Long partyId, final LocalDateTime now) {
+        final Vote vote =
+                voteRepository
+                        .findByPartyIdAndUseTrue(partyId)
+                        .orElseThrow(() -> new BusinessException("투표가 존재하지 않습니다."));
+
+        if (vote.isSelectVote()) {
+            final SelectionVoteInfo selectionVoteInfo =
+                    selectionVoteInfoRepository
+                            .findByVoteIdAndUseTrue(vote.getId())
+                            .orElseThrow(() -> new BusinessException("선택 투표 정보가 존재하지 않습니다."));
+            vote.changeStatusByNowForSelectionVote(now, selectionVoteInfo);
+
+        } else {
+            final RandomVoteInfo randomVoteInfo =
+                    randomVoteInfoRepository
+                            .findByVoteIdAndUseTrue(vote.getId())
+                            .orElseThrow(() -> new BusinessException("랜덤 투표 정보가 존재하지 않습니다."));
+            vote.changeStatusByNowForRandomVote(now, randomVoteInfo);
+        }
+    }
 }
