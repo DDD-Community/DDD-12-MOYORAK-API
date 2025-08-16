@@ -5,12 +5,11 @@ import com.moyorak.api.party.dto.PartyGeneralInfoProjection;
 import jakarta.persistence.QueryHint;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.QueryHints;
-import org.springframework.data.repository.CrudRepository;
 
-public interface PartyRepository extends CrudRepository<Party, Long> {
-    List<Party> findAllByTeamIdAndUseIsTrue(Long teamId);
+public interface PartyRepository extends JpaRepository<Party, Long> {
 
     @Query(
             """
