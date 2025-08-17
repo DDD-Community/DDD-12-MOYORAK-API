@@ -13,28 +13,32 @@ public interface PartyRepository extends JpaRepository<Party, Long> {
 
     @Query(
             """
-        SELECT new com.moyorak.api.party.dto.PartyGeneralInfoProjection(
-            p.id,
-            COALESCE(s.startDate, r.randomDate),
-            p.title,
-            v.type,
-            v.status,
-            COUNT(DISTINCT pa.id)
-        )
-        FROM Party p
-        LEFT JOIN Vote v
-               ON v.partyId = p.id AND v.use = true
-        LEFT JOIN SelectionVoteInfo s
-               ON s.voteId = v.id AND v.type = com.moyorak.api.party.domain.VoteType.SELECT AND s.use = true
-        LEFT JOIN RandomVoteInfo r
-               ON r.voteId = v.id AND v.type = com.moyorak.api.party.domain.VoteType.RANDOM AND r.use = true
-        LEFT JOIN PartyAttendee pa
-               ON pa.partyId = p.id AND pa.use = true
-        WHERE p.teamId = :teamId
-          AND p.use = true
-        GROUP BY
-          p.id, p.title, v.type, v.status, COALESCE(s.startDate, r.randomDate)
-        """)
+    SELECT new com.moyorak.api.party.dto.PartyGeneralInfoProjection(
+        p.id,
+        COALESCE(MAX(s.startDate), MAX(r.randomDate)),
+        MAX(s.expiredDate),
+        p.title,
+        v.type,
+        v.status,
+        COUNT(DISTINCT pa.id)
+    )
+    FROM Party p
+    LEFT JOIN Vote v
+           ON v.partyId = p.id AND v.use = true
+    LEFT JOIN SelectionVoteInfo s
+           ON s.voteId = v.id
+          AND v.type = com.moyorak.api.party.domain.VoteType.SELECT
+          AND s.use = true
+    LEFT JOIN RandomVoteInfo r
+           ON r.voteId = v.id
+          AND v.type = com.moyorak.api.party.domain.VoteType.RANDOM
+          AND r.use = true
+    LEFT JOIN PartyAttendee pa
+           ON pa.partyId = p.id AND pa.use = true
+    WHERE p.teamId = :teamId
+      AND p.use = true
+    GROUP BY p.id, p.title, v.type, v.status
+""")
     @QueryHints(
             @QueryHint(
                     name = "org.hibernate.comment",

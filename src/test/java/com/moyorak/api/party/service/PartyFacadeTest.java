@@ -67,11 +67,11 @@ class PartyFacadeTest {
                     PartyGeneralInfoProjectionFixture.fixture(
                             partyId,
                             LocalDateTime.now(),
+                            LocalDateTime.now(),
                             "점심팟 구합니다.",
                             VoteType.SELECT,
                             VoteStatus.VOTING,
-                            3L // attendeeCount (프로젝트에서 int/Long 확인)
-                            );
+                            3L);
             final List<PartyGeneralInfoProjection> parties = List.of(generalInfo);
             given(partyService.findPartyGeneralInfos(teamId)).willReturn(parties);
 
