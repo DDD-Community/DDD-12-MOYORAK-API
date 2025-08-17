@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 public record PartyGeneralInfoProjection(
         Long id,
         LocalDateTime startDate,
+        LocalDateTime endDate,
         String title,
         VoteType voteType,
         VoteStatus voteStatus,
