@@ -46,4 +46,10 @@ public interface MealTagRepository extends CrudRepository<MealTag, Long> {
                     name = "org.hibernate.comment",
                     value = "FoodFlagRepository.clearByUserId : 회원 ID별 등록된 항목을 조회합니다."))
     void clearByUserId(@Param("userId") Long userId);
+
+    @QueryHints(
+            @QueryHint(
+                    name = "org.hibernate.comment",
+                    value = "FoodFlagRepository.findByUserIdInAndUse : 회원 ID들로 등록된 항목을 조회합니다."))
+    List<MealTag> findByUserIdInAndUse(List<Long> userIds, boolean use);
 }

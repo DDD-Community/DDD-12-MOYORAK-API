@@ -2,13 +2,16 @@ package com.moyorak.api.auth.service;
 
 import com.moyorak.api.auth.domain.MealTag;
 import com.moyorak.api.auth.domain.MealTagType;
+import com.moyorak.api.auth.dto.MealTagResponse;
 import com.moyorak.api.auth.dto.MealTagSaveRequest;
 import com.moyorak.api.auth.repository.MealTagRepository;
 import com.moyorak.config.exception.BusinessException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -119,5 +122,29 @@ public class MealTagService {
                             "%s 타입은 최대 %d개까지만 등록 가능합니다.",
                             type.getDescription(), MAX_ITEMS_PER_TYPE));
         }
+    }
+
+    @Transactional(readOnly = true)
+    public Map<Long, MealTagResponse> getMealTags(final List<Long> userIds) {
+        final List<MealTag> existing = mealTagRepository.findByUserIdInAndUse(userIds, true);
+
+        Map<Long, Map<MealTagType, List<String>>> grouped =
+                existing.stream()
+                        .collect(
+                                Collectors.groupingBy(
+                                        MealTag::getUserId,
+                                        Collectors.groupingBy(
+                                                MealTag::getType,
+                                                () -> new EnumMap<>(MealTagType.class),
+                                                Collectors.mapping(
+                                                        MealTag::getItem,
+                                                        Collectors.collectingAndThen(
+                                                                Collectors.toCollection(
+                                                                        LinkedHashSet::new),
+                                                                ArrayList::new)))));
+
+        return grouped.entrySet().stream()
+                .collect(
+                        Collectors.toMap(Map.Entry::getKey, e -> MealTagResponse.of(e.getValue())));
     }
 }

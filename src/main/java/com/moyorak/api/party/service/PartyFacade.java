@@ -1,5 +1,9 @@
 package com.moyorak.api.party.service;
 
+import com.moyorak.api.auth.dto.MealTagResponse;
+import com.moyorak.api.auth.service.MealTagService;
+import com.moyorak.api.party.domain.Party;
+import com.moyorak.api.party.dto.PartyAttendeeListResponse;
 import com.moyorak.api.party.dto.PartyAttendeeWithUserProfile;
 import com.moyorak.api.party.dto.PartyGeneralInfoProjection;
 import com.moyorak.api.party.dto.PartyInfo;
@@ -21,6 +25,7 @@ import com.moyorak.config.exception.BusinessException;
 import com.moyorak.global.domain.ListResponse;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,6 +41,7 @@ public class PartyFacade {
     private final VoteRecordService voteRecordService;
     private final PartyRestaurantService partyRestaurantService;
     private final PartyAttendeeService partyAttendeeService;
+    private final MealTagService mealTagService;
     private final TeamService teamService;
 
     @Transactional
@@ -68,7 +74,7 @@ public class PartyFacade {
         return PartyResponse.from(partyInfo, voteDetail.voteInfo(), candidateResponses, voters);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public ListResponse<PartyListResponse> getParties(
             final Long teamId, final Long userId, final PartyListRequest partyListRequest) {
         final List<PartyGeneralInfoProjection> parties = partyService.findPartyGeneralInfos(teamId);
@@ -117,5 +123,22 @@ public class PartyFacade {
         // 5. 파티 식당 등록
         partyRestaurantService.registerRestaurants(
                 voteId, request.getRestaurantSelections().getRestaurants());
+    }
+
+    @Transactional(readOnly = true)
+    public List<PartyAttendeeListResponse> getPartyAttendees(
+            final Long partyId, final Long teamId) {
+        final Party party = partyService.getParty(partyId);
+        if (!party.getTeamId().equals(teamId)) {
+            throw new BusinessException("해당 팀의 파티가 아닙니다.");
+        }
+        final List<PartyAttendeeWithUserProfile> partyAttendees =
+                partyAttendeeService.findPartyAttendeeWithUserByPartyIds(List.of(partyId));
+
+        final List<Long> userIds =
+                partyAttendees.stream().map(PartyAttendeeWithUserProfile::userId).toList();
+        final Map<Long, MealTagResponse> mealTagMap = mealTagService.getMealTags(userIds);
+
+        return PartyAttendeeListResponse.fromList(partyAttendees, mealTagMap);
     }
 }
