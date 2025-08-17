@@ -5,6 +5,7 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
+import com.moyorak.api.auth.dto.MealTagResponseFixture;
 import com.moyorak.api.auth.service.MealTagService;
 import com.moyorak.api.party.domain.Party;
 import com.moyorak.api.party.domain.PartyAttendeeWithUserFixture;
@@ -26,6 +27,7 @@ import com.moyorak.global.domain.ListResponse;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -149,8 +151,6 @@ class PartyFacadeTest {
         private final Long userId = 9L;
         private final String userName = "홍길동";
 
-        private final PartyListRequest request = PartyListRequestFixture.fixture(5, 1);
-
         @Test
         @DisplayName("참가자가 존재하면 정상적으로 응답한다")
         void successWhenAttendeesExist() {
@@ -165,7 +165,8 @@ class PartyFacadeTest {
             given(partyAttendeeService.findPartyAttendeeWithUserByPartyIds(List.of(partyId)))
                     .willReturn(List.of(attendee));
 
-            given(mealTagService.getMealTags(List.of(userId))).willReturn(Collections.emptyMap());
+            given(mealTagService.getMealTags(List.of(userId)))
+                    .willReturn(Map.of(userId, MealTagResponseFixture.fixture("해삼", "복숭아")));
 
             // when
             final List<PartyAttendeeListResponse> result =

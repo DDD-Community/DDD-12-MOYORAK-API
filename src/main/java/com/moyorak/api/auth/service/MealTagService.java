@@ -2,11 +2,13 @@ package com.moyorak.api.auth.service;
 
 import com.moyorak.api.auth.domain.MealTag;
 import com.moyorak.api.auth.domain.MealTagType;
+import com.moyorak.api.auth.dto.MealTagResponse;
 import com.moyorak.api.auth.dto.MealTagSaveRequest;
 import com.moyorak.api.auth.repository.MealTagRepository;
 import com.moyorak.config.exception.BusinessException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -123,20 +125,26 @@ public class MealTagService {
     }
 
     @Transactional(readOnly = true)
-    public Map<Long, Map<MealTagType, List<String>>> getMealTags(final List<Long> userIds) {
-        final List<MealTag> existingTags = mealTagRepository.findByUserIdInAndUse(userIds, true);
+    public Map<Long, MealTagResponse> getMealTags(final List<Long> userIds) {
+        final List<MealTag> existing = mealTagRepository.findByUserIdInAndUse(userIds, true);
 
-        return existingTags.stream()
-                .collect(
-                        Collectors.groupingBy(
-                                MealTag::getUserId,
+        Map<Long, Map<MealTagType, List<String>>> grouped =
+                existing.stream()
+                        .collect(
                                 Collectors.groupingBy(
-                                        MealTag::getType,
-                                        Collectors.collectingAndThen(
+                                        MealTag::getUserId,
+                                        Collectors.groupingBy(
+                                                MealTag::getType,
+                                                () -> new EnumMap<>(MealTagType.class),
                                                 Collectors.mapping(
                                                         MealTag::getItem,
-                                                        Collectors.toCollection(
-                                                                LinkedHashSet::new)),
-                                                ArrayList::new))));
+                                                        Collectors.collectingAndThen(
+                                                                Collectors.toCollection(
+                                                                        LinkedHashSet::new),
+                                                                ArrayList::new)))));
+
+        return grouped.entrySet().stream()
+                .collect(
+                        Collectors.toMap(Map.Entry::getKey, e -> MealTagResponse.of(e.getValue())));
     }
 }

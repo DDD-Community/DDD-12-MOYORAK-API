@@ -1,6 +1,6 @@
 package com.moyorak.api.party.service;
 
-import com.moyorak.api.auth.domain.MealTagType;
+import com.moyorak.api.auth.dto.MealTagResponse;
 import com.moyorak.api.auth.service.MealTagService;
 import com.moyorak.api.party.domain.Party;
 import com.moyorak.api.party.dto.PartyAttendeeListResponse;
@@ -137,8 +137,7 @@ public class PartyFacade {
 
         final List<Long> userIds =
                 partyAttendees.stream().map(PartyAttendeeWithUserProfile::userId).toList();
-        final Map<Long, Map<MealTagType, List<String>>> mealTagMap =
-                mealTagService.getMealTags(userIds);
+        final Map<Long, MealTagResponse> mealTagMap = mealTagService.getMealTags(userIds);
 
         return PartyAttendeeListResponse.fromList(partyAttendees, mealTagMap);
     }
