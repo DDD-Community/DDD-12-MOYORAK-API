@@ -51,6 +51,6 @@ public class Party extends AuditInformation {
     }
 
     public static Party create(final Long teamId, final String title, final String content) {
-        return Party.builder().teamId(teamId).title(title).content(content).build();
+        return Party.builder().teamId(teamId).title(title).content(content).use(true).build();
     }
 }

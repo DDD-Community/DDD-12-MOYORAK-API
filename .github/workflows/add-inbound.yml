@@ -39,8 +39,8 @@ jobs:
           IP=${{ secrets.IP }}
           PORT=${{ github.event.inputs.port }}
 
-          if [[ "$PORT" != "22" && "$PORT" != "80" ]]; then
-            echo "❌ 허용되지 않은 포트입니다. 22 또는 80만 가능합니다."
+          if [[ "$PORT" != "22" && "$PORT" != "443" ]]; then
+            echo "❌ 허용되지 않은 포트입니다. 22 또는 443만 가능합니다."
             exit 1
           fi
 
