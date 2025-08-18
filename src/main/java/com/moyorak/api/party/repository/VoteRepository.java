@@ -13,4 +13,11 @@ public interface VoteRepository extends JpaRepository<Vote, Long> {
                     name = "org.hibernate.comment",
                     value = "VoteRepository.findByPartyIdAndUseTrue : 파티ID로 투표를 조회합니다."))
     Optional<Vote> findByPartyIdAndUseTrue(Long partyId);
+
+    @QueryHints(
+            @QueryHint(
+                    name = "org.hibernate.comment",
+                    value =
+                            "VoteRepository.findByIdAndPartyIdAndUseTrue : 투표 ID와 파티ID로 투표를 조회합니다."))
+    Optional<Vote> findByIdAndPartyIdAndUseTrue(Long id, Long partyId);
 }

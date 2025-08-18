@@ -8,6 +8,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -17,7 +18,9 @@ import org.hibernate.annotations.Comment;
 
 @Getter
 @Entity
-@Table(name = "vote_restaurant_candidate")
+@Table(
+        name = "vote_restaurant_candidate",
+        indexes = {@Index(name = "idx_vote_use", columnList = "vote_id, use_yn")})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class VoteRestaurantCandidate extends AuditInformation {
 
