@@ -5,6 +5,7 @@ import com.moyorak.api.party.dto.PartyRestaurantProjection;
 import jakarta.persistence.LockModeType;
 import jakarta.persistence.QueryHint;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.QueryHints;
@@ -56,4 +57,10 @@ public interface PartyRestaurantRepository extends CrudRepository<VoteRestaurant
                     value =
                             "PartyRestaurantRepository.findAllByVoteIdAndUseTrueForUpdate: 투표 ID로 후보 식당 리스트를 조회힙니다.(배타 락 사용)"))
     List<VoteRestaurantCandidate> findAllByVoteIdAndUseTrueForUpdate(@Param("voteId") Long voteId);
+
+    @QueryHints(
+            @QueryHint(
+                    name = "org.hibernate.comment",
+                    value = "PartyRestaurantRepository.findByIdAndUseTrue: ID로 후보 식당을 조회힙니다."))
+    Optional<VoteRestaurantCandidate> findByIdAndUseTrue(Long candidateId);
 }

@@ -14,6 +14,7 @@ import com.moyorak.api.party.repository.VoteRepository;
 import com.moyorak.config.exception.BusinessException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +30,11 @@ public class VoteService {
     private final SelectionVoteInfoRepository selectionVoteInfoRepository;
     private final RandomVoteInfoRepository randomVoteInfoRepository;
     private final PartyRestaurantRepository partyRestaurantRepository;
+
+    @Transactional(readOnly = true)
+    public Optional<Vote> getVoteByIdAndPartyId(final Long voteId, final Long partyId) {
+        return voteRepository.findByIdAndPartyIdAndUseTrue(voteId, partyId);
+    }
 
     @Transactional
     public VoteDetail getVoteDetail(final Long partyId, final LocalDateTime now) {
