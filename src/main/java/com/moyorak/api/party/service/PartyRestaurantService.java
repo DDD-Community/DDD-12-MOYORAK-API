@@ -5,6 +5,7 @@ import com.moyorak.api.party.domain.PartyRestaurants;
 import com.moyorak.api.party.domain.VoteRestaurantCandidate;
 import com.moyorak.api.party.dto.PartyRestaurantAppendRequest;
 import com.moyorak.api.party.dto.PartyRestaurantProjection;
+import com.moyorak.api.party.dto.PartySaveRestaurantsRequest;
 import com.moyorak.api.party.repository.PartyRepository;
 import com.moyorak.api.party.repository.PartyRestaurantRepository;
 import com.moyorak.api.party.repository.VoteRepository;
@@ -80,5 +81,22 @@ public class PartyRestaurantService {
         if (!Objects.equals(teamUser.getTeam().getId(), party.getTeamId())) {
             throw new BusinessException("해당 팀에 존재하지 않는 파티입니다.");
         }
+    }
+
+    /**
+     * 투표 참여 식당을 지정합니다.
+     *
+     * @param voteId 투표 고유 ID
+     * @param restaurants 식당 고유 ID
+     */
+    @Transactional
+    public void registerRestaurants(
+            final Long voteId, final PartySaveRestaurantsRequest restaurants) {
+        final List<VoteRestaurantCandidate> candidates =
+                restaurants.getIds().stream()
+                        .map(it -> VoteRestaurantCandidate.create(it.getRestaurantId(), voteId))
+                        .toList();
+
+        partyRestaurantRepository.saveAll(candidates);
     }
 }

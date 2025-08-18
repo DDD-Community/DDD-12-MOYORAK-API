@@ -4,6 +4,7 @@ import com.moyorak.api.party.domain.RandomVoteInfo;
 import com.moyorak.api.party.domain.SelectionVoteInfo;
 import com.moyorak.api.party.domain.Vote;
 import com.moyorak.api.party.domain.VoteRestaurantCandidate;
+import com.moyorak.api.party.domain.VoteType;
 import com.moyorak.api.party.dto.VoteDetail;
 import com.moyorak.api.party.dto.VoteInfo;
 import com.moyorak.api.party.repository.PartyRestaurantRepository;
@@ -97,5 +98,40 @@ public class VoteService {
         final Long selectedCandidateId =
                 randomVoteInfoRepository.findSelectedCandidateIdById(randomVoteInfo.getId());
         randomVoteInfo.confirmRandomCandidate(selectedCandidateId);
+    }
+
+    @Transactional
+    public void updateVoteStatus(final Long partyId, final LocalDateTime now) {
+        final Vote vote =
+                voteRepository
+                        .findByPartyIdAndUseTrue(partyId)
+                        .orElseThrow(() -> new BusinessException("투표가 존재하지 않습니다."));
+
+        if (vote.isSelectVote()) {
+            final SelectionVoteInfo selectionVoteInfo =
+                    selectionVoteInfoRepository
+                            .findByVoteIdAndUseTrue(vote.getId())
+                            .orElseThrow(() -> new BusinessException("선택 투표 정보가 존재하지 않습니다."));
+            vote.changeStatusByNowForSelectionVote(now, selectionVoteInfo);
+
+        } else {
+            final RandomVoteInfo randomVoteInfo =
+                    randomVoteInfoRepository
+                            .findByVoteIdAndUseTrue(vote.getId())
+                            .orElseThrow(() -> new BusinessException("랜덤 투표 정보가 존재하지 않습니다."));
+            vote.changeStatusByNowForRandomVote(now, randomVoteInfo);
+        }
+    }
+
+    /**
+     * 투표를 생성합니다.
+     *
+     * @param partyId 파티 고유 ID
+     * @param voteType 파티 타입
+     * @return 투표 고유 ID
+     */
+    @Transactional
+    public Long register(final Long partyId, final VoteType voteType) {
+        return voteRepository.save(Vote.create(partyId, voteType)).getId();
     }
 }

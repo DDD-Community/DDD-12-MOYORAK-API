@@ -10,6 +10,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
@@ -37,12 +38,13 @@ public class PartyAttendee extends AuditInformation {
     @Column(name = "member_id", nullable = false, columnDefinition = "bigint")
     private Long userId;
 
+    @Builder(access = AccessLevel.PRIVATE)
+    PartyAttendee(Long partyId, Long userId) {
+        this.partyId = partyId;
+        this.userId = userId;
+    }
+
     public static PartyAttendee create(final Long partyId, final Long userId) {
-        PartyAttendee partyAttendee = new PartyAttendee();
-
-        partyAttendee.partyId = partyId;
-        partyAttendee.userId = userId;
-
-        return partyAttendee;
+        return PartyAttendee.builder().partyId(partyId).userId(userId).build();
     }
 }

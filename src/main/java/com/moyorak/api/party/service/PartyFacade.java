@@ -1,5 +1,9 @@
 package com.moyorak.api.party.service;
 
+import com.moyorak.api.auth.dto.MealTagResponse;
+import com.moyorak.api.auth.service.MealTagService;
+import com.moyorak.api.party.domain.Party;
+import com.moyorak.api.party.dto.PartyAttendeeListResponse;
 import com.moyorak.api.party.dto.PartyAttendeeWithUserProfile;
 import com.moyorak.api.party.dto.PartyGeneralInfoProjection;
 import com.moyorak.api.party.dto.PartyInfo;
@@ -8,6 +12,7 @@ import com.moyorak.api.party.dto.PartyListResponse;
 import com.moyorak.api.party.dto.PartyListStore;
 import com.moyorak.api.party.dto.PartyResponse;
 import com.moyorak.api.party.dto.PartyRestaurantProjection;
+import com.moyorak.api.party.dto.PartySaveRequest;
 import com.moyorak.api.party.dto.RestaurantCandidateResponse;
 import com.moyorak.api.party.dto.VoteDetail;
 import com.moyorak.api.party.dto.Voter;
@@ -15,9 +20,12 @@ import com.moyorak.api.review.domain.FirstReviewPhotoPaths;
 import com.moyorak.api.review.service.ReviewPhotoService;
 import com.moyorak.api.team.domain.TeamRestaurantSummaries;
 import com.moyorak.api.team.service.TeamRestaurantService;
+import com.moyorak.api.team.service.TeamService;
+import com.moyorak.config.exception.BusinessException;
 import com.moyorak.global.domain.ListResponse;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,6 +41,8 @@ public class PartyFacade {
     private final VoteRecordService voteRecordService;
     private final PartyRestaurantService partyRestaurantService;
     private final PartyAttendeeService partyAttendeeService;
+    private final MealTagService mealTagService;
+    private final TeamService teamService;
 
     @Transactional
     public PartyResponse getParty(final Long partyId) {
@@ -64,11 +74,12 @@ public class PartyFacade {
         return PartyResponse.from(partyInfo, voteDetail.voteInfo(), candidateResponses, voters);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public ListResponse<PartyListResponse> getParties(
             final Long teamId, final Long userId, final PartyListRequest partyListRequest) {
         final List<PartyGeneralInfoProjection> parties = partyService.findPartyGeneralInfos(teamId);
-
+        final LocalDateTime now = LocalDateTime.now();
+        parties.forEach(p -> voteService.updateVoteStatus(p.id(), now));
         final List<Long> partyIds = parties.stream().map(PartyGeneralInfoProjection::id).toList();
 
         final List<PartyRestaurantProjection> partyRestaurantProjections =
@@ -84,5 +95,50 @@ public class PartyFacade {
 
         return ListResponse.from(
                 PartyListResponse.toPage(partyListResponses, partyListRequest.toPageable()));
+    }
+
+    /**
+     * 파티를 생성합니다.
+     *
+     * @param teamId 팀 고유 ID
+     * @param request 파티 생성 요청 DTO
+     */
+    @Transactional
+    public void partyRegister(final Long teamId, final PartySaveRequest request) {
+        // 1. 팀 존재 여부 확인
+        if (!teamService.existTeam(teamId)) {
+            throw new BusinessException("존재하지 않는 팀입니다.");
+        }
+
+        // 2. 파티 생성
+        final Long partyId =
+                partyService.register(teamId, request.getTitle(), request.getContent());
+
+        // 3. 투표 생성
+        final Long voteId = voteService.register(partyId, request.getVoteType());
+
+        // 4. 파티 회원 등록
+        partyAttendeeService.registerUsers(partyId, request.getUserSelections().getUsers());
+
+        // 5. 파티 식당 등록
+        partyRestaurantService.registerRestaurants(
+                voteId, request.getRestaurantSelections().getRestaurants());
+    }
+
+    @Transactional(readOnly = true)
+    public List<PartyAttendeeListResponse> getPartyAttendees(
+            final Long partyId, final Long teamId) {
+        final Party party = partyService.getParty(partyId);
+        if (!party.getTeamId().equals(teamId)) {
+            throw new BusinessException("해당 팀의 파티가 아닙니다.");
+        }
+        final List<PartyAttendeeWithUserProfile> partyAttendees =
+                partyAttendeeService.findPartyAttendeeWithUserByPartyIds(List.of(partyId));
+
+        final List<Long> userIds =
+                partyAttendees.stream().map(PartyAttendeeWithUserProfile::userId).toList();
+        final Map<Long, MealTagResponse> mealTagMap = mealTagService.getMealTags(userIds);
+
+        return PartyAttendeeListResponse.fromList(partyAttendees, mealTagMap);
     }
 }

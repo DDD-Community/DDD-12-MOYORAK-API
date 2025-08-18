@@ -41,6 +41,12 @@ public class AuthService {
         return new SignInResponse(token, refreshToken);
     }
 
+    /**
+     * 로그아웃을 요청합니다. <br>
+     * 토큰 정보를 초기화합니다.
+     *
+     * @param userId 회원 고유 ID
+     */
     @Transactional
     public void signOut(final Long userId) {
         UserToken userToken = getUserLastToken(userId);

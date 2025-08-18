@@ -11,6 +11,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
@@ -41,12 +42,16 @@ public class VoteRestaurantCandidate extends AuditInformation {
     @Column(name = "use_yn", nullable = false, columnDefinition = "char(1)")
     private boolean use = true;
 
+    @Builder(access = AccessLevel.PRIVATE)
+    VoteRestaurantCandidate(Long teamRestaurantId, Long voteId) {
+        this.teamRestaurantId = teamRestaurantId;
+        this.voteId = voteId;
+    }
+
     public static VoteRestaurantCandidate create(final Long teamRestaurantId, final Long voteId) {
-        VoteRestaurantCandidate candidate = new VoteRestaurantCandidate();
-
-        candidate.teamRestaurantId = teamRestaurantId;
-        candidate.voteId = voteId;
-
-        return candidate;
+        return VoteRestaurantCandidate.builder()
+                .teamRestaurantId(teamRestaurantId)
+                .voteId(voteId)
+                .build();
     }
 }

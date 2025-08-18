@@ -8,6 +8,7 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.data.repository.query.Param;
@@ -16,24 +17,24 @@ public interface TeamUserRepository extends JpaRepository<TeamUser, Long> {
 
     @Query(
             """
-        SELECT tu
-        FROM TeamUser tu
-        JOIN FETCH tu.team t
-        JOIN FETCH t.company
-        WHERE tu.userId = :userId
-        AND tu.team.id = :teamId
-        and tu.use = :use
-""")
+                    SELECT tu
+                    FROM TeamUser tu
+                    JOIN FETCH tu.team t
+                    JOIN FETCH t.company
+                    WHERE tu.userId = :userId
+                    AND tu.team.id = :teamId
+                    and tu.use = :use
+            """)
     Optional<TeamUser> findWithTeamAndCompany(
             @Param("teamId") Long teamId, @Param("userId") Long userId, @Param("use") boolean use);
 
     @Query(
             """
-        SELECT tu
-        FROM TeamUser tu
-        JOIN Team t ON tu.team.id = t.id
-        WHERE tu.userId = :userId AND tu.team.id = :teamId AND tu.use = :use
-""")
+                    SELECT tu
+                    FROM TeamUser tu
+                    JOIN Team t ON tu.team.id = t.id
+                    WHERE tu.userId = :userId AND tu.team.id = :teamId AND tu.use = :use
+            """)
     @QueryHints(
             @QueryHint(
                     name = "org.hibernate.comment",
@@ -43,12 +44,12 @@ public interface TeamUserRepository extends JpaRepository<TeamUser, Long> {
 
     @Query(
             """
-        SELECT new com.moyorak.api.team.dto.TeamUserResponse(tu.id, u.name, u.email, u.profileImage, tu.status)
-        FROM TeamUser tu
-        JOIN User u ON tu.userId = u.id
-        WHERE tu.team.id = :teamId AND tu.status = :status
-        AND tu.use = :use AND u.use = true
-        """)
+            SELECT new com.moyorak.api.team.dto.TeamUserResponse(tu.id, u.name, u.email, u.profileImage, tu.status)
+            FROM TeamUser tu
+            JOIN User u ON tu.userId = u.id
+            WHERE tu.team.id = :teamId AND tu.status = :status
+            AND tu.use = :use AND u.use = true
+            """)
     @QueryHints(
             @QueryHint(
                     name = "org.hibernate.comment",
@@ -59,6 +60,23 @@ public interface TeamUserRepository extends JpaRepository<TeamUser, Long> {
             @Param("use") boolean use,
             Pageable pageable);
 
+    @Query(
+            """
+        SELECT exists(
+            SELECT 1
+            FROM TeamUser tu
+            JOIN Team t ON tu.team.id = t.id
+            WHERE tu.userId = :userId
+            AND tu.role = '관리자'
+            AND tu.use = true
+        )
+    """)
+    @QueryHints(
+            @QueryHint(
+                    name = "org.hibernate.comment",
+                    value = "TeamUserRepository.isTeamAdmin : 팀에 관리자로 존재하는 데이터가 있는지 조회합니다."))
+    boolean isTeamAdmin(@Param("userId") Long userId);
+
     @QueryHints(
             @QueryHint(
                     name = "org.hibernate.comment",
@@ -66,4 +84,17 @@ public interface TeamUserRepository extends JpaRepository<TeamUser, Long> {
     Optional<TeamUser> findByIdAndUseAndStatus(Long id, boolean use, TeamUserStatus status);
 
     boolean existsByUserIdAndUseIsTrue(Long userId);
+
+    @Modifying
+    @Query(
+            """
+                  UPDATE TeamUser tu
+                  SET tu.userId = null
+                  WHERE tu.userId = :userId
+            """)
+    @QueryHints(
+            @QueryHint(
+                    name = "org.hibernate.comment",
+                    value = "TeamUserRepository.clearUserId : 과거 팀에 속해있던 정보를 clear합니다."))
+    int clearUserId(final Long userId);
 }
