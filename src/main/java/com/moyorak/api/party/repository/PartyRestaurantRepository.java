@@ -2,11 +2,14 @@ package com.moyorak.api.party.repository;
 
 import com.moyorak.api.party.domain.VoteRestaurantCandidate;
 import com.moyorak.api.party.dto.PartyRestaurantProjection;
+import jakarta.persistence.LockModeType;
 import jakarta.persistence.QueryHint;
 import java.util.List;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
 
 public interface PartyRestaurantRepository extends CrudRepository<VoteRestaurantCandidate, Long> {
 
@@ -39,4 +42,18 @@ public interface PartyRestaurantRepository extends CrudRepository<VoteRestaurant
                     value =
                             "VoteRestaurantCandidateRepository.findAllByVoteIdAndUseTrue : 투표 ID로 후보 식당 리스트를 조회합니다."))
     List<VoteRestaurantCandidate> findAllByVoteIdAndUseTrue(Long voteId);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query(
+            """
+            SELECT vrc
+            FROM VoteRestaurantCandidate vrc
+            WHERE vrc.voteId = :voteId AND vrc.use = true
+        """)
+    @QueryHints(
+            @QueryHint(
+                    name = "org.hibernate.comment",
+                    value =
+                            "PartyRestaurantRepository.findAllByVoteIdAndUseTrueForUpdate: 투표 ID로 후보 식당 리스트를 조회힙니다.(배타 락 사용)"))
+    List<VoteRestaurantCandidate> findAllByVoteIdAndUseTrueForUpdate(@Param("voteId") Long voteId);
 }
