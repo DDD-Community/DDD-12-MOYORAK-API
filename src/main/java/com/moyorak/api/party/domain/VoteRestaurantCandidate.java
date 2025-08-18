@@ -8,6 +8,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -16,7 +17,9 @@ import org.hibernate.annotations.Comment;
 
 @Getter
 @Entity
-@Table(name = "vote_restaurant_candidate")
+@Table(
+        name = "vote_restaurant_candidate",
+        indexes = {@Index(name = "idx_vote_use", columnList = "vote_id, use_yn")})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class VoteRestaurantCandidate extends AuditInformation {
 
@@ -37,4 +40,13 @@ public class VoteRestaurantCandidate extends AuditInformation {
     @Convert(converter = BooleanYnConverter.class)
     @Column(name = "use_yn", nullable = false, columnDefinition = "char(1)")
     private boolean use = true;
+
+    public static VoteRestaurantCandidate create(final Long teamRestaurantId, final Long voteId) {
+        VoteRestaurantCandidate candidate = new VoteRestaurantCandidate();
+
+        candidate.teamRestaurantId = teamRestaurantId;
+        candidate.voteId = voteId;
+
+        return candidate;
+    }
 }
