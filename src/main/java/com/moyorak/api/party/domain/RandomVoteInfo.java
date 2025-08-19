@@ -9,13 +9,19 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
 
 @Getter
 @Entity
 @Table(name = "random_vote_info")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class RandomVoteInfo extends AuditInformation {
 
     @Id
@@ -43,6 +49,29 @@ public class RandomVoteInfo extends AuditInformation {
     @Convert(converter = BooleanYnConverter.class)
     @Column(name = "use_yn", nullable = false, columnDefinition = "char(1)")
     private boolean use = true;
+
+    @Builder(access = AccessLevel.PRIVATE)
+    private RandomVoteInfo(
+            LocalDateTime randomDate,
+            LocalDateTime mealDate,
+            Long voteId,
+            Long selectedCandidateId,
+            boolean use) {
+        this.randomDate = randomDate;
+        this.mealDate = mealDate;
+        this.voteId = voteId;
+        this.selectedCandidateId = selectedCandidateId;
+        this.use = use;
+    }
+
+    public static RandomVoteInfo generate(
+            final Long voteId, final LocalDate date, final LocalTime randomDate) {
+        return RandomVoteInfo.builder()
+                .voteId(voteId)
+                .randomDate(LocalDateTime.of(date, randomDate))
+                .use(true)
+                .build();
+    }
 
     public void confirmRandomCandidate(final Long candidateId) {
         selectedCandidateId = candidateId;
