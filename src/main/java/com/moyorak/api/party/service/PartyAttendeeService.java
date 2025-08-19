@@ -13,7 +13,6 @@ import com.moyorak.api.team.repository.TeamUserRepository;
 import com.moyorak.config.exception.BusinessException;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,9 +32,10 @@ public class PartyAttendeeService {
     }
 
     @Transactional(readOnly = true)
-    public Optional<PartyAttendee> getTeamUserByUserIdAndTeamId(
-            final Long userId, final Long partyId) {
-        return partyAttendeeRepository.findByPartyIdAndUserIdAndUseTrue(partyId, userId);
+    public PartyAttendee getPartyAttendeeByUserIdAndPartyId(final Long userId, final Long partyId) {
+        return partyAttendeeRepository
+                .findByPartyIdAndUserIdAndUseTrue(partyId, userId)
+                .orElseThrow(() -> new BusinessException("파티 참가자가 존재하지 않습니다."));
     }
 
     @Transactional

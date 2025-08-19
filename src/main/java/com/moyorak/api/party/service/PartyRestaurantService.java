@@ -15,7 +15,6 @@ import com.moyorak.api.team.repository.TeamUserRepository;
 import com.moyorak.config.exception.BusinessException;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,8 +28,10 @@ public class PartyRestaurantService {
     private final VoteRepository voteRepository;
 
     @Transactional(readOnly = true)
-    public Optional<VoteRestaurantCandidate> getById(final Long candidateId) {
-        return partyRestaurantRepository.findByIdAndUseTrue(candidateId);
+    public VoteRestaurantCandidate getById(final Long candidateId) {
+        return partyRestaurantRepository
+                .findByIdAndUseTrue(candidateId)
+                .orElseThrow(() -> new BusinessException("후보가 존재하지 않습니다."));
     }
 
     @Transactional(readOnly = true)

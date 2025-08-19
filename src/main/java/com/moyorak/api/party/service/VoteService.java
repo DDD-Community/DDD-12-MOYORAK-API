@@ -14,7 +14,6 @@ import com.moyorak.api.party.repository.VoteRepository;
 import com.moyorak.config.exception.BusinessException;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,8 +31,10 @@ public class VoteService {
     private final PartyRestaurantRepository partyRestaurantRepository;
 
     @Transactional(readOnly = true)
-    public Optional<Vote> getVoteByIdAndPartyId(final Long voteId, final Long partyId) {
-        return voteRepository.findByIdAndPartyIdAndUseTrue(voteId, partyId);
+    public Vote getVoteByIdAndPartyId(final Long voteId, final Long partyId) {
+        return voteRepository
+                .findByIdAndPartyIdAndUseTrue(voteId, partyId)
+                .orElseThrow(() -> new BusinessException("투표가 존재하지 않습니다."));
     }
 
     @Transactional

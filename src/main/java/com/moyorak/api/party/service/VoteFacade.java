@@ -2,6 +2,7 @@ package com.moyorak.api.party.service;
 
 import com.moyorak.api.party.domain.Party;
 import com.moyorak.api.party.domain.VoteRecord;
+import com.moyorak.api.party.domain.VoteRestaurantCandidate;
 import com.moyorak.api.party.dto.VoteRequest;
 import com.moyorak.api.team.domain.TeamUser;
 import com.moyorak.api.team.domain.TeamUserNotFoundException;
@@ -41,25 +42,16 @@ public class VoteFacade {
         }
 
         // 파티 참가자가 존재하는지
-        boolean isAttendeePresent =
-                partyAttendeeService.getTeamUserByUserIdAndTeamId(userId, partyId).isPresent();
-
-        if (!isAttendeePresent) {
-            throw new BusinessException("파티 참가자가 존재하지 않습니다.");
-        }
+        partyAttendeeService.getPartyAttendeeByUserIdAndPartyId(userId, partyId);
 
         // 투표가 존재하는지
-        boolean isVotePresent = voteService.getVoteByIdAndPartyId(voteId, partyId).isPresent();
-
-        if (!isVotePresent) {
-            throw new BusinessException("투표가 존재하지 않습니다.");
-        }
+        voteService.getVoteByIdAndPartyId(voteId, partyId);
 
         // 후보가 존재하는지
-        boolean isCandidatePresent =
-                partyRestaurantService.getById(voteRequest.candidateId()).isPresent();
-        if (!isCandidatePresent) {
-            throw new BusinessException("후보가 존재하지 않습니다.");
+        final VoteRestaurantCandidate candidate =
+                partyRestaurantService.getById(voteRequest.candidateId());
+        if (!Objects.equals(candidate.getVoteId(), voteId)) {
+            throw new BusinessException("해당 투표의 후보가 아닙니다.");
         }
 
         // 재투표시, 기존 데이터 사용 유무 불가 처리
@@ -68,6 +60,10 @@ public class VoteFacade {
         boolean isVoteRecordPresent = voteRecord.isPresent();
         if (isVoteRecordPresent) {
             VoteRecord existingRecord = voteRecord.get();
+            if (Objects.equals(
+                    existingRecord.getVoteRestaurantCandidateId(), voteRequest.candidateId())) {
+                throw new BusinessException("이미 투표한 후보 입니다.");
+            }
             existingRecord.toggleUse();
         }
         // 투표 기록 저장
