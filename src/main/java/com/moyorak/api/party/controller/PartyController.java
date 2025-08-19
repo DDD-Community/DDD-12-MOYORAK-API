@@ -35,6 +35,7 @@ class PartyController {
     @GetMapping("/teams/{teamId}/parties/{partyId}")
     @Operation(summary = "파티 상세 조회", description = "파티 상세 조회를 합니다.")
     public PartyResponse getParty(
+            @PathVariable @Positive final Long teamId,
             @PathVariable @Positive final Long partyId,
             @AuthenticationPrincipal final UserPrincipal userPrincipal) {
         return partyFacade.getParty(partyId, userPrincipal.getId());
