@@ -1,7 +1,9 @@
 package com.moyorak.api.party.service;
 
 import com.moyorak.api.auth.dto.MealTagResponse;
+import com.moyorak.api.auth.dto.UserDailyStatesResponse;
 import com.moyorak.api.auth.service.MealTagService;
+import com.moyorak.api.auth.service.UserService;
 import com.moyorak.api.party.domain.Party;
 import com.moyorak.api.party.dto.PartyAttendeeListResponse;
 import com.moyorak.api.party.dto.PartyAttendeeWithUserProfile;
@@ -23,6 +25,7 @@ import com.moyorak.api.team.service.TeamRestaurantService;
 import com.moyorak.api.team.service.TeamService;
 import com.moyorak.config.exception.BusinessException;
 import com.moyorak.global.domain.ListResponse;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -43,6 +46,7 @@ public class PartyFacade {
     private final PartyAttendeeService partyAttendeeService;
     private final MealTagService mealTagService;
     private final TeamService teamService;
+    private final UserService userService;
 
     @Transactional
     public PartyResponse getParty(final Long partyId) {
@@ -140,5 +144,16 @@ public class PartyFacade {
         final Map<Long, MealTagResponse> mealTagMap = mealTagService.getMealTags(userIds);
 
         return PartyAttendeeListResponse.fromList(partyAttendees, mealTagMap);
+    }
+
+    @Transactional(readOnly = true)
+    public List<UserDailyStatesResponse> getUsers(final Long teamId) {
+        // 1. 팀 존재 여부 확인
+        if (!teamService.existTeam(teamId)) {
+            throw new BusinessException("존재하지 않는 팀입니다.");
+        }
+
+        // 2. 혼밥 정보를 포함한 회원 정보 조회
+        return userService.getUsersWithDailyState(LocalDate.now());
     }
 }

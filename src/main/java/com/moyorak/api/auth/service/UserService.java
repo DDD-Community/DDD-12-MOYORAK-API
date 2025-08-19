@@ -4,8 +4,11 @@ import com.moyorak.api.auth.domain.User;
 import com.moyorak.api.auth.domain.UserNotFoundException;
 import com.moyorak.api.auth.dto.SignUpRequest;
 import com.moyorak.api.auth.dto.SignUpResponse;
+import com.moyorak.api.auth.dto.UserDailyStatesResponse;
 import com.moyorak.api.auth.repository.UserRepository;
 import com.moyorak.config.exception.BusinessException;
+import java.time.LocalDate;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,5 +48,10 @@ public class UserService {
 
         // 2. 사용하지 않는 정보 clear
         user.unregister();
+    }
+
+    @Transactional(readOnly = true)
+    public List<UserDailyStatesResponse> getUsersWithDailyState(final LocalDate today) {
+        return userRepository.findByUsersWithDailyState(today);
     }
 }
