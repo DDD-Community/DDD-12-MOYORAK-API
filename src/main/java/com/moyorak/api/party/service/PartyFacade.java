@@ -45,7 +45,7 @@ public class PartyFacade {
     private final TeamService teamService;
 
     @Transactional
-    public PartyResponse getParty(final Long partyId) {
+    public PartyResponse getParty(final Long partyId, final Long userId) {
 
         // 파티 정보 가져오기
         final PartyInfo partyInfo = partyService.getPartyInfo(partyId);
@@ -65,13 +65,17 @@ public class PartyFacade {
                 reviewPhotoService.findFirstReviewPhotoPaths(
                         teamRestaurantSummaries.getTeamRestaurantIds());
 
+        // 참석 여부 확인
+        final boolean attended = partyAttendeeService.existAttendee(partyId, userId);
+
         // 응답
         final List<RestaurantCandidateResponse> candidateResponses =
                 RestaurantCandidateResponse.listFrom(
                         teamRestaurantSummaries,
                         firstReviewPhotoPaths,
                         voteDetail.RestaurantCandidates());
-        return PartyResponse.from(partyInfo, voteDetail.voteInfo(), candidateResponses, voters);
+        return PartyResponse.from(
+                partyInfo, voteDetail.voteInfo(), candidateResponses, voters, attended);
     }
 
     @Transactional

@@ -79,4 +79,9 @@ public class PartyAttendeeService {
 
         partyAttendeeRepository.saveAll(partyAttendees);
     }
+
+    @Transactional(readOnly = true)
+    public boolean existAttendee(final Long partyId, final Long userId) {
+        return partyAttendeeRepository.existsByPartyIdAndUserIdAndUseTrue(partyId, userId);
+    }
 }

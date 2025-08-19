@@ -17,12 +17,14 @@ public record PartyResponse(
         @ArraySchema(
                         schema = @Schema(implementation = VoterResponse.class),
                         arraySchema = @Schema(description = "투표자 목록"))
-                List<VoterResponse> voters) {
+                List<VoterResponse> voters,
+        @Schema(description = "참석 여부", example = "true") boolean attended) {
     public static PartyResponse from(
             final PartyInfo partyInfo,
             final VoteInfo voteInfo,
             final List<RestaurantCandidateResponse> candidates,
-            final List<Voter> voters) {
+            final List<Voter> voters,
+            final boolean attended) {
 
         final List<VoterResponse> voterResponses =
                 voters.stream().map(VoterResponse::from).toList();
@@ -33,6 +35,7 @@ public record PartyResponse(
                 partyInfo.content(),
                 VoteResponse.from(voteInfo),
                 candidates,
-                voterResponses);
+                voterResponses,
+                attended);
     }
 }
