@@ -147,13 +147,13 @@ public class PartyFacade {
     }
 
     @Transactional(readOnly = true)
-    public List<UserDailyStatesResponse> getUsers(final Long teamId) {
+    public List<UserDailyStatesResponse> getUsers(final Long teamId, final Long userId) {
         // 1. 팀 존재 여부 확인
         if (!teamService.existTeam(teamId)) {
             throw new BusinessException("존재하지 않는 팀입니다.");
         }
 
         // 2. 혼밥 정보를 포함한 회원 정보 조회
-        return userService.getUsersWithDailyState(LocalDate.now());
+        return userService.getUsersWithDailyState(LocalDate.now(), userId);
     }
 }

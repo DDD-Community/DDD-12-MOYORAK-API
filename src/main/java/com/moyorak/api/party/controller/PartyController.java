@@ -59,7 +59,9 @@ class PartyController {
 
     @GetMapping("/teams/{teamId}/parties/users")
     @Operation(summary = "파티에 추가할 회원 목록", description = "파티에 추가할 회원에 대한 목록을 조회합니다.")
-    public List<UserDailyStatesResponse> getUsers(@PathVariable @Positive final Long teamId) {
-        return partyFacade.getUsers(teamId);
+    public List<UserDailyStatesResponse> getUsers(
+            @PathVariable @Positive final Long teamId,
+            @AuthenticationPrincipal final UserPrincipal userPrincipal) {
+        return partyFacade.getUsers(teamId, userPrincipal.getId());
     }
 }

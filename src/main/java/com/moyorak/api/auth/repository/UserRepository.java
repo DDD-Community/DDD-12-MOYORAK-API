@@ -31,10 +31,13 @@ public interface UserRepository extends CrudRepository<User, Long> {
         FROM User u
         LEFT JOIN UserDailyState uds ON uds.userId = u.id AND uds.recordDate = :today
         WHERE u.use = true
+        AND u.id <> :userId
         """)
     @QueryHints(
             @QueryHint(
                     name = "org.hibernate.comment",
-                    value = "UserRepository.findByUsersWithDailyState : 혼밥 여부가 포함된 회원 정보를 조회합니다."))
-    List<UserDailyStatesResponse> findByUsersWithDailyState(@Param("today") LocalDate today);
+                    value =
+                            "UserRepository.findByUsersWithDailyState : 혼밥 여부가 포함된 회원 정보를 조회합니다. 본인 ID는 제외하고 조회합니다."))
+    List<UserDailyStatesResponse> findByUsersWithDailyState(
+            @Param("today") LocalDate today, @Param("userId") Long userId);
 }

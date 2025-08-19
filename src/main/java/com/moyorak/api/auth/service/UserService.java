@@ -51,7 +51,8 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public List<UserDailyStatesResponse> getUsersWithDailyState(final LocalDate today) {
-        return userRepository.findByUsersWithDailyState(today);
+    public List<UserDailyStatesResponse> getUsersWithDailyState(
+            final LocalDate today, final Long userId) {
+        return userRepository.findByUsersWithDailyState(today, userId);
     }
 }
