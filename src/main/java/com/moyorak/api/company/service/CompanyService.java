@@ -4,6 +4,7 @@ import com.moyorak.api.company.domain.Company;
 import com.moyorak.api.company.domain.CompanySearch;
 import com.moyorak.api.company.dto.CompanyPositionResponse;
 import com.moyorak.api.company.dto.CompanySaveRequest;
+import com.moyorak.api.company.dto.CompanySaveResponse;
 import com.moyorak.api.company.dto.CompanySearchListResponse;
 import com.moyorak.api.company.dto.CompanySearchRequest;
 import com.moyorak.api.company.repository.CompanyRepository;
@@ -22,7 +23,7 @@ public class CompanyService {
     private final CompanySearchRepository companySearchRepository;
 
     @Transactional
-    public void save(CompanySaveRequest saveRequest) {
+    public CompanySaveResponse save(CompanySaveRequest saveRequest) {
         final Company company = saveRequest.toCompany();
 
         final boolean isSaved =
@@ -37,7 +38,10 @@ public class CompanyService {
             throw new BusinessException("회사가 이미 등록되어 있습니다.");
         }
         final Company saved = companyRepository.save(company);
+
         companySearchRepository.save(CompanySearch.create(saved.getId(), saved.getName()));
+
+        return CompanySaveResponse.from(saved.getId());
     }
 
     @Transactional(readOnly = true)

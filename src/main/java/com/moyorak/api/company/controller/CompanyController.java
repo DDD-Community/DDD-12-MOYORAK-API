@@ -2,6 +2,7 @@ package com.moyorak.api.company.controller;
 
 import com.moyorak.api.company.dto.CompanyPositionResponse;
 import com.moyorak.api.company.dto.CompanySaveRequest;
+import com.moyorak.api.company.dto.CompanySaveResponse;
 import com.moyorak.api.company.dto.CompanySearchListResponse;
 import com.moyorak.api.company.dto.CompanySearchRequest;
 import com.moyorak.api.company.service.CompanyService;
@@ -28,8 +29,8 @@ class CompanyController {
 
     @PostMapping
     @Operation(summary = "회사 저장", description = "회사를 저장 합니다.")
-    public void save(@Valid @RequestBody final CompanySaveRequest saveRequest) {
-        companyService.save(saveRequest);
+    public CompanySaveResponse save(@Valid @RequestBody final CompanySaveRequest saveRequest) {
+        return companyService.save(saveRequest);
     }
 
     @GetMapping
