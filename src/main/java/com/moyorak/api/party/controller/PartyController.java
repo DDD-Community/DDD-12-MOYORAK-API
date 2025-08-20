@@ -1,6 +1,7 @@
 package com.moyorak.api.party.controller;
 
 import com.moyorak.api.auth.domain.UserPrincipal;
+import com.moyorak.api.auth.dto.UserDailyStatesResponse;
 import com.moyorak.api.party.dto.PartyListRequest;
 import com.moyorak.api.party.dto.PartyListResponse;
 import com.moyorak.api.party.dto.PartyResponse;
@@ -12,6 +13,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
@@ -53,5 +55,13 @@ class PartyController {
             @PathVariable @Positive final Long teamId,
             @RequestBody @Valid final PartySaveRequest request) {
         partyFacade.partyRegister(teamId, request);
+    }
+
+    @GetMapping("/teams/{teamId}/parties/users")
+    @Operation(summary = "파티에 추가할 회원 목록", description = "파티에 추가할 회원에 대한 목록을 조회합니다.")
+    public List<UserDailyStatesResponse> getUsers(
+            @PathVariable @Positive final Long teamId,
+            @AuthenticationPrincipal final UserPrincipal userPrincipal) {
+        return partyFacade.getUsers(teamId, userPrincipal.getId());
     }
 }
