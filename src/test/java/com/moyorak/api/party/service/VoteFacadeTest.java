@@ -1,7 +1,6 @@
 package com.moyorak.api.party.service;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.*;
@@ -10,8 +9,6 @@ import com.moyorak.api.party.domain.Party;
 import com.moyorak.api.party.domain.PartyAttendee;
 import com.moyorak.api.party.domain.PartyAttendeeFixture;
 import com.moyorak.api.party.domain.PartyFixture;
-import com.moyorak.api.party.domain.VoteRecord;
-import com.moyorak.api.party.domain.VoteRecordFixture;
 import com.moyorak.api.party.domain.VoteRestaurantCandidate;
 import com.moyorak.api.party.domain.VoteRestaurantCandidateFixture;
 import com.moyorak.api.party.dto.VoteRequest;
@@ -25,7 +22,6 @@ import com.moyorak.api.team.domain.TeamUserNotFoundException;
 import com.moyorak.api.team.domain.TeamUserStatus;
 import com.moyorak.api.team.service.TeamUserService;
 import com.moyorak.config.exception.BusinessException;
-import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -208,10 +204,9 @@ class VoteFacadeTest {
                     VoteRestaurantCandidateFixture.fixture(candidateId, voteId, 5L, true);
             given(partyRestaurantService.getById(candidateId)).willReturn(candidate);
 
-            final VoteRecord existing =
-                    VoteRecordFixture.fixture(1L, voteId, candidateId, userId, true);
-            given(voteRecordService.findByVoteIdAndUserIdAndUseTrue(userId, voteId))
-                    .willReturn(Optional.of(existing));
+            willThrow(new BusinessException("이미 투표한 후보 입니다."))
+                    .given(voteRecordService)
+                    .vote(userId, voteId, candidateId);
 
             // when & then
             assertThatThrownBy(
@@ -224,41 +219,6 @@ class VoteFacadeTest {
                                             voteRequest(candidateId)))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("이미 투표한 후보 입니다.");
-
-            verify(voteRecordService, never()).save(any());
-        }
-
-        @Test
-        @DisplayName("재투표 시 기존 활성 레코드를 비활성화하고 새 레코드를 저장한다.")
-        void revoteDifferentCandidate() {
-            // given
-            final TeamUser teamUser = teamUserOf(teamId);
-            final Party party = PartyFixture.fixture(partyId, teamId);
-            final Long oldCandidateId = 1111L;
-            final Long newCandidateId = 2222L;
-            final PartyAttendee partyAttendee =
-                    PartyAttendeeFixture.fixture(1L, true, partyId, userId);
-
-            given(teamUserService.getTeamUserByUserIdAndTeamId(userId, teamId))
-                    .willReturn(teamUser);
-            given(partyService.getParty(partyId)).willReturn(party);
-            given(partyAttendeeService.getPartyAttendeeByUserIdAndPartyId(userId, partyId))
-                    .willReturn(partyAttendee);
-
-            final VoteRestaurantCandidate newCandidate =
-                    VoteRestaurantCandidateFixture.fixture(newCandidateId, voteId, 999L, true);
-            given(partyRestaurantService.getById(newCandidateId)).willReturn(newCandidate);
-
-            final VoteRecord existing =
-                    VoteRecordFixture.fixture(1L, voteId, oldCandidateId, userId, true);
-            given(voteRecordService.findByVoteIdAndUserIdAndUseTrue(userId, voteId))
-                    .willReturn(Optional.of(existing));
-
-            // when
-            voteFacade.vote(teamId, partyId, voteId, userId, voteRequest(newCandidateId));
-
-            // then
-            verify(voteRecordService, times(1)).save(any(VoteRecord.class));
         }
 
         @Test
@@ -281,13 +241,12 @@ class VoteFacadeTest {
                     VoteRestaurantCandidateFixture.fixture(candidateId, voteId, 444L, true);
             given(partyRestaurantService.getById(candidateId)).willReturn(candidate);
 
-            given(voteRecordService.findByVoteIdAndUserIdAndUseTrue(userId, voteId))
-                    .willReturn(Optional.empty());
-
             // when
             voteFacade.vote(teamId, partyId, voteId, userId, voteRequest(candidateId));
 
-            verify(voteRecordService, times(1)).save(any(VoteRecord.class));
+            // then
+            verify(voteRecordService, times(1)).vote(userId, voteId, candidateId);
+            verifyNoMoreInteractions(voteRecordService);
         }
     }
 }
