@@ -4,6 +4,7 @@ import com.moyorak.api.party.domain.VoteRecord;
 import com.moyorak.api.party.dto.Voter;
 import jakarta.persistence.QueryHint;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.QueryHints;
@@ -28,4 +29,11 @@ public interface VoteRecordRepository extends JpaRepository<VoteRecord, Long> {
                             "VoteRecordRepository.findAllByVoteRestaurantCandidateIdIn : 후보 식당 ID 리스트로 투표자 리스트를 조회합니다."))
     List<Voter> findAllByVoteRestaurantCandidateIdIn(
             @Param("voteRestaurantCandidateIds") List<Long> voteRestaurantCandidateIds);
+
+    @QueryHints(
+            @QueryHint(
+                    name = "org.hibernate.comment",
+                    value =
+                            "VoteRecordRepository.findByVoteIdAndAttendeeIdAndUseTrue : 투표 ID와 참가자 ID 로 투표 기록을 조회합니다."))
+    Optional<VoteRecord> findByVoteIdAndAttendeeIdAndUseTrue(Long voteId, Long attendeeId);
 }

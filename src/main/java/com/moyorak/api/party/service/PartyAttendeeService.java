@@ -31,6 +31,13 @@ public class PartyAttendeeService {
         return partyAttendeeRepository.findPartyAttendeeWithUser(partyIds);
     }
 
+    @Transactional(readOnly = true)
+    public PartyAttendee getPartyAttendeeByUserIdAndPartyId(final Long userId, final Long partyId) {
+        return partyAttendeeRepository
+                .findByPartyIdAndUserIdAndUseTrue(partyId, userId)
+                .orElseThrow(() -> new BusinessException("파티 참가자가 존재하지 않습니다."));
+    }
+
     @Transactional
     public void attend(final PartyAttendRequest request, final Long teamId) {
         final boolean isPresent =

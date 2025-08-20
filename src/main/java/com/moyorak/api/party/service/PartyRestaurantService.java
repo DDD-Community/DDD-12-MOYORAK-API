@@ -28,6 +28,13 @@ public class PartyRestaurantService {
     private final VoteRepository voteRepository;
 
     @Transactional(readOnly = true)
+    public VoteRestaurantCandidate getById(final Long candidateId) {
+        return partyRestaurantRepository
+                .findByIdAndUseTrue(candidateId)
+                .orElseThrow(() -> new BusinessException("후보가 존재하지 않습니다."));
+    }
+
+    @Transactional(readOnly = true)
     public List<PartyRestaurantProjection> findPartyRestaurantInfo(List<Long> partyIds) {
         return partyRestaurantRepository.findPartyRestaurantInfo(partyIds);
     }

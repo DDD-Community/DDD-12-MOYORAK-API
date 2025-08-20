@@ -51,10 +51,7 @@ public class TeamUserService {
 
     @Transactional
     public void withdraw(final Long userId, final Long teamId) {
-        final TeamUser teamUser =
-                teamUserRepository
-                        .findByUserIdAndTeamIdAndUse(userId, teamId, true)
-                        .orElseThrow(TeamUserNotFoundException::new);
+        final TeamUser teamUser = getTeamUserByUserIdAndTeamId(userId, teamId);
 
         if (teamUser.isNotApproved()) {
             throw new TeamUserNotFoundException();
@@ -82,10 +79,8 @@ public class TeamUserService {
 
     @Transactional
     public void approveRequestJoin(final Long userId, final Long teamId, final Long teamMemberId) {
-        final TeamUser teamAdminUser =
-                teamUserRepository
-                        .findByUserIdAndTeamIdAndUse(userId, teamId, true)
-                        .orElseThrow(TeamUserNotFoundException::new);
+        final TeamUser teamAdminUser = getTeamUserByUserIdAndTeamId(userId, teamId);
+
         if (!teamAdminUser.isTeamAdmin()) {
             throw new BusinessException("승인을 하는 주체가, 팀 관리자가 아닙니다.");
         }
@@ -99,6 +94,13 @@ public class TeamUserService {
         }
 
         teamUser.approve();
+    }
+
+    @Transactional(readOnly = true)
+    public TeamUser getTeamUserByUserIdAndTeamId(final Long userId, final Long teamId) {
+        return teamUserRepository
+                .findByUserIdAndTeamIdAndUse(userId, teamId, true)
+                .orElseThrow(TeamUserNotFoundException::new);
     }
 
     /**

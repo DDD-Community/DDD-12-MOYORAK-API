@@ -31,6 +31,13 @@ public class VoteService {
     private final RandomVoteInfoRepository randomVoteInfoRepository;
     private final PartyRestaurantRepository partyRestaurantRepository;
 
+    @Transactional(readOnly = true)
+    public Vote getVoteByIdAndPartyId(final Long voteId, final Long partyId) {
+        return voteRepository
+                .findByIdAndPartyIdAndUseTrue(voteId, partyId)
+                .orElseThrow(() -> new BusinessException("투표가 존재하지 않습니다."));
+    }
+
     @Transactional
     public VoteDetail getVoteDetail(final Long partyId, final LocalDateTime now) {
         // 투표 정보 가져오기

@@ -9,7 +9,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import java.util.Objects;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
@@ -41,4 +43,28 @@ public class VoteRecord extends AuditInformation {
     @Convert(converter = BooleanYnConverter.class)
     @Column(name = "use_yn", nullable = false, columnDefinition = "char(1)")
     private boolean use = true;
+
+    public void toggleUse() {
+        this.use = !this.use;
+    }
+
+    public boolean isSameCandidate(final Long candidateId) {
+        return Objects.equals(this.voteRestaurantCandidateId, candidateId);
+    }
+
+    @Builder(access = AccessLevel.PRIVATE)
+    VoteRecord(Long voteRestaurantCandidateId, Long voteId, Long attendeeId) {
+        this.voteRestaurantCandidateId = voteRestaurantCandidateId;
+        this.voteId = voteId;
+        this.attendeeId = attendeeId;
+    }
+
+    public static VoteRecord create(
+            final Long voteRestaurantCandidateId, final Long voteId, final Long attendeeId) {
+        return VoteRecord.builder()
+                .voteRestaurantCandidateId(voteRestaurantCandidateId)
+                .voteId(voteId)
+                .attendeeId(attendeeId)
+                .build();
+    }
 }
