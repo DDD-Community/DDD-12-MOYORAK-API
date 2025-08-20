@@ -9,6 +9,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -53,6 +54,10 @@ public class Party extends AuditInformation {
         this.title = title;
         this.content = content;
         this.use = use;
+    }
+
+    public boolean isSameTeam(final Long teamId) {
+        return Objects.equals(this.teamId, teamId);
     }
 
     public static Party create(final Long teamId, final String title, final String content) {

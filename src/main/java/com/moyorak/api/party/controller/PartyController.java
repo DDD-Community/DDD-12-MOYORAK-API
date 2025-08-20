@@ -40,7 +40,7 @@ class PartyController {
             @PathVariable @Positive final Long teamId,
             @PathVariable @Positive final Long partyId,
             @AuthenticationPrincipal final UserPrincipal userPrincipal) {
-        return partyFacade.getParty(partyId, userPrincipal.getId());
+        return partyFacade.getParty(partyId, teamId, userPrincipal.getId());
     }
 
     @GetMapping("/teams/{teamId}/parties")

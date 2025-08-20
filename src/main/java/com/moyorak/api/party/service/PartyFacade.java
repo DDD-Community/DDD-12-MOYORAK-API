@@ -49,10 +49,10 @@ public class PartyFacade {
     private final UserService userService;
 
     @Transactional
-    public PartyResponse getParty(final Long partyId, final Long userId) {
+    public PartyResponse getParty(final Long partyId, final Long teamId, final Long userId) {
 
         // 파티 정보 가져오기
-        final PartyInfo partyInfo = partyService.getPartyInfo(partyId);
+        final PartyInfo partyInfo = partyService.getPartyInfo(partyId, teamId);
 
         // 투표 정보 가져오기
         final VoteDetail voteDetail = voteService.getVoteDetail(partyId, LocalDateTime.now());

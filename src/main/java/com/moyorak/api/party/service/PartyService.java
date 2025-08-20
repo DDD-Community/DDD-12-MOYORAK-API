@@ -17,8 +17,11 @@ public class PartyService {
     private final PartyRepository partyRepository;
 
     @Transactional(readOnly = true)
-    public PartyInfo getPartyInfo(final Long partyId) {
+    public PartyInfo getPartyInfo(final Long partyId, final Long teamId) {
         final Party party = getParty(partyId);
+        if (!party.isSameTeam(teamId)) {
+            throw new BusinessException("팀에 해당 파티가 존재하지 않습니다.");
+        }
         return PartyInfo.from(party);
     }
 
