@@ -10,14 +10,23 @@ public class ReviewWithUserProjectionFixture {
             Integer score,
             Integer servingTime,
             Integer waitingTime,
+            Long userId,
             String name,
             String profileImage,
             LocalDateTime createdDate) {
         return new ReviewWithUserProjection(
-                id, extraText, score, servingTime, waitingTime, name, profileImage, createdDate);
+                id,
+                extraText,
+                score,
+                servingTime,
+                waitingTime,
+                userId,
+                name,
+                profileImage,
+                createdDate);
     }
 
     public static ReviewWithUserProjection defaultFixture() {
-        return fixture(1L, "좋은식당", 5, 5, 5, "아무개", "/images/profile.png", LocalDateTime.now());
+        return fixture(1L, "좋은식당", 5, 5, 5, 1L, "아무개", "/images/profile.png", LocalDateTime.now());
     }
 }
