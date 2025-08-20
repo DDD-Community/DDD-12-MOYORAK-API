@@ -9,6 +9,7 @@ public record PartyResponse(
         @Schema(description = "파티 고유 ID", example = "1") Long id,
         @Schema(description = "파티 제목", example = "분식 가실 분") String title,
         @Schema(description = "파티 내용", example = "3개 음식점 중에 골라보시죠") String content,
+        @Schema(description = "파티 참석 가능 여부", example = "true") boolean attendable,
         @Schema(description = "투표 정보") VoteResponse vote,
         @ArraySchema(
                         schema = @Schema(implementation = RestaurantCandidateResponse.class),
@@ -33,6 +34,7 @@ public record PartyResponse(
                 partyInfo.id(),
                 partyInfo.title(),
                 partyInfo.content(),
+                partyInfo.attendable(),
                 VoteResponse.from(voteInfo),
                 candidates,
                 voterResponses,
