@@ -8,6 +8,7 @@ public record ReviewWithUserProjection(
         Integer score,
         Integer servingTime,
         Integer waitingTime,
+        Long userId,
         String name,
         String profileImage,
         LocalDateTime createdDate) {}
