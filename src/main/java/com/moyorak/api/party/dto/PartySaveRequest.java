@@ -1,10 +1,12 @@
 package com.moyorak.api.party.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import com.moyorak.api.party.domain.VoteType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Size;
+import java.time.LocalTime;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -28,7 +30,27 @@ public class PartySaveRequest {
     @Schema(description = "파티 설명", example = "국밥 빼고 다 좋아하는 파티입니다.")
     private String content;
 
+    @JsonIgnore
+    public boolean isVoteTypeSelect() {
+        return getVoteType().isSelect();
+    }
+
     public VoteType getVoteType() {
         return vote.getVoteType();
+    }
+
+    @JsonIgnore
+    public LocalTime getVoteStartTime() {
+        return vote.getFromTime();
+    }
+
+    @JsonIgnore
+    public LocalTime getVoteEndTime() {
+        return vote.getToTime();
+    }
+
+    @JsonIgnore
+    public LocalTime getPartyMealTime() {
+        return vote.getMealTime();
     }
 }

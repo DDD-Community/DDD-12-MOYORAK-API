@@ -9,8 +9,11 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
@@ -46,4 +49,33 @@ public class SelectionVoteInfo extends AuditInformation {
     @Convert(converter = BooleanYnConverter.class)
     @Column(name = "use_yn", nullable = false, columnDefinition = "char(1)")
     private boolean use = true;
+
+    @Builder(access = AccessLevel.PRIVATE)
+    private SelectionVoteInfo(
+            LocalDateTime startDate,
+            LocalDateTime expiredDate,
+            LocalDateTime mealDate,
+            Long voteId,
+            boolean use) {
+        this.startDate = startDate;
+        this.expiredDate = expiredDate;
+        this.mealDate = mealDate;
+        this.voteId = voteId;
+        this.use = use;
+    }
+
+    public static SelectionVoteInfo generate(
+            final Long voteId,
+            final LocalDate date,
+            final LocalTime startDate,
+            final LocalTime expiredDate,
+            final LocalTime mealDate) {
+        return SelectionVoteInfo.builder()
+                .voteId(voteId)
+                .startDate(LocalDateTime.of(date, startDate))
+                .expiredDate(LocalDateTime.of(date, expiredDate))
+                .mealDate(LocalDateTime.of(date, mealDate))
+                .use(true)
+                .build();
+    }
 }

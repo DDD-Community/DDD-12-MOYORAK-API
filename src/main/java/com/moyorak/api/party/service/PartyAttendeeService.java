@@ -59,6 +59,10 @@ public class PartyAttendeeService {
                         .findByIdAndUseTrue(request.partyId())
                         .orElseThrow(() -> new BusinessException("파티가 존재하지 않습니다."));
 
+        if (!party.isAttendable()) {
+            throw new BusinessException("참석 불가능한 파티입니다.");
+        }
+
         validateSameTeam(teamUser, party);
 
         final PartyAttendee partyAttendee = request.toPartyAttendee();
@@ -85,5 +89,10 @@ public class PartyAttendeeService {
                         .toList();
 
         partyAttendeeRepository.saveAll(partyAttendees);
+    }
+
+    @Transactional(readOnly = true)
+    public boolean existAttendee(final Long partyId, final Long userId) {
+        return partyAttendeeRepository.existsByPartyIdAndUserIdAndUseTrue(partyId, userId);
     }
 }

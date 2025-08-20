@@ -4,7 +4,7 @@ import com.moyorak.api.party.domain.RandomVoteInfo;
 import com.moyorak.api.party.domain.SelectionVoteInfo;
 import com.moyorak.api.party.domain.Vote;
 import com.moyorak.api.party.domain.VoteRestaurantCandidate;
-import com.moyorak.api.party.domain.VoteType;
+import com.moyorak.api.party.dto.PartySaveRequest;
 import com.moyorak.api.party.dto.VoteDetail;
 import com.moyorak.api.party.dto.VoteInfo;
 import com.moyorak.api.party.repository.PartyRestaurantRepository;
@@ -12,6 +12,7 @@ import com.moyorak.api.party.repository.RandomVoteInfoRepository;
 import com.moyorak.api.party.repository.SelectionVoteInfoRepository;
 import com.moyorak.api.party.repository.VoteRepository;
 import com.moyorak.config.exception.BusinessException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
@@ -134,11 +135,30 @@ public class VoteService {
      * 투표를 생성합니다.
      *
      * @param partyId 파티 고유 ID
-     * @param voteType 파티 타입
+     * @param request 파티 생성 요청 DTO
      * @return 투표 고유 ID
      */
     @Transactional
-    public Long register(final Long partyId, final VoteType voteType) {
-        return voteRepository.save(Vote.create(partyId, voteType)).getId();
+    public Long register(final Long partyId, final PartySaveRequest request) {
+        final Vote vote = voteRepository.save(Vote.create(partyId, request.getVoteType()));
+
+        final LocalDate now = LocalDate.now();
+
+        if (request.isVoteTypeSelect()) {
+            selectionVoteInfoRepository.save(
+                    SelectionVoteInfo.generate(
+                            vote.getId(),
+                            now,
+                            request.getVoteStartTime(),
+                            request.getVoteEndTime(),
+                            request.getPartyMealTime()));
+
+            return vote.getId();
+        }
+
+        randomVoteInfoRepository.save(
+                RandomVoteInfo.generate(vote.getId(), now, request.getVoteEndTime()));
+
+        return vote.getId();
     }
 }

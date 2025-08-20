@@ -14,7 +14,7 @@ public interface VoteRecordRepository extends JpaRepository<VoteRecord, Long> {
 
     @Query(
             """
-        SELECT new com.moyorak.api.party.dto.Voter(vr.voteRestaurantCandidateId, u.name, u.profileImage)
+        SELECT new com.moyorak.api.party.dto.Voter(vr.voteRestaurantCandidateId, u.id, u.name, u.profileImage)
         FROM VoteRecord vr
         LEFT JOIN PartyAttendee pa ON pa.id = vr.attendeeId AND pa.use = true
         LEFT JOIN User u on u.id = pa.userId AND u.use = true

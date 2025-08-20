@@ -9,6 +9,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -37,6 +38,11 @@ public class Party extends AuditInformation {
     @Column(name = "content", nullable = false, columnDefinition = "varchar(512)")
     private String content;
 
+    @Comment("파티 참여 가능 여부")
+    @Convert(converter = BooleanYnConverter.class)
+    @Column(name = "attendable", nullable = false, columnDefinition = "char(1)")
+    private boolean attendable;
+
     @Comment("사용 여부")
     @Convert(converter = BooleanYnConverter.class)
     @Column(name = "use_yn", nullable = false, columnDefinition = "char(1)")
@@ -48,6 +54,10 @@ public class Party extends AuditInformation {
         this.title = title;
         this.content = content;
         this.use = use;
+    }
+
+    public boolean isSameTeam(final Long teamId) {
+        return Objects.equals(this.teamId, teamId);
     }
 
     public static Party create(final Long teamId, final String title, final String content) {
