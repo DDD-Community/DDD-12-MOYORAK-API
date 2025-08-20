@@ -37,6 +37,11 @@ public class Party extends AuditInformation {
     @Column(name = "content", nullable = false, columnDefinition = "varchar(512)")
     private String content;
 
+    @Comment("파티 참여 가능 여부")
+    @Convert(converter = BooleanYnConverter.class)
+    @Column(name = "attendable", nullable = false, columnDefinition = "char(1)")
+    private boolean attendable;
+
     @Comment("사용 여부")
     @Convert(converter = BooleanYnConverter.class)
     @Column(name = "use_yn", nullable = false, columnDefinition = "char(1)")

@@ -73,7 +73,7 @@ class PartyAttendeeServiceTest {
             final Team requesterTeam = TeamFixture.fixture(teamId, true);
             final TeamUser requesterTeamUser =
                     TeamUserFixture.fixture(userId, requesterTeam, TeamUserStatus.APPROVED, true);
-            final Party party = PartyFixture.fixture(partyId, otherTeamId);
+            final Party party = PartyFixture.fixture(partyId, otherTeamId, true);
 
             given(partyAttendeeRepository.findByPartyIdAndUserIdAndUseTrue(partyId, userId))
                     .willReturn(Optional.empty());
