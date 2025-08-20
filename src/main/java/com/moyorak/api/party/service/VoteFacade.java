@@ -1,11 +1,7 @@
 package com.moyorak.api.party.service;
 
-import com.moyorak.api.party.domain.Party;
 import com.moyorak.api.party.domain.VoteRestaurantCandidate;
 import com.moyorak.api.party.dto.VoteRequest;
-import com.moyorak.api.team.domain.TeamUser;
-import com.moyorak.api.team.domain.TeamUserNotFoundException;
-import com.moyorak.api.team.service.TeamUserService;
 import com.moyorak.config.exception.BusinessException;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class VoteFacade {
-    private final TeamUserService teamUserService;
     private final PartyService partyService;
     private final VoteService voteService;
     private final PartyAttendeeService partyAttendeeService;
@@ -30,14 +25,8 @@ public class VoteFacade {
             final Long userId,
             final VoteRequest voteRequest) {
 
-        // 파티의 팀과 유저의 팀을 비교
-        final TeamUser teamUser = teamUserService.getTeamUserByUserIdAndTeamId(userId, teamId);
-
-        final Party party = partyService.getParty(partyId);
-
-        if (!Objects.equals(teamUser.getTeam().getId(), party.getTeamId())) {
-            throw new TeamUserNotFoundException();
-        }
+        // 팀에 존재하는 파티인지
+        partyService.getPartyInfo(partyId, teamId);
 
         // 파티 참가자가 존재하는지
         partyAttendeeService.getPartyAttendeeByUserIdAndPartyId(userId, partyId);
