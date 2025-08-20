@@ -36,4 +36,11 @@ WHERE p.use = true
                     value =
                             "PartyAttendeeRepository.findByPartyIdAndUserIdAndUseTrue: 파티 ID와 유저 ID로 참석자 조회"))
     Optional<PartyAttendee> findByPartyIdAndUserIdAndUseTrue(Long partyId, Long userId);
+
+    @QueryHints(
+            @QueryHint(
+                    name = "org.hibernate.comment",
+                    value =
+                            "PartyAttendeeRepository.existsByPartyIdAndUserIdAndUseTrue: 파티 ID와 유저 ID로 참석 유무 확인"))
+    boolean existsByPartyIdAndUserIdAndUseTrue(Long partyId, Long userId);
 }
