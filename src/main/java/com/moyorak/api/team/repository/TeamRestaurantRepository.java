@@ -57,17 +57,29 @@ WHERE tr.id IN :ids AND tr.use = :use
     @Modifying(clearAutomatically = true)
     @Query(
             """
-UPDATE TeamRestaurant tr
-SET
-    tr.reviewCount = tr.reviewCount + :reviewCount,
-    tr.totalReviewScore = tr.totalReviewScore -:previousReviewScore + :reviewScore,
-    tr.totalServingTime = tr.totalServingTime -:previousServingTime + :servingTime,
-    tr.totalWaitingTime = tr.totalWaitingTime -:previousWaitingTime + :waitingTime,
-    tr.averageReviewScore = ROUND((tr.totalReviewScore -:previousReviewScore + :reviewScore) * 1.0 / (tr.reviewCount + :reviewCount), 1),
-    tr.averageServingTime = ROUND((tr.totalServingTime -:previousServingTime + :servingTime) * 1.0 / (tr.reviewCount + :reviewCount), 1),
-    tr.averageWaitingTime = ROUND((tr.totalWaitingTime -:previousWaitingTime + :waitingTime) * 1.0 / (tr.reviewCount + :reviewCount), 1)
-WHERE tr.id = :teamRestaurantId
-""")
+        UPDATE TeamRestaurant tr
+        SET
+            tr.reviewCount = tr.reviewCount + :reviewCount,
+            tr.totalReviewScore = tr.totalReviewScore - :previousReviewScore + :reviewScore,
+            tr.totalServingTime = tr.totalServingTime - :previousServingTime + :servingTime,
+            tr.totalWaitingTime = tr.totalWaitingTime - :previousWaitingTime + :waitingTime,
+
+            tr.averageReviewScore = CASE
+                WHEN tr.reviewCount = 0 THEN 0
+                ELSE ROUND((tr.totalReviewScore - :previousReviewScore + :reviewScore) * 1.0 / tr.reviewCount, 1)
+            END,
+
+            tr.averageServingTime = CASE
+                WHEN tr.reviewCount = 0 THEN 0
+                ELSE ROUND((tr.totalServingTime - :previousServingTime + :servingTime) * 1.0 / tr.reviewCount, 1)
+            END,
+
+            tr.averageWaitingTime = CASE
+                WHEN tr.reviewCount = 0 THEN 0
+                ELSE ROUND((tr.totalWaitingTime - :previousWaitingTime + :waitingTime) * 1.0 / tr.reviewCount, 1)
+            END
+        WHERE tr.id = :teamRestaurantId
+        """)
     @QueryHints(
             @QueryHint(
                     name = "org.hibernate.comment",

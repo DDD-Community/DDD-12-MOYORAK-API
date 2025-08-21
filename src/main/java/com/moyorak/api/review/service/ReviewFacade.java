@@ -85,23 +85,31 @@ public class ReviewFacade {
         final ReviewWaitingTime reviewWaitingTime =
                 reviewService.getReviewWaitingTime(reviewUpdateRequest.waitingTimeId());
 
-        review.updateReview(
-                reviewUpdateRequest.extraText(),
-                reviewServingTime.getServingTimeValue(),
-                reviewWaitingTime.getWaitingTimeValue(),
-                reviewUpdateRequest.score());
-
         // 새로운 사진 경로 추출
         final List<ReviewPhoto> reviewPhotoList =
                 reviewPhotoService.getReviewPhotosByReviewId(reviewId);
-        final List<String> photoPath = reviewPhotoList.stream().map(ReviewPhoto::getPath).toList();
+        final List<String> existingPaths =
+                reviewPhotoList.stream().map(ReviewPhoto::getPath).toList();
+
+        // 새로 들어온 요청 path
+        final List<String> requestedPaths = reviewUpdateRequest.photoPaths();
+
+        // 새로 추가해야 할 path
         final List<String> newPhotoPaths =
-                reviewUpdateRequest.photoPaths().stream()
-                        .filter(path -> !photoPath.contains(path))
+                requestedPaths.stream().filter(path -> !existingPaths.contains(path)).toList();
+
+        // 요청에는 없고 기존 DB에만 있는 path
+        final List<ReviewPhoto> toDeactivate =
+                reviewPhotoList.stream()
+                        .filter(photo -> !requestedPaths.contains(photo.getPath()))
                         .toList();
 
-        // 새로운 리뷰 사진 등록
+        // 새로운 사진 등록
         reviewPhotoService.createReviewPhoto(newPhotoPaths, reviewId);
+
+        // 기존 사진 삭제
+        toDeactivate.forEach(ReviewPhoto::toggleUse);
+
         // 팀 맛집 평균 값 수정
         teamRestaurantService.updateAverageValue(
                 0,
@@ -112,6 +120,13 @@ public class ReviewFacade {
                 reviewServingTime.getServingTimeValue(),
                 review.getWaitingTime(),
                 reviewWaitingTime.getWaitingTimeValue());
+
+        // 팀 맛집 데이터 업데이트 후 리뷰 업데이트
+        review.updateReview(
+                reviewUpdateRequest.extraText(),
+                reviewServingTime.getServingTimeValue(),
+                reviewWaitingTime.getWaitingTimeValue(),
+                reviewUpdateRequest.score());
 
         // 업데이트 된 정보 조히 및 검색 테이블에 저장
         final TeamRestaurant updatedTeamRestaurant =
