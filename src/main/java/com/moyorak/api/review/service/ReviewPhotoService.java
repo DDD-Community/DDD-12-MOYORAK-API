@@ -48,7 +48,7 @@ public class ReviewPhotoService {
         return reviewPhotoRepository.findPhotoPathsByReviewIds(reviewIds);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public List<ReviewPhoto> getReviewPhotosByReviewId(final Long reviewId) {
         return reviewPhotoRepository.findReviewPhotosByReviewIdAndUseIsTrue(reviewId);
     }

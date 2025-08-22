@@ -59,7 +59,7 @@ WHERE tr.id IN :ids AND tr.use = :use
             """
         UPDATE TeamRestaurant tr
         SET
-            tr.reviewCount = tr.reviewCount + :reviewCount,
+            tr.reviewCount = CASE WHEN tr.reviewCount + :reviewCount <= 0 THEN 0 ELSE tr.reviewCount + :reviewCount END,
             tr.totalReviewScore = tr.totalReviewScore - :previousReviewScore + :reviewScore,
             tr.totalServingTime = tr.totalServingTime - :previousServingTime + :servingTime,
             tr.totalWaitingTime = tr.totalWaitingTime - :previousWaitingTime + :waitingTime,

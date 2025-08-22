@@ -83,8 +83,8 @@ public class ReviewService {
                 reviewSaveRequest.toReview(servingTimeValue, waitingTimeValue, teamRestaurantId));
     }
 
-    @Transactional(readOnly = true)
-    public Review getReview(final Long id) {
+    @Transactional
+    public Review getReviewForUpdate(final Long id) {
         return reviewRepository
                 .findByIdAndUseIsTrue(id)
                 .orElseThrow(() -> new BusinessException("리뷰가 존재하지 않습니다."));
