@@ -66,17 +66,17 @@ WHERE tr.id IN :ids AND tr.use = :use
 
             tr.averageReviewScore = CASE
                 WHEN tr.reviewCount = 0 THEN 0
-                ELSE ROUND((tr.totalReviewScore - :previousReviewScore + :reviewScore) * 1.0 / tr.reviewCount, 1)
+                ELSE ROUND(tr.totalReviewScore * 1.0 / tr.reviewCount, 1)
             END,
 
             tr.averageServingTime = CASE
                 WHEN tr.reviewCount = 0 THEN 0
-                ELSE ROUND((tr.totalServingTime - :previousServingTime + :servingTime) * 1.0 / tr.reviewCount, 1)
+                ELSE ROUND(tr.totalServingTime - :previousServingTime + :servingTime / tr.reviewCount, 1)
             END,
 
             tr.averageWaitingTime = CASE
                 WHEN tr.reviewCount = 0 THEN 0
-                ELSE ROUND((tr.totalWaitingTime - :previousWaitingTime + :waitingTime) * 1.0 / tr.reviewCount, 1)
+                ELSE ROUND(tr.totalWaitingTime - :previousWaitingTime + :waitingTime/ tr.reviewCount, 1)
             END
         WHERE tr.id = :teamRestaurantId
         """)
