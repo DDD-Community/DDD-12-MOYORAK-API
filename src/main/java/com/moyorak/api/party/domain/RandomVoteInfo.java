@@ -65,10 +65,14 @@ public class RandomVoteInfo extends AuditInformation {
     }
 
     public static RandomVoteInfo generate(
-            final Long voteId, final LocalDate date, final LocalTime randomDate) {
+            final Long voteId,
+            final LocalDate date,
+            final LocalTime randomDate,
+            final LocalTime mealDate) {
         return RandomVoteInfo.builder()
                 .voteId(voteId)
                 .randomDate(LocalDateTime.of(date, randomDate))
+                .mealDate(LocalDateTime.of(date, mealDate))
                 .use(true)
                 .build();
     }
