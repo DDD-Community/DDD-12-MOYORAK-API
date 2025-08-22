@@ -110,23 +110,26 @@ public class ReviewFacade {
         // 기존 사진 삭제
         toDeactivate.forEach(ReviewPhoto::toggleUse);
 
-        // 팀 맛집 평균 값 수정
-        teamRestaurantService.updateAverageValue(
-                0,
-                teamRestaurantId,
-                review.getScore(),
-                reviewUpdateRequest.score(),
-                review.getServingTime(),
-                reviewServingTime.getServingTimeValue(),
-                review.getWaitingTime(),
-                reviewWaitingTime.getWaitingTimeValue());
-
-        // 팀 맛집 데이터 업데이트 후 리뷰 업데이트
+        final Integer reviewScore = review.getScore();
+        final Integer servingTime = review.getServingTime();
+        final Integer waitingTime = review.getWaitingTime();
+        // 리뷰 업데이트
         review.updateReview(
                 reviewUpdateRequest.extraText(),
                 reviewServingTime.getServingTimeValue(),
                 reviewWaitingTime.getWaitingTimeValue(),
                 reviewUpdateRequest.score());
+
+        // 팀 맛집 평균 값 수정
+        teamRestaurantService.updateAverageValue(
+                0,
+                teamRestaurantId,
+                reviewScore,
+                reviewUpdateRequest.score(),
+                servingTime,
+                reviewServingTime.getServingTimeValue(),
+                waitingTime,
+                reviewWaitingTime.getWaitingTimeValue());
 
         // 업데이트 된 정보 조히 및 검색 테이블에 저장
         final TeamRestaurant updatedTeamRestaurant =

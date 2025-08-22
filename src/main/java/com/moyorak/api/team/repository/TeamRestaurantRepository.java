@@ -54,7 +54,7 @@ WHERE tr.id IN :ids AND tr.use = :use
 
     Page<TeamRestaurant> findAllByTeamId(Long teamId, Pageable pageable);
 
-    @Modifying(clearAutomatically = true)
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query(
             """
         UPDATE TeamRestaurant tr
