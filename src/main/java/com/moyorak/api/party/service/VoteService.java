@@ -157,7 +157,8 @@ public class VoteService {
         }
 
         randomVoteInfoRepository.save(
-                RandomVoteInfo.generate(vote.getId(), now, request.getVoteEndTime()));
+                RandomVoteInfo.generate(
+                        vote.getId(), now, request.getVoteEndTime(), request.getPartyMealTime()));
 
         return vote.getId();
     }

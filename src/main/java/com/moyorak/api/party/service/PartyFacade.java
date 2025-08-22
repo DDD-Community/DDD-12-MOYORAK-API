@@ -120,7 +120,8 @@ public class PartyFacade {
 
         // 2. 파티 생성
         final Long partyId =
-                partyService.register(teamId, request.getTitle(), request.getContent());
+                partyService.register(
+                        teamId, request.getTitle(), request.getContent(), request.getAttendable());
 
         // 3. 투표 생성
         final Long voteId = voteService.register(partyId, request);

@@ -49,10 +49,11 @@ public class Party extends AuditInformation {
     private boolean use = true;
 
     @Builder(access = AccessLevel.PRIVATE)
-    Party(Long teamId, String title, String content, boolean use) {
+    Party(Long teamId, String title, String content, boolean attendable, boolean use) {
         this.teamId = teamId;
         this.title = title;
         this.content = content;
+        this.attendable = attendable;
         this.use = use;
     }
 
@@ -60,7 +61,14 @@ public class Party extends AuditInformation {
         return Objects.equals(this.teamId, teamId);
     }
 
-    public static Party create(final Long teamId, final String title, final String content) {
-        return Party.builder().teamId(teamId).title(title).content(content).use(true).build();
+    public static Party create(
+            final Long teamId, final String title, final String content, final boolean attendable) {
+        return Party.builder()
+                .teamId(teamId)
+                .title(title)
+                .content(content)
+                .attendable(attendable)
+                .use(true)
+                .build();
     }
 }
