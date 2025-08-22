@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import com.moyorak.api.party.domain.VoteType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.time.LocalTime;
 import lombok.AccessLevel;
@@ -29,6 +30,10 @@ public class PartySaveRequest {
     @Size(max = 50, message = "파티 설명은 {max}자까지 입력 가능합니다.")
     @Schema(description = "파티 설명", example = "국밥 빼고 다 좋아하는 파티입니다.")
     private String content;
+
+    @NotNull(message = "null값이 들어올 수 없습니다.")
+    @Schema(description = "파티 참여 가능 여부", example = "true")
+    private Boolean attendable;
 
     @JsonIgnore
     public boolean isVoteTypeSelect() {

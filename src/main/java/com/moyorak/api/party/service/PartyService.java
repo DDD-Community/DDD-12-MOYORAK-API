@@ -46,8 +46,9 @@ public class PartyService {
      * @return 파티 고유 ID
      */
     @Transactional
-    public Long register(final Long teamId, final String title, final String content) {
-        final Party party = Party.create(teamId, title, content);
+    public Long register(
+            final Long teamId, final String title, final String content, final boolean attendable) {
+        final Party party = Party.create(teamId, title, content, attendable);
 
         return partyRepository.save(party).getId();
     }
