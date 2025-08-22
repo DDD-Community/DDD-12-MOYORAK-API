@@ -75,7 +75,7 @@ public class ReviewFacade {
         // 유효성 체크
         teamRestaurantService.getValidatedTeamRestaurant(teamId, teamRestaurantId);
 
-        Review review = reviewService.getReview(reviewId);
+        Review review = reviewService.getReviewForUpdate(reviewId);
 
         if (!review.isMine(userId)) {
             throw new BusinessException("본인 리뷰가 아닙니다.");
@@ -143,7 +143,7 @@ public class ReviewFacade {
             final Long userId) {
         // 유효성 체크
         teamRestaurantService.getValidatedTeamRestaurant(teamId, teamRestaurantId);
-        Review review = reviewService.getReview(reviewId);
+        Review review = reviewService.getReviewForUpdate(reviewId);
 
         if (!review.isMine(userId)) {
             throw new BusinessException("본인 리뷰가 아닙니다.");

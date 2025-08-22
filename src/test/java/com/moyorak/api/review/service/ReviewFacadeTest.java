@@ -189,7 +189,7 @@ class ReviewFacadeTest {
 
         given(teamRestaurantService.getValidatedTeamRestaurant(teamId, teamRestaurantId))
                 .willReturn(teamRestaurant);
-        given(reviewService.getReview(reviewId)).willReturn(review);
+        given(reviewService.getReviewForUpdate(reviewId)).willReturn(review);
         given(reviewService.getReviewServingTime(request.servingTimeId())).willReturn(servingTime);
         given(reviewService.getReviewWaitingTime(request.waitingTimeId())).willReturn(waitingTime);
         given(reviewPhotoService.getReviewPhotosByReviewId(reviewId)).willReturn(existingPhotos);
@@ -198,7 +198,7 @@ class ReviewFacadeTest {
         reviewFacade.updateReview(teamId, teamRestaurantId, reviewId, request, userId);
 
         // then
-        verify(reviewService).getReview(reviewId);
+        verify(reviewService).getReviewForUpdate(reviewId);
 
         verify(reviewPhotoService)
                 .createReviewPhoto(List.of("s3://new1.jpg", "s3://new2.jpg"), reviewId);
@@ -266,7 +266,7 @@ class ReviewFacadeTest {
 
         given(teamRestaurantService.getValidatedTeamRestaurant(teamId, teamRestaurantId))
                 .willReturn(teamRestaurant);
-        given(reviewService.getReview(reviewId)).willReturn(review);
+        given(reviewService.getReviewForUpdate(reviewId)).willReturn(review);
         given(reviewPhotoService.getReviewPhotosByReviewId(reviewId)).willReturn(reviewPhotos);
 
         // when
@@ -275,7 +275,7 @@ class ReviewFacadeTest {
         // then
         verify(teamRestaurantService, times(2))
                 .getValidatedTeamRestaurant(teamId, teamRestaurantId);
-        verify(reviewService).getReview(reviewId);
+        verify(reviewService).getReviewForUpdate(reviewId);
         verify(reviewPhotoService).getReviewPhotosByReviewId(reviewId);
 
         verify(teamRestaurantService)
