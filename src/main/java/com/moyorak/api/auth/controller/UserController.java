@@ -3,6 +3,7 @@ package com.moyorak.api.auth.controller;
 import com.moyorak.api.auth.domain.UserPrincipal;
 import com.moyorak.api.auth.dto.SignUpRequest;
 import com.moyorak.api.auth.dto.SignUpResponse;
+import com.moyorak.api.auth.dto.UserOrganisationResponse;
 import com.moyorak.api.auth.service.UserFacade;
 import com.moyorak.api.auth.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -14,6 +15,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -51,5 +53,22 @@ class UserController {
             description = "회원 탈퇴를 요청합니다.\n이름과 생년월일, 성별, 알러지 + 비선호 음식, 회사, 팀 정보가 제거 됩니다.")
     public void unregister(@AuthenticationPrincipal final UserPrincipal userPrincipal) {
         userFacade.unregister(userPrincipal.getId());
+    }
+
+    @GetMapping
+    @SecurityRequirement(name = "JWT")
+    @ApiResponses(
+            value = {
+                @ApiResponse(responseCode = "200", description = "조회 성공"),
+                @ApiResponse(
+                        responseCode = "400",
+                        description =
+                                "<ol><li>회원 정보가 없는 경우</li><li>로그인 정보가 없는 경우</li><li>예상치 못한 클라이언트 오류</li></ol>"),
+                @ApiResponse(responseCode = "401", description = "로그인 정보가 없는 경우"),
+                @ApiResponse(responseCode = "500", description = "예상치 못한 서버 오류"),
+            })
+    @Operation(summary = "[회원] [마이] 회사, 팀 ID 조회", description = "로그인 된 정보에 의해 회사와 팀 ID를 조회합니다.")
+    public UserOrganisationResponse me(@AuthenticationPrincipal final UserPrincipal userPrincipal) {
+        return userFacade.getMe(userPrincipal.getId());
     }
 }

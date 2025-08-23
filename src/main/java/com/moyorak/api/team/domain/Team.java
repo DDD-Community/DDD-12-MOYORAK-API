@@ -18,6 +18,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
+import org.springframework.util.ObjectUtils;
 
 @Getter
 @Entity
@@ -52,5 +53,13 @@ public class Team extends AuditInformation {
 
     public static Team create(final String name, final Company company) {
         return Team.builder().name(name).use(true).company(company).build();
+    }
+
+    public Long getCompanyId() {
+        if (ObjectUtils.isEmpty(company)) {
+            return null;
+        }
+
+        return company.getId();
     }
 }

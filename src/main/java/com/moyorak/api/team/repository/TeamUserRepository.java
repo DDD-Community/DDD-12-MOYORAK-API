@@ -30,6 +30,18 @@ public interface TeamUserRepository extends JpaRepository<TeamUser, Long> {
 
     @Query(
             """
+                SELECT tu
+                FROM TeamUser tu
+                JOIN FETCH tu.team t
+                JOIN FETCH t.company
+                WHERE tu.userId = :userId
+                and tu.use = :use
+        """)
+    Optional<TeamUser> findWithTeamAndCompany(
+            @Param("userId") Long userId, @Param("use") boolean use);
+
+    @Query(
+            """
                     SELECT tu
                     FROM TeamUser tu
                     JOIN Team t ON tu.team.id = t.id

@@ -1,5 +1,6 @@
 package com.moyorak.api.team.service;
 
+import com.moyorak.api.auth.dto.UserOrganisationResponse;
 import com.moyorak.api.team.domain.Team;
 import com.moyorak.api.team.domain.TeamRole;
 import com.moyorak.api.team.domain.TeamUser;
@@ -124,5 +125,21 @@ public class TeamUserService {
     @Transactional(readOnly = true)
     public boolean isTeamAdmin(final Long userId) {
         return teamUserRepository.isTeamAdmin(userId);
+    }
+
+    @Transactional(readOnly = true)
+    public UserOrganisationResponse getTeamId(final Long userId) {
+        final Long teamId =
+                teamUserRepository
+                        .findWithTeamAndCompany(userId, true)
+                        .orElseThrow(() -> new BusinessException("해당 팀의 팀원이 아닙니다."))
+                        .getTeamId();
+
+        final Team team =
+                teamRepository
+                        .findByTeamId(teamId, userId)
+                        .orElseThrow(() -> new BusinessException("유효하지 않은 팀 ID 입니다."));
+
+        return UserOrganisationResponse.from(team.getCompanyId(), teamId);
     }
 }

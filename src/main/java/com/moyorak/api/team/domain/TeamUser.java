@@ -20,6 +20,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
+import org.springframework.util.ObjectUtils;
 
 @Getter
 @Entity
@@ -131,5 +132,13 @@ public class TeamUser extends AuditInformation {
         teamUser.status = teamUserStatus;
 
         return teamUser;
+    }
+
+    public Long getTeamId() {
+        if (ObjectUtils.isEmpty(team)) {
+            return null;
+        }
+
+        return team.getId();
     }
 }

@@ -1,5 +1,6 @@
 package com.moyorak.api.auth.service;
 
+import com.moyorak.api.auth.dto.UserOrganisationResponse;
 import com.moyorak.api.team.service.TeamUserService;
 import com.moyorak.config.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
@@ -48,5 +49,16 @@ public class UserFacade {
 
         // 5. 토큰 초기화
         authService.signOut(userId);
+    }
+
+    /**
+     * 입력된 ID의 회사, 팀 ID를 조회합니다.
+     *
+     * @param userId 회원 고유 ID
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public UserOrganisationResponse getMe(final Long userId) {
+        return teamUserService.getTeamId(userId);
     }
 }
