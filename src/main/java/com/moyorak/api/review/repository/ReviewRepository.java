@@ -33,6 +33,23 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     @QueryHints(
             @QueryHint(
                     name = "org.hibernate.comment",
+                    value = "ReviewRepository.findReviewWithUserByUserId: 사용자 ID 로 리뷰와 사용자 정보 조회 "))
+    @Query(
+            """
+SELECT new com.moyorak.api.review.dto.ReviewWithUserProjection(
+    r.id, r.extraText,r.score, r.servingTime, r.waitingTime,u.id,
+    u.name, u.profileImage,r.createdDate
+)
+FROM Review r
+JOIN User u ON r.userId = u.id
+WHERE r.userId = :userId AND r.use = true
+""")
+    Page<ReviewWithUserProjection> findReviewWithUserByUserId(
+            @Param("userId") Long userId, Pageable pageable);
+
+    @QueryHints(
+            @QueryHint(
+                    name = "org.hibernate.comment",
                     value = "ReviewRepository.findByIdAndUseIsTrue: ID 로 리뷰 조회"))
     Optional<Review> findByIdAndUseIsTrue(Long id);
 }

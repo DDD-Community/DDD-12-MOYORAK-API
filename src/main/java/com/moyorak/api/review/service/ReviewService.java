@@ -32,6 +32,12 @@ public class ReviewService {
     }
 
     @Transactional(readOnly = true)
+    public Page<ReviewWithUserProjection> getReviewWithUserByUserId(
+            Long userId, Pageable pageable) {
+        return reviewRepository.findReviewWithUserByUserId(userId, pageable);
+    }
+
+    @Transactional(readOnly = true)
     public List<ReviewServingTimeResponse> getReviewServingTimeList() {
         return ReviewServingTimeResponse.fromList(getAllReviewServingTimes());
     }
