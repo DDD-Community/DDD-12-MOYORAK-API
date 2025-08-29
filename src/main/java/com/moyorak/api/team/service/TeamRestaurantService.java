@@ -35,7 +35,7 @@ public class TeamRestaurantService {
     @Transactional(readOnly = true)
     public Page<TeamRestaurant> getTeamRestaurants(
             Long teamId, TeamRestaurantListRequest teamRestaurantListRequest) {
-        return teamRestaurantRepository.findAllByTeamId(
+        return teamRestaurantRepository.findAllByTeamIdAndUseTrue(
                 teamId, teamRestaurantListRequest.toPageable());
     }
 
