@@ -2,12 +2,11 @@ package com.moyorak.api.team.controller;
 
 import com.moyorak.api.auth.domain.UserPrincipal;
 import com.moyorak.api.team.dto.TeamUserListRequest;
-import com.moyorak.api.team.dto.TeamUserResponse;
+import com.moyorak.api.team.dto.TeamUserListResponse;
 import com.moyorak.api.team.dto.TeamUserRoleUpdateRequest;
 import com.moyorak.api.team.service.TeamJoinFacade;
 import com.moyorak.api.team.service.TeamUserManagementService;
 import com.moyorak.api.team.service.TeamUserService;
-import com.moyorak.global.domain.ListResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -47,7 +46,7 @@ class TeamUserController {
 
     @GetMapping("/teams/{teamId}/team-members")
     @Operation(summary = "팀 멤버 리스트 조회", description = "팀 멤버 리스트를 조회합니다.")
-    public ListResponse<TeamUserResponse> getTeamUsers(
+    public TeamUserListResponse getTeamUsers(
             @PathVariable @Positive final Long teamId,
             @AuthenticationPrincipal final UserPrincipal userPrincipal,
             @Valid final TeamUserListRequest request) {
