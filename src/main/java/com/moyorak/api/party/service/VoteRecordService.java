@@ -22,14 +22,14 @@ public class VoteRecordService {
     }
 
     @Transactional(readOnly = true)
-    public Optional<VoteRecord> findByVoteIdAndUserIdAndUseTrue(
+    public Optional<VoteRecord> findByVoteIdAndAttendeeIdAndUseTrue(
             final Long userId, final Long voteId) {
         return voteRecordRepository.findByVoteIdAndAttendeeIdAndUseTrue(voteId, userId);
     }
 
     @Transactional
-    public void vote(final Long userId, final Long voteId, final Long candidateId) {
-        Optional<VoteRecord> voteRecord = findByVoteIdAndUserIdAndUseTrue(userId, voteId);
+    public void vote(final Long attendeeId, final Long voteId, final Long candidateId) {
+        Optional<VoteRecord> voteRecord = findByVoteIdAndAttendeeIdAndUseTrue(attendeeId, voteId);
         boolean isVoteRecordPresent = voteRecord.isPresent();
         if (isVoteRecordPresent) {
             VoteRecord existingRecord = voteRecord.get();
@@ -38,6 +38,6 @@ public class VoteRecordService {
             }
             existingRecord.toggleUse();
         }
-        voteRecordRepository.save(VoteRecord.create(candidateId, voteId, userId));
+        voteRecordRepository.save(VoteRecord.create(candidateId, voteId, attendeeId));
     }
 }
