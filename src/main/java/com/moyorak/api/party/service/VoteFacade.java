@@ -1,5 +1,6 @@
 package com.moyorak.api.party.service;
 
+import com.moyorak.api.party.domain.PartyAttendee;
 import com.moyorak.api.party.domain.VoteRestaurantCandidate;
 import com.moyorak.api.party.dto.VoteRequest;
 import com.moyorak.config.exception.BusinessException;
@@ -29,7 +30,8 @@ public class VoteFacade {
         partyService.getPartyInfo(partyId, teamId);
 
         // 파티 참가자가 존재하는지
-        partyAttendeeService.getPartyAttendeeByUserIdAndPartyId(userId, partyId);
+        PartyAttendee partyAttendee =
+                partyAttendeeService.getPartyAttendeeByUserIdAndPartyId(userId, partyId);
 
         // 투표가 존재하는지
         voteService.getVoteByIdAndPartyId(voteId, partyId);
@@ -42,6 +44,6 @@ public class VoteFacade {
         }
 
         // 투표 기록 저장
-        voteRecordService.vote(userId, voteId, voteRequest.candidateId());
+        voteRecordService.vote(partyAttendee.getId(), voteId, voteRequest.candidateId());
     }
 }
