@@ -23,4 +23,11 @@ public interface SearchHistoryRepository extends JpaRepository<SearchHistory, Lo
                     name = "org.hibernate.comment",
                     value = "SearchHistoryRepository.findByIdAndUserIdAndUse : 팀 맛집 검색 기록을 조회합니다."))
     Optional<SearchHistory> findByIdAndUserIdAndUse(Long id, Long userId, boolean use);
+
+    @QueryHints(
+            @QueryHint(
+                    name = "org.hibernate.comment",
+                    value =
+                            "SearchHistoryRepository.existsByTeamIdAndUserIdAndKeywordAndUseTrue : 팀 맛집 검색 기록의 존재 유무를 확인합니다."))
+    boolean existsByTeamIdAndUserIdAndKeywordAndUseTrue(Long teamId, Long userId, String keyword);
 }

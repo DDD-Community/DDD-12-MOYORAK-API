@@ -24,4 +24,12 @@ public interface ViewHistoryRepository extends JpaRepository<ViewHistory, Long> 
                     value =
                             "ViewHistoryRepository.findByIdAndUserIdAndUse : 팀 맛집 상세 조회 기록을 조회합니다."))
     Optional<ViewHistory> findByIdAndUserIdAndUse(Long id, Long userId, boolean use);
+
+    @QueryHints(
+            @QueryHint(
+                    name = "org.hibernate.comment",
+                    value =
+                            "ViewHistoryRepository.existsByTeamIdAndUserIdAndTeamRestaurantIdAndUseTrue : 팀 맛집 상세 조회 기록의 존재 유무를 확인합니다."))
+    boolean existsByTeamIdAndUserIdAndTeamRestaurantIdAndUseTrue(
+            Long teamId, Long userId, Long teamRestaurantId);
 }
