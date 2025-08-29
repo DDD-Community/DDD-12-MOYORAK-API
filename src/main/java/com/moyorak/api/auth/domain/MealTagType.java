@@ -10,4 +10,12 @@ public enum MealTagType {
     ALLERGY("알러지");
 
     private final String description;
+
+    public boolean isDislike() {
+        return this == DISLIKE;
+    }
+
+    public boolean isAllergy() {
+        return this == ALLERGY;
+    }
 }

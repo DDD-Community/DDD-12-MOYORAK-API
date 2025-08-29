@@ -2,6 +2,7 @@ package com.moyorak.api.auth.controller;
 
 import com.moyorak.api.auth.domain.UserPrincipal;
 import com.moyorak.api.auth.dto.MealTagSaveRequest;
+import com.moyorak.api.auth.dto.MealTagSearchResponse;
 import com.moyorak.api.auth.service.MealTagService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -9,6 +10,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,5 +31,12 @@ class MealTagController {
             @AuthenticationPrincipal final UserPrincipal userPrincipal,
             @RequestBody @Valid final MealTagSaveRequest request) {
         mealTagService.foodFlagRegister(userPrincipal.getId(), request);
+    }
+
+    @GetMapping("/meal/tags")
+    @Operation(summary = "[알러지, 비선호 음식] 알러지, 비선호 음식 조회", description = "알러지, 비선호 음식 리스트를 조회합니다.")
+    public MealTagSearchResponse findMealTag(
+            @AuthenticationPrincipal final UserPrincipal userPrincipal) {
+        return mealTagService.getMealTags(userPrincipal.getId());
     }
 }
