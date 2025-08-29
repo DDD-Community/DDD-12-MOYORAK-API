@@ -175,7 +175,7 @@ class VoteFacadeTest {
 
             willThrow(new BusinessException("이미 투표한 후보 입니다."))
                     .given(voteRecordService)
-                    .vote(userId, voteId, candidateId);
+                    .vote(partyAttendee.getId(), voteId, candidateId);
 
             // when & then
             assertThatThrownBy(
@@ -211,7 +211,7 @@ class VoteFacadeTest {
             voteFacade.vote(teamId, partyId, voteId, userId, voteRequest(candidateId));
 
             // then
-            verify(voteRecordService, times(1)).vote(userId, voteId, candidateId);
+            verify(voteRecordService, times(1)).vote(partyAttendee.getId(), voteId, candidateId);
             verifyNoMoreInteractions(voteRecordService);
         }
     }
