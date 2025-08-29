@@ -52,7 +52,7 @@ WHERE tr.id IN :ids AND tr.use = :use
     List<TeamRestaurantLocation> findLocationsByTeamIdAndUse(
             @Param("teamId") Long teamId, @Param("use") boolean use);
 
-    Page<TeamRestaurant> findAllByTeamId(Long teamId, Pageable pageable);
+    Page<TeamRestaurant> findAllByTeamIdAndUseTrue(Long teamId, Pageable pageable);
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query(
