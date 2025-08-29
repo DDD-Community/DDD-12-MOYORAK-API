@@ -70,7 +70,7 @@ public class PartyAttendeeService {
     }
 
     private void validateSameTeam(final TeamUser teamUser, final Party party) {
-        if (!Objects.equals(teamUser.getTeam().getId(), party.getId())) {
+        if (!Objects.equals(teamUser.getTeam().getId(), party.getTeamId())) {
             throw new NotTeamUserException();
         }
     }
