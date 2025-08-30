@@ -7,10 +7,10 @@ import com.moyorak.api.team.domain.TeamUser;
 import com.moyorak.api.team.domain.TeamUserNotFoundException;
 import com.moyorak.api.team.domain.TeamUserStatus;
 import com.moyorak.api.team.dto.TeamUserListRequest;
+import com.moyorak.api.team.dto.TeamUserListResponse;
 import com.moyorak.api.team.dto.TeamUserResponse;
 import com.moyorak.api.team.repository.TeamUserRepository;
 import com.moyorak.config.exception.BusinessException;
-import com.moyorak.global.domain.ListResponse;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -47,7 +47,7 @@ public class TeamUserManagementService {
     }
 
     @Transactional(readOnly = true)
-    public ListResponse<TeamUserResponse> getTeamUsers(
+    public TeamUserListResponse getTeamUsers(
             final Long userId, final Long teamId, final TeamUserListRequest request) {
 
         final TeamUser teamUserAdmin = getTeamUser(userId, teamId);
@@ -58,7 +58,7 @@ public class TeamUserManagementService {
                 teamUserRepository.findByConditions(
                         teamId, request.getStatus(), true, request.toRecentPageable());
 
-        return ListResponse.from(teamUsers);
+        return TeamUserListResponse.from(teamUsers, teamUserAdmin.getTeam().getName());
     }
 
     @Transactional
