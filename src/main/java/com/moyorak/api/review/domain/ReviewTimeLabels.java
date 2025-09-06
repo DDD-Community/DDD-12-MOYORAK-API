@@ -1,5 +1,6 @@
 package com.moyorak.api.review.domain;
 
+import com.moyorak.api.auth.dto.ReviewWithUserAndTeamRestaurantProjection;
 import com.moyorak.api.review.dto.LabelPair;
 import com.moyorak.api.review.dto.ReviewWithUserProjection;
 import java.time.LocalDate;
@@ -24,6 +25,23 @@ public class ReviewTimeLabels {
                         .collect(
                                 Collectors.toUnmodifiableMap(
                                         ReviewWithUserProjection::id,
+                                        r ->
+                                                new LabelPair(
+                                                        timeMapper.mapServingTime(r.servingTime()),
+                                                        timeMapper.mapWaitingTime(
+                                                                r.waitingTime()))));
+
+        return new ReviewTimeLabels(labelMap);
+    }
+
+    public static ReviewTimeLabels createFromUserReview(
+            List<ReviewWithUserAndTeamRestaurantProjection> reviews,
+            ReviewTimeRangeMapper timeMapper) {
+        Map<Long, LabelPair> labelMap =
+                reviews.stream()
+                        .collect(
+                                Collectors.toUnmodifiableMap(
+                                        ReviewWithUserAndTeamRestaurantProjection::id,
                                         r ->
                                                 new LabelPair(
                                                         timeMapper.mapServingTime(r.servingTime()),

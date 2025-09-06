@@ -1,5 +1,6 @@
 package com.moyorak.api.review.repository;
 
+import com.moyorak.api.auth.dto.ReviewWithUserAndTeamRestaurantProjection;
 import com.moyorak.api.review.domain.Review;
 import com.moyorak.api.review.dto.ReviewWithUserProjection;
 import jakarta.persistence.QueryHint;
@@ -33,18 +34,21 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     @QueryHints(
             @QueryHint(
                     name = "org.hibernate.comment",
-                    value = "ReviewRepository.findReviewWithUserByUserId: 사용자 ID 로 리뷰와 사용자 정보 조회 "))
+                    value =
+                            "ReviewRepository.findReviewWithUserAndTeamRestaurantByUserId: 사용자 ID 로 리뷰와 사용자 정보,맛집 정보 조회 "))
     @Query(
             """
-SELECT new com.moyorak.api.review.dto.ReviewWithUserProjection(
-    r.id, r.extraText,r.score, r.servingTime, r.waitingTime,u.id,
-    u.name, u.profileImage,r.createdDate
+SELECT new com.moyorak.api.auth.dto.ReviewWithUserAndTeamRestaurantProjection(
+r.id,rt.name,t.id, r.extraText,r.score, r.servingTime, r.waitingTime,u.id,
+u.name, u.profileImage,r.createdDate
 )
 FROM Review r
 JOIN User u ON r.userId = u.id
+JOIN TeamRestaurant t ON t.id = r.teamRestaurantId
+JOIN Restaurant rt ON rt.id = t.restaurant.id
 WHERE r.userId = :userId AND r.use = true
 """)
-    Page<ReviewWithUserProjection> findReviewWithUserByUserId(
+    Page<ReviewWithUserAndTeamRestaurantProjection> findReviewWithUserAndTeamRestaurantByUserId(
             @Param("userId") Long userId, Pageable pageable);
 
     @QueryHints(
