@@ -1,5 +1,6 @@
 package com.moyorak.api.review.service;
 
+import com.moyorak.api.auth.dto.ReviewWithUserAndTeamRestaurantProjection;
 import com.moyorak.api.review.domain.Review;
 import com.moyorak.api.review.domain.ReviewServingTime;
 import com.moyorak.api.review.domain.ReviewWaitingTime;
@@ -32,9 +33,9 @@ public class ReviewService {
     }
 
     @Transactional(readOnly = true)
-    public Page<ReviewWithUserProjection> getReviewWithUserByUserId(
-            Long userId, Pageable pageable) {
-        return reviewRepository.findReviewWithUserByUserId(userId, pageable);
+    public Page<ReviewWithUserAndTeamRestaurantProjection>
+            getReviewWithUserAndTeamRestaurantByUserId(Long userId, Pageable pageable) {
+        return reviewRepository.findReviewWithUserAndTeamRestaurantByUserId(userId, pageable);
     }
 
     @Transactional(readOnly = true)

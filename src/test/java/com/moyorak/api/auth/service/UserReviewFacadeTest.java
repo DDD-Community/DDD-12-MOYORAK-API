@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.BDDMockito.given;
 
+import com.moyorak.api.auth.dto.ReviewWithUserAndTeamRestaurantProjection;
+import com.moyorak.api.auth.dto.ReviewWithUserAndTeamRestaurantProjectionFixture;
 import com.moyorak.api.auth.dto.UserReviewRequest;
 import com.moyorak.api.auth.dto.UserReviewRequestFixture;
 import com.moyorak.api.auth.dto.UserReviewResponse;
@@ -13,8 +15,6 @@ import com.moyorak.api.review.domain.ReviewServingTimeFixture;
 import com.moyorak.api.review.domain.ReviewWaitingTime;
 import com.moyorak.api.review.domain.ReviewWaitingTimeFixture;
 import com.moyorak.api.review.dto.ReviewPhotoPath;
-import com.moyorak.api.review.dto.ReviewWithUserProjection;
-import com.moyorak.api.review.dto.ReviewWithUserProjectionFixture;
 import com.moyorak.api.review.service.ReviewPhotoService;
 import com.moyorak.api.review.service.ReviewService;
 import com.moyorak.global.domain.ListResponse;
@@ -44,11 +44,14 @@ public class UserReviewFacadeTest {
         // given
         final UserReviewRequest request = UserReviewRequestFixture.fixture(1, 10);
 
-        final ReviewWithUserProjection review = ReviewWithUserProjectionFixture.defaultFixture();
-        final Page<ReviewWithUserProjection> reviewPage =
+        final ReviewWithUserAndTeamRestaurantProjection review =
+                ReviewWithUserAndTeamRestaurantProjectionFixture.defaultFixture();
+        final Page<ReviewWithUserAndTeamRestaurantProjection> reviewPage =
                 new PageImpl<>(List.of(review), PageRequest.of(0, 10), 1);
 
-        given(reviewService.getReviewWithUserByUserId(userId, request.toPageableAndDateSorted()))
+        given(
+                        reviewService.getReviewWithUserAndTeamRestaurantByUserId(
+                                userId, request.toPageableAndDateSorted()))
                 .willReturn(reviewPage);
 
         final List<Long> reviewIds = List.of(1L);

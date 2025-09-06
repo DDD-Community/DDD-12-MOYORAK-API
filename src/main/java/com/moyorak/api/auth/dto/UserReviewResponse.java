@@ -2,7 +2,6 @@ package com.moyorak.api.auth.dto;
 
 import com.moyorak.api.review.domain.ReviewPhotoPaths;
 import com.moyorak.api.review.domain.ReviewTimeLabels;
-import com.moyorak.api.review.dto.ReviewWithUserProjection;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 import org.springframework.data.domain.Page;
@@ -10,6 +9,8 @@ import org.springframework.data.domain.Page;
 @Schema(title = "[마이] 사용자 리뷰 조회 응답 DTO")
 public record UserReviewResponse(
         @Schema(description = "리뷰 ID", example = "1") Long id,
+        @Schema(description = "팀 맛집 ID", example = "1") Long teamRestaurantId,
+        @Schema(description = "팀 맛집 이름", example = "우가우가 식당") String teamRestaurantName,
         @Schema(description = "추가 텍스트", example = "음식이 조금 짰지만 전체적으로 만족스러웠습니다.") String extraText,
         @Schema(description = "리뷰 점수 (1~5)", example = "4") Integer score,
         @Schema(description = "서빙 시간", example = "바로 준비됌") String servingTime,
@@ -24,13 +25,15 @@ public record UserReviewResponse(
                 List<String> photoUrls,
         @Schema(description = "리뷰 작성일 (yyyy-MM-dd)", example = "2025-08-25") String createdDate) {
     public static Page<UserReviewResponse> from(
-            Page<ReviewWithUserProjection> review,
+            Page<ReviewWithUserAndTeamRestaurantProjection> review,
             ReviewPhotoPaths reviewPhotoPaths,
             ReviewTimeLabels reviewTimeLabels) {
         return review.map(
                 r ->
                         new UserReviewResponse(
                                 r.id(),
+                                r.teamRestaurantId(),
+                                r.teamRestaurantName(),
                                 r.extraText(),
                                 r.score(),
                                 reviewTimeLabels.getServingLabel(r.id()),
