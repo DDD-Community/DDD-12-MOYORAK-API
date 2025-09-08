@@ -67,7 +67,7 @@ class UserController {
                 @ApiResponse(responseCode = "401", description = "로그인 정보가 없는 경우"),
                 @ApiResponse(responseCode = "500", description = "예상치 못한 서버 오류"),
             })
-    @Operation(summary = "[회원] [마이] 회사, 팀 ID 조회", description = "로그인 된 정보에 의해 회사와 팀 ID를 조회합니다.")
+    @Operation(summary = "[회원] [마이] 자신의 팀 정보 조회", description = "로그인 된 정보에 의해 팀 정보를 조회합니다.")
     public UserOrganisationResponse me(@AuthenticationPrincipal final UserPrincipal userPrincipal) {
         return userFacade.getMe(userPrincipal.getId());
     }
