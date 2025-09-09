@@ -129,17 +129,17 @@ public class TeamUserService {
 
     @Transactional(readOnly = true)
     public UserOrganisationResponse getTeamId(final Long userId) {
-        final Long teamId =
+        final TeamUser teamUser =
                 teamUserRepository
                         .findWithTeamAndCompany(userId, true)
-                        .orElseThrow(() -> new BusinessException("해당 팀의 팀원이 아닙니다."))
-                        .getTeamId();
+                        .orElseThrow(() -> new BusinessException("해당 팀의 팀원이 아닙니다."));
 
         final Team team =
                 teamRepository
-                        .findByTeamId(teamId, userId)
+                        .findByTeamId(teamUser.getTeamId(), userId)
                         .orElseThrow(() -> new BusinessException("유효하지 않은 팀 ID 입니다."));
 
-        return UserOrganisationResponse.from(team.getCompanyId(), teamId);
+        return UserOrganisationResponse.from(
+                team.getCompanyId(), teamUser.getTeamId(), teamUser.getRole().getDescription());
     }
 }
