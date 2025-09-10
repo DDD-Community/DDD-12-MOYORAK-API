@@ -6,6 +6,7 @@ public record ReviewWithUserAndTeamRestaurantProjection(
         Long id,
         String teamRestaurantName,
         Long teamRestaurantId,
+        boolean isDeletedTeamRestaurant,
         String extraText,
         Integer score,
         Integer servingTime,

@@ -11,6 +11,8 @@ public record UserReviewResponse(
         @Schema(description = "리뷰 ID", example = "1") Long id,
         @Schema(description = "팀 맛집 ID", example = "1") Long teamRestaurantId,
         @Schema(description = "팀 맛집 이름", example = "우가우가 식당") String teamRestaurantName,
+        @Schema(description = "팀 맛집 삭제 여부", example = "true=삭제된 팀 맛집 리뷰|false=삭제 돼지 않은 팀 맛집 리뷰")
+                boolean isDeletedTeamRestaurantReview,
         @Schema(description = "추가 텍스트", example = "음식이 조금 짰지만 전체적으로 만족스러웠습니다.") String extraText,
         @Schema(description = "리뷰 점수 (1~5)", example = "4") Integer score,
         @Schema(description = "서빙 시간", example = "바로 준비됌") String servingTime,
@@ -34,6 +36,7 @@ public record UserReviewResponse(
                                 r.id(),
                                 r.teamRestaurantId(),
                                 r.teamRestaurantName(),
+                                r.isDeletedTeamRestaurant(),
                                 r.extraText(),
                                 r.score(),
                                 reviewTimeLabels.getServingLabel(r.id()),
