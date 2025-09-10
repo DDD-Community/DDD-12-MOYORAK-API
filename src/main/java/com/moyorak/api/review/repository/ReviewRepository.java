@@ -39,7 +39,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     @Query(
             """
 SELECT new com.moyorak.api.auth.dto.ReviewWithUserAndTeamRestaurantProjection(
-r.id,rt.name,t.id, r.extraText,r.score, r.servingTime, r.waitingTime,u.id,
+r.id,rt.name,t.id,t.use, r.extraText,r.score, r.servingTime, r.waitingTime,u.id,
 u.name, u.profileImage,r.createdDate
 )
 FROM Review r

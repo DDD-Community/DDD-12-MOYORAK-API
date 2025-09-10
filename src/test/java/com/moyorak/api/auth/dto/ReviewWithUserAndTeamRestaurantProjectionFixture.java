@@ -7,6 +7,7 @@ public class ReviewWithUserAndTeamRestaurantProjectionFixture {
     public static ReviewWithUserAndTeamRestaurantProjection fixture(
             Long id,
             Long teamRestaurantId,
+            boolean isDeletedTeamRestaurant,
             String restaurantName,
             String extraText,
             Integer score,
@@ -20,6 +21,7 @@ public class ReviewWithUserAndTeamRestaurantProjectionFixture {
                 id,
                 restaurantName,
                 teamRestaurantId,
+                isDeletedTeamRestaurant,
                 extraText,
                 score,
                 servingTime,
@@ -34,6 +36,7 @@ public class ReviewWithUserAndTeamRestaurantProjectionFixture {
         return fixture(
                 1L,
                 1L,
+                true,
                 "식당",
                 "좋은식당",
                 5,
