@@ -3,7 +3,6 @@ package com.moyorak.api.team.controller;
 import com.moyorak.api.auth.domain.UserPrincipal;
 import com.moyorak.api.team.dto.TeamUserListRequest;
 import com.moyorak.api.team.dto.TeamUserListResponse;
-import com.moyorak.api.team.dto.TeamUserRoleUpdateRequest;
 import com.moyorak.api.team.service.TeamJoinFacade;
 import com.moyorak.api.team.service.TeamUserManagementService;
 import com.moyorak.api.team.service.TeamUserService;
@@ -20,7 +19,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -80,14 +78,12 @@ class TeamUserController {
     }
 
     @PutMapping("/teams/{teamId}/team-members/{teamMemberId}/role")
-    @Operation(summary = "팀 멤버 역할 변경", description = "팀 멤버 역할을 변경합니다.")
-    public void updateRole(
+    @Operation(summary = "팀 매니저 역할 양도", description = "팀 매니저 역할을 양도합니다.")
+    public void transferManagerRole(
             @PathVariable @Positive final Long teamId,
             @PathVariable @Positive final Long teamMemberId,
-            @AuthenticationPrincipal final UserPrincipal userPrincipal,
-            @Valid @RequestBody final TeamUserRoleUpdateRequest request) {
-        teamUserManagementService.updateRole(
-                userPrincipal.getId(), teamId, teamMemberId, request.role());
+            @AuthenticationPrincipal final UserPrincipal userPrincipal) {
+        teamUserManagementService.transferManagerRole(userPrincipal.getId(), teamId, teamMemberId);
     }
 
     @DeleteMapping("/teams/{teamId}/team-members/{teamMemberId}")
