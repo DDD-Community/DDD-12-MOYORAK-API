@@ -36,8 +36,8 @@ class TeamUserManagementServiceTest {
     @Mock private TeamUserRepository teamUserRepository;
 
     @Nested
-    @DisplayName("역할 변경 시")
-    class UpdateRole {
+    @DisplayName("역할 양도 시")
+    class transferManager {
 
         final Long teamId = 1L;
         final Long requesterUserId = 1L;
@@ -54,11 +54,8 @@ class TeamUserManagementServiceTest {
             // when & then
             assertThatThrownBy(
                             () ->
-                                    teamUserManagementService.updateRole(
-                                            requesterUserId,
-                                            teamId,
-                                            targetTeamUserId,
-                                            TeamRole.TEAM_ADMIN))
+                                    teamUserManagementService.transferManagerRole(
+                                            requesterUserId, teamId, targetTeamUserId))
                     .isInstanceOf(TeamUserNotFoundException.class)
                     .hasMessage("팀 멤버가 아닙니다.");
         }
@@ -75,11 +72,8 @@ class TeamUserManagementServiceTest {
             // when & then
             assertThatThrownBy(
                             () ->
-                                    teamUserManagementService.updateRole(
-                                            requesterUserId,
-                                            teamId,
-                                            targetTeamUserId,
-                                            TeamRole.TEAM_ADMIN))
+                                    teamUserManagementService.transferManagerRole(
+                                            requesterUserId, teamId, targetTeamUserId))
                     .isInstanceOf(NotTeamAdminException.class)
                     .hasMessage("팀 관리자가 아닙니다.");
         }
@@ -103,11 +97,8 @@ class TeamUserManagementServiceTest {
             // when & then
             assertThatThrownBy(
                             () ->
-                                    teamUserManagementService.updateRole(
-                                            requesterUserId,
-                                            teamId,
-                                            adminUser.getId(),
-                                            TeamRole.TEAM_ADMIN))
+                                    teamUserManagementService.transferManagerRole(
+                                            requesterUserId, teamId, adminUser.getId()))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("본인은 변경이 불가능합니다.");
         }
@@ -135,11 +126,8 @@ class TeamUserManagementServiceTest {
             // when & then
             assertThatThrownBy(
                             () ->
-                                    teamUserManagementService.updateRole(
-                                            requesterUserId,
-                                            teamId,
-                                            targetTeamUserId,
-                                            TeamRole.TEAM_MEMBER))
+                                    teamUserManagementService.transferManagerRole(
+                                            requesterUserId, teamId, targetTeamUserId))
                     .isInstanceOf(TeamUserNotFoundException.class)
                     .hasMessage("팀 멤버가 아닙니다.");
         }
@@ -178,11 +166,8 @@ class TeamUserManagementServiceTest {
             // when & then
             assertThatThrownBy(
                             () ->
-                                    teamUserManagementService.updateRole(
-                                            requesterUserId,
-                                            teamId,
-                                            targetTeamUserId,
-                                            TeamRole.TEAM_MEMBER))
+                                    teamUserManagementService.transferManagerRole(
+                                            requesterUserId, teamId, targetTeamUserId))
                     .isInstanceOf(NotTeamUserException.class)
                     .hasMessage("해당 팀의 팀원이 아닙니다.");
         }

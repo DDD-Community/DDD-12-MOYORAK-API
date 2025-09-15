@@ -24,8 +24,7 @@ public class TeamUserManagementService {
     private final TeamUserRepository teamUserRepository;
 
     @Transactional
-    public void updateRole(
-            final Long userId, final Long teamId, final Long teamUserId, final TeamRole role) {
+    public void transferManagerRole(final Long userId, final Long teamId, final Long teamUserId) {
         final TeamUser teamUserAdmin = getTeamUser(userId, teamId);
 
         validateApprovedTeamUserAdmin(teamUserAdmin);
@@ -43,7 +42,8 @@ public class TeamUserManagementService {
             throw new NotTeamUserException();
         }
 
-        teamUser.changeRole(role);
+        teamUser.changeRole(TeamRole.TEAM_ADMIN);
+        teamUserAdmin.changeRole(TeamRole.TEAM_MEMBER);
     }
 
     @Transactional(readOnly = true)
