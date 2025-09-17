@@ -52,7 +52,7 @@ public class User extends AuditInformation {
     private LocalDate birthday;
 
     @Comment("프로필 이미지 URL")
-    @Column(name = "profile_image", columnDefinition = "varchar(256)")
+    @Column(name = "profile_image", columnDefinition = "varchar(512)")
     private String profileImage;
 
     @NotNull
