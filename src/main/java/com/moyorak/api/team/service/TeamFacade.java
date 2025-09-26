@@ -1,5 +1,6 @@
 package com.moyorak.api.team.service;
 
+import com.moyorak.api.team.dto.TeamCreateResponse;
 import com.moyorak.api.team.dto.TeamSaveRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,7 +21,8 @@ public class TeamFacade {
      * @param request 팀 생성 요청 DTO
      */
     @Transactional
-    public void create(final Long companyId, final Long userId, final TeamSaveRequest request) {
+    public TeamCreateResponse create(
+            final Long companyId, final Long userId, final TeamSaveRequest request) {
         // 1. 이미 다른 팀에 소속중인지 확인
         teamUserService.assignUserToTeam(userId);
 
@@ -29,5 +31,7 @@ public class TeamFacade {
 
         // 3. 팀에 관리자로 소속 추가
         teamUserService.adminJoin(teamId, userId);
+
+        return TeamCreateResponse.of(teamId);
     }
 }
