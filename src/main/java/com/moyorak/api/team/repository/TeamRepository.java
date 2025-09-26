@@ -18,7 +18,7 @@ public interface TeamRepository extends CrudRepository<Team, Long> {
             SELECT t
             FROM Team t
             JOIN FETCH t.company
-            WHERE t.company.id = :teamId
+            WHERE t.id = :teamId
             and t.use = true
             and t.company.use = true
         """)
