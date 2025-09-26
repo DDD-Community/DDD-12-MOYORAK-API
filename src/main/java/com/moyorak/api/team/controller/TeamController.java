@@ -1,6 +1,7 @@
 package com.moyorak.api.team.controller;
 
 import com.moyorak.api.auth.domain.UserPrincipal;
+import com.moyorak.api.team.dto.TeamCreateResponse;
 import com.moyorak.api.team.dto.TeamSaveRequest;
 import com.moyorak.api.team.dto.TeamSearchListResponse;
 import com.moyorak.api.team.dto.TeamSearchRequest;
@@ -42,10 +43,10 @@ class TeamController {
 
     @PostMapping("/companies/{companyId}/teams")
     @Operation(summary = "[팀] 팀 생성", description = "팀을 생성하고, 최초 생성자는 팀장이 됩니다.")
-    public void createTeam(
+    public TeamCreateResponse createTeam(
             @PathVariable @Positive final Long companyId,
             @AuthenticationPrincipal final UserPrincipal userPrincipal,
             @RequestBody @Valid final TeamSaveRequest request) {
-        teamFacade.create(companyId, userPrincipal.getId(), request);
+        return teamFacade.create(companyId, userPrincipal.getId(), request);
     }
 }
